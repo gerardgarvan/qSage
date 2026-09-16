@@ -9,8 +9,8 @@ Signature legend: **[V]** verified against qseriesdoc.pdf / doc pages · **[?]**
 
 ### Foundation
 
-- [ ] **FOUND-01**: `QSeries` wraps `LaurentSeriesRing(R, 'q')` with explicit truncation order `T` stored per instance and propagated as `min(T1, T2)`. `R` is `QQ` by default, `GF(p)` for mod-p functions, and `LaurentPolynomialRing(QQ, 'z')` (or a two-variable equivalent) for the functions that are Laurent in a second variable: `theta`, `tripleprod`, `quinprod`, `winquist`, `zqfactor`.
-- [ ] **FOUND-02**: `QSeries` carries a rational exponent shift `r` so that `q^r * (Laurent series in q)` is representable. Needed because Maple returns fractional q-powers from `theta2` (`q^(1/4)`), `etamake` (`q^(-5/24)` etc.), and any user expression like `q^(1/3)*etaq(...)`.
+- [x] **FOUND-01**: `QSeries` wraps `LaurentSeriesRing(R, 'q')` with explicit truncation order `T` stored per instance and propagated as `min(T1, T2)`. `R` is `QQ` by default, `GF(p)` for mod-p functions, and `LaurentPolynomialRing(QQ, 'z')` (or a two-variable equivalent) for the functions that are Laurent in a second variable: `theta`, `tripleprod`, `quinprod`, `winquist`, `zqfactor`.
+- [x] **FOUND-02**: `QSeries` carries a rational exponent shift `r` so that `q^r * (Laurent series in q)` is representable. Needed because Maple returns fractional q-powers from `theta2` (`q^(1/4)`), `etamake` (`q^(-5/24)` etc.), and any user expression like `q^(1/3)*etaq(...)`.
 - [ ] **FOUND-03**: Output classes, each printable in Maple's notation and convertible back via `.to_series(T)`:
   `QProduct` — `∏(1-q^n)^e_n` (return type of `prodmake`);
   `EtaProduct` — `c * q^r * ∏ eta(k*tau)^e_k` (return type of `etamake`);
