@@ -30,20 +30,20 @@
 
 ---
 
-## 3. Andrews' Algorithm — Log-Derivative Implementation
+## 3. Andrews' Algorithm — Recurrence, Not Log-Derivative
 
-**Pitfall:** The log-derivative `f'/f` of a q-product requires dividing series, which introduces truncation error. The standard implementation computes `d/dq log f = f'/f` and reads off exponents from the partial fractions at roots of unity — but the series version must work with finite truncation.
+**Pitfall:** Andrews' algorithm is a **recurrence**, not a log-derivative / partial-fraction decomposition. The recurrence `n*b_n = sum_{j=1}^{n} b_{n-j} * sigma_a(j)` (where `b_n` are log-coefficients and `sigma_a(j) = sum_{d|j} d*a_d`) is solved iteratively for `a_n`. There is no linear algebra or Möbius inversion step.
 
-Common error: forgetting to handle the `q^(1/N)` substitution when the product has fractional q-powers.
+Common error: implementing a coefficient-matrix / nullspace approach instead of the recurrence, which makes `prodmake` O(T²) in memory and produces a different (incorrect) algorithm.
 
-**Warning signs:** `prodmake` works on simple examples but fails when the product involves a half-integer q-power prefix.
+**Warning signs:** `prodmake` calls `M.right_kernel()`; `prodmake` requires T >> 50 to converge.
 
 **Prevention:**
-- Implement prodmake for integer-exponent products first; add fractional-power prefix handling separately.
-- Verify against the Maple doc's `prodmake` examples using high truncation order (T ≥ 50).
-- Cross-check: apply `aqprod` with recovered exponents and compare with original series.
+- Implement the recurrence exactly as stated in CONV-01: `a_n = (n*b_n - sum_{j=1}^{n-1} b_{n-j}*sigma_a(j)) / n`, where `sigma_a` is updated with each newly found `a_n`.
+- Normalise `f` to `f[0] = 1` before applying the recurrence (strip the rational q-power shift first, restore it after).
+- Cross-check: expand recovered exponents via `aqprod` and compare with original series to order T.
 
-**Phase:** prodmake phase (Phase 4).
+**Phase:** prodmake phase (Phase 3).
 
 ---
 
@@ -162,3 +162,75 @@ Common error: forgetting to handle the `q^(1/N)` substitution when the product h
 - Cross-check theta function implementations against the Jacobi triple product identity (testable without Maple).
 
 **Phase:** Building blocks (Phase 2).
+
+---
+
+## 12. Fractional q-Power Shifts Are Not Edge Cases
+
+**Pitfall:** Treating `q^(1/4)` prefactors as an edge case to handle "later". In fact, `theta2` returns `q^(1/4) * (2 + 2*q^2 + ...)` and every `etamake` result on theta-series has a fractional shift. `QSeries` must support a rational exponent shift `r` (FOUND-02) from Phase 1.
+
+**Warning signs:** `theta2` is implemented as a power series without the `q^(1/4)` factor; `etamake(theta2(...))` crashes or returns wrong results.
+
+**Prevention:**
+- Implement FOUND-02 (rational shift) in `QSeries` in Phase 1, before any building-block function.
+- Represent `q^r * series` as `(shift=r, series)` pair stored on the `QSeries` object.
+- Verify `theta2` output in Phase 2 matches `q^(1/4) * (2 + 2*q^2 + 2*q^6 + ...)`.
+
+**Phase:** Series representation layer (Phase 1), used from Phase 2 onward.
+
+---
+
+## 13. Bivariate Series — QQ-Only Ring Is Insufficient
+
+**Pitfall:** Five functions are Laurent in two variables: `theta(z, q, T)`, `tripleprod(z, q, T)`, `quinprod(z, q, T)`, `winquist(a, b, q, T)`, `zqfactor(f, z, q, T)`. A `LaurentSeriesRing(QQ, 'q')` cannot hold them — `z` is a free variable.
+
+**Warning signs:** `theta(z, q, 20)` crashes with a ring coercion error; `z` treated as a numeric constant.
+
+**Prevention:**
+- For bivariate functions, use `LaurentPolynomialRing(QQ, ['z', 'q'])` or a nested `LaurentSeriesRing(LaurentPolynomialRing(QQ, 'z'), 'q')`.
+- `QSeries` base ring `R` must be pluggable (FOUND-01) so bivariate functions can pass their own ring.
+- Decide the bivariate ring strategy in Phase 1 planning and document it in CONTEXT.md.
+
+**Phase:** Building blocks (Phase 2), requires FOUND-01 from Phase 1.
+
+---
+
+## 14. quinprod Argument Overloading
+
+**Pitfall:** `quinprod(z, q, T)` overloads its third argument: when `T` is an integer it returns a truncated series; when `T == 'prodid'` it returns the product-form identity as a displayable equation; when `T == 'seriesid'` it returns the series-form identity. Treating `T` as always an integer will silently produce wrong results for the symbolic modes.
+
+**Warning signs:** `quinprod(z, q, 'prodid')` raises `TypeError: cannot convert 'prodid' to integer`.
+
+**Prevention:**
+- Check `isinstance(T, int)` at the top of `quinprod`; branch to identity-display path for string values.
+- Write separate tests for each mode.
+
+**Phase:** Building blocks (Phase 2).
+
+---
+
+## 15. Relation Finders Return Polynomials, Not Coefficient Vectors
+
+**Pitfall:** Returning bare coefficient vectors (lists of rationals) instead of Sage polynomials in `X1..Xk`. The Maple package returns expressions in global variables `X[i]`; downstream code (and tutorial examples) expects polynomial objects.
+
+**Warning signs:** Tutorial example `findhomcombo(...)` prints a list of numbers instead of `X1^2*X2 + 40*X1*X2^2 + 335*X2^3`.
+
+**Prevention:**
+- Implement FOUND-04: construct `PolynomialRing(QQ, ['X1','X2',...])` inside relation finders and return polynomial objects, not vectors.
+- `findhom` family returns a list of polynomials; `findhomcombo` returns a single polynomial expression for f.
+
+**Phase:** Relation finding (Phase 5–6).
+
+---
+
+## 16. findhom Has No T Argument
+
+**Pitfall:** `findhom(L, q, n, topshift)` takes the truncation from the series in `L` — there is no separate `T` argument. Passing a `T` argument will cause a `TypeError` or silently be treated as `topshift`.
+
+**Warning signs:** `findhom([f1, f2], q, 40, 2)` is called with the old invented signature (40 = T, 2 = degree); the correct call is `findhom([f1, f2], q, 2, 0)` (2 = degree, 0 = topshift).
+
+**Prevention:**
+- Verify the `findhom` signature against its doc page before implementing.
+- Use series-carried truncation; let `topshift` trim rows to suppress spurious relations.
+
+**Phase:** Relation finding (Phase 5).

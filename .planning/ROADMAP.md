@@ -3,8 +3,8 @@
 **Project:** qseries-sage
 **Milestone:** v1.0 — full 41-function port of Garvan's Maple qseries package
 **Granularity:** Standard (7 phases)
-**Requirements:** 28 v1 requirements (FOUND-01 through PKG-02)
-**Coverage:** 28/28 ✓
+**Requirements:** 30 v1 requirements (FOUND-01 through PKG-02)
+**Coverage:** 30/30 ✓
 **Last updated:** 2026-09-16
 
 ---
@@ -15,7 +15,7 @@
 - [ ] **Phase 2: Building Blocks & Utilities** — All 11 q-product/theta functions and all 8 series utilities
 - [ ] **Phase 3: prodmake (Andrews' Algorithm)** — Standalone implementation of the core product-recovery algorithm
 - [ ] **Phase 4: Product Conversion** — Remaining 10 product conversion functions built on prodmake
-- [ ] **Phase 5: Relation Finding (Exact)** — 9 exact relation finders over QQ
+- [ ] **Phase 5: Relation Finding (Exact)** — 8 exact relation finders over QQ
 - [ ] **Phase 6: Relation Finding (Mod-p)** — 3 GF(p) relation finders
 - [ ] **Phase 7: Packaging & Test Suite** — pyproject.toml, install validation, full pytest coverage
 
@@ -25,14 +25,15 @@
 
 ### Phase 1: Foundation
 
-**Goal:** The project has a legal basis to proceed and a working data layer — QSeries wrapper with explicit truncation, printable EtaProduct/JacProduct types, and correct degree conventions.
+**Goal:** The project has a legal basis to proceed and a working data layer — QSeries wrapper with explicit truncation, pluggable base ring, rational q-power shift, all five symbolic output types, and correct degree conventions.
 **Depends on:** Nothing (first phase)
-**Requirements:** FOUND-01, FOUND-02, FOUND-03
+**Requirements:** FOUND-01, FOUND-02, FOUND-03, FOUND-04, FOUND-05
 **Success Criteria** (what must be TRUE):
   1. `QSeries(ring_element, T=20)` stores the truncation order and arithmetic on two QSeries instances propagates `min(T1, T2)` without user intervention.
-  2. `EtaProduct([...]).to_series(T)` returns a QSeries, and `str(EtaProduct([...]))` prints in Maple-style `eta(k*tau)^e * q^r` notation.
-  3. `qdegree`, `lqdegree`, and `lqdegree0` return values matching the Maple documentation examples for both ordinary and Laurent polynomials in q.
-  4. A written record (comment in `_series.py` or a `LICENSING.md`) documents the conclusion of the licensing check and the chosen porting method (translation vs. clean reimplementation from docs).
+  2. Each FOUND-03 class (`QProduct`, `EtaProduct`, `EProduct`, `JacProduct`, `PochProduct`) prints in Maple notation and `.to_series(T)` round-trips back to a `QSeries`.
+  3. `QSeries` can represent `q^(1/4) * (2 + 2*q^2 + ...)` (fractional shift, needed for `theta2`) and a series Laurent in a second variable `z` (needed for `theta`, `tripleprod`, `quinprod`, `winquist`, `zqfactor`).
+  4. `qdegree`, `lqdegree`, and `lqdegree0` return values matching the Maple documentation examples; `lqdegree0` behaviour verified against its doc page (it is the q-monomial variant, not a zero-safe alias).
+  5. A block comment at the top of `_series.py` documents the clean-reimplementation licensing decision and cites the Garvan docs URL.
 **Plans:** TBD
 
 ### Phase 2: Building Blocks & Utilities
@@ -41,9 +42,9 @@
 **Depends on:** Phase 1
 **Requirements:** BUILD-01, BUILD-02, BUILD-03, BUILD-04, BUILD-05, BUILD-06, BUILD-07, BUILD-08, BUILD-09, BUILD-10, BUILD-11, UTIL-01, UTIL-02, UTIL-03, UTIL-04, UTIL-05, UTIL-06, UTIL-07, UTIL-08
 **Success Criteria** (what must be TRUE):
-  1. `aqprod(1 - q, q, 10)` returns the correct truncated q-Pochhammer series matching the Maple documentation example.
-  2. `theta3(q, 20)` and `theta4(q, 20)` produce series whose product matches the known identity (e.g., theta3*theta4 relation) to order 20.
-  3. `sift(f, 0, 3)` on a known series extracts exactly the coefficients at positions 0, 3, 6, ... matching the Maple result.
+  1. `aqprod(q, q, 4)` equals `(1-q)(1-q^2)(1-q^3)(1-q^4)`; `tripleprod(q, q^3, 10)` equals Euler's pentagonal series (tutorial §6.1).
+  2. `theta3(q, 20)` and `theta4(q, 20)` produce series whose product matches the known identity to order 20.
+  3. `sift(etaq(q, 1, 500), q, 5, 0, 499)` equals the `E0` series printed in tutorial §6.2.
   4. `packageversion()` and `changes()` return non-empty strings; `checkmult` and `checkprod` each pass on a known matching pair and raise/return False on a mismatch.
 **Plans:** TBD
 
@@ -54,8 +55,8 @@
 **Requirements:** CONV-01
 **Success Criteria** (what must be TRUE):
   1. `prodmake(aqprod(q, q, 30), q, 30)` returns an exponent structure that, when re-expanded via `aqprod`, matches the original series to order 30.
-  2. `prodmake` applied to `etaq(q, 30)` recovers the correct single-factor eta exponent list matching the Maple documentation output.
-  3. `prodmake` on a series with a fractional q-power prefix (e.g., a Ramanujan-style eta quotient) returns the correct rational prefactor alongside the integer exponent list.
+  2. `prodmake(x, q, 40)` on the Rogers–Ramanujan series gives exponents −1 at n ≡ ±1 mod 5 (tutorial §3.1).
+  3. `prodmake` on a series with a fractional q-power prefix returns the correct rational prefactor alongside the integer exponent list.
 **Plans:** TBD
 
 ### Phase 4: Product Conversion
@@ -64,23 +65,23 @@
 **Depends on:** Phase 3
 **Requirements:** CONV-02, CONV-03, CONV-04, CONV-05, CONV-06, CONV-07, CONV-08, CONV-09, CONV-10, CONV-11
 **Success Criteria** (what must be TRUE):
-  1. `etamake(f, q, 30)` on a known eta-product series returns an `EtaProduct` whose `.to_series(30)` matches f to order 30.
-  2. `jac2series(j, q, 20)` on a known `JacProduct` returns a series matching the Maple documentation example.
-  3. `qfactor(f, q)` and `zqfactor(f, q)` return the correct (power, remaining) pair for a series with a leading q-power, matching Maple's output.
+  1. `etamake(theta3(q, 100), q, 100)` returns `eta(2*tau)^5 / (eta(4*tau)^2 * eta(tau)^2)` matching the Maple documentation example.
+  2. `jac2series(j, 20)` on a known `JacProduct` returns a series matching the Maple documentation example.
+  3. `qfactor(t8, 20)` reproduces the tutorial §3.2 result: `(1-q^9)(1-q^10)(1-q^11)(1-q^16) * q^6 / ((1-q)(1-q^2)(1-q^3)(1-q^4))`.
   4. `findprod(f, q, 30)` successfully identifies the product form for at least one Maple tutorial example series.
 **Plans:** TBD
 
 ### Phase 5: Relation Finding (Exact)
 
-**Goal:** All 9 exact relation-finding functions operate correctly over QQ — returning relations that are verifiable to high truncation order — matching the Maple documentation examples up to basis reordering.
+**Goal:** All 8 exact relation-finding functions operate correctly over QQ — returning relations that are verifiable to high truncation order — matching the Maple documentation examples up to basis reordering.
 **Depends on:** Phase 4
 **Requirements:** REL-01, REL-02, REL-05, REL-06, REL-07, REL-09, REL-10, REL-11
 **Success Criteria** (what must be TRUE):
-  1. `findhom([f1, f2, f3], q, 40, 2)` returns a set of homogeneous degree-2 relations whose span matches Maple's result (checked by verifying each returned relation evaluates to the zero series to order 40).
-  2. `findlincombo(f_list, q, 40)` on the Maple tutorial's canonical example returns a linear relation whose coefficients, when applied to the series, sum to zero to order 40.
-  3. `findmaxind(f_list, q, 40)` returns a maximal independent subset whose size matches the Maple documentation example.
-  4. `findpoly(f, g_list, q, 40, 3)` recovers the correct degree-3 polynomial in g_list that equals f, matching the Maple tutorial example.
-  5. `findcong(f_list, q, 40, 5)` identifies at least one congruence documented in the Maple tutorial.
+  1. `findhom([theta3(q), theta4(q), theta3(q^2), theta4(q^2)], q, 2, 0)` returns no linear and exactly two quadratic relations.
+  2. `findhomcombo(UE, [B1, B2], q, 3, 0, 'yes')` returns `X1^2*X2 + 40*X1*X2^2 + 335*X2^3` (tutorial §5 example).
+  3. `findmaxind(f_list, q, T)` returns a maximal independent subset whose size matches the Maple documentation example.
+  4. `findpoly(x, y, q, 3, 1, 60)` recovers `(X+6)^3*Y - 27*(X+2)^2` (tutorial §4 example).
+  5. `findcong(P, 1000)` returns the set `{[4,5,5], [5,7,7], [6,11,11], [24,25,25]}` (tutorial §7 example).
 **Plans:** TBD
 
 ### Phase 6: Relation Finding (Mod-p)
@@ -89,9 +90,9 @@
 **Depends on:** Phase 5
 **Requirements:** REL-03, REL-04, REL-08
 **Success Criteria** (what must be TRUE):
-  1. `findhommodp([f1, f2, f3], q, 40, 2, 5)` returns homogeneous degree-2 relations over GF(5) whose span is consistent with Maple's documented result (relation set verified to order 40 mod 5).
-  2. `findlincombomodp(f_list, q, 40, 7)` returns a GF(7) linear relation that evaluates to the zero series mod 7 to order 40.
-  3. Passing a non-prime `p` to any mod-p function raises an assertion error or ValueError before any computation.
+  1. `findhommodp(f_list, q, p, 2, 0)` returns homogeneous degree-2 relations over GF(p) consistent with Maple's documented result (signatures to be verified against mod-p doc pages).
+  2. `findlincombomodp(f, f_list, q, p, ...)` returns a GF(p) linear combination that evaluates to zero mod p (signatures to be verified against doc pages).
+  3. Passing a non-prime `p` to any mod-p function raises a `ValueError` before any computation.
 **Plans:** TBD
 
 ### Phase 7: Packaging & Test Suite
@@ -128,6 +129,8 @@
 | FOUND-01 | Phase 1 | Pending |
 | FOUND-02 | Phase 1 | Pending |
 | FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 1 | Pending |
+| FOUND-05 | Phase 1 | Pending |
 | BUILD-01 | Phase 2 | Pending |
 | BUILD-02 | Phase 2 | Pending |
 | BUILD-03 | Phase 2 | Pending |

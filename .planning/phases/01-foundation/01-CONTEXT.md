@@ -8,9 +8,9 @@
 
 Phase 1 delivers the legal basis to proceed and the core data layer:
 1. Licensing decision documented.
-2. `QSeries` wrapper class with explicit truncation order `T` and `min(T1,T2)` propagation.
-3. `EtaProduct` and `JacProduct` display types — printable in Maple-style notation, `.to_series(T)` method.
-4. Degree functions: `qdegree`, `lqdegree`, `lqdegree0`.
+2. `QSeries` wrapper — explicit truncation order `T`, pluggable base ring `R`, rational q-power shift `r`.
+3. Five symbolic output types: `QProduct`, `EtaProduct`, `EProduct`, `JacProduct`, `PochProduct` — each printable in Maple-style notation with `.to_series(T)` method.
+4. Degree functions: `qdegree`, `lqdegree`, `lqdegree0` (semantics verified against their doc pages).
 
 No public q-series functions are implemented here — that is Phase 2.
 
@@ -26,7 +26,7 @@ No public q-series functions are implemented here — that is Phase 2.
 
 ### QSeries Wrapper
 
-- **D-03:** `QSeries` always wraps **`LaurentSeriesRing(QQ, 'q')`** — never `PowerSeriesRing`. Laurent subsumes power series and handles negative-degree terms needed by `lqdegree`.
+- **D-03:** `QSeries` wraps **`LaurentSeriesRing(R, 'q')`** with a pluggable base ring `R` (default `QQ`; `GF(p)` for mod-p functions; a polynomial ring in `z` for bivariate functions). It also carries a rational exponent shift `r` so that `q^r * (Laurent series)` is representable — required for `theta2` (`r=1/4`) and all `etamake` outputs. Never `PowerSeriesRing`.
 - **D-04:** The underlying Sage series is exposed as **`self.series`** (a `.series` attribute). Internal modules access it directly for raw Sage operations, then rewrap the result. No delegation boilerplate.
 - **D-05:** Arithmetic on two `QSeries` instances propagates truncation order as `min(T1, T2)`. Arithmetic operators (`__add__`, `__mul__`, etc.) must enforce this.
 
@@ -41,7 +41,11 @@ No public q-series functions are implemented here — that is Phase 2.
 ### Degree Functions
 
 - **D-09:** `qdegree(f)` raises **`ValueError`** for the zero series (degree undefined). Same for `lqdegree(f)`.
-- **D-10:** `lqdegree0(f)` is a **safe variant** that returns `0` for the zero series instead of raising. Used inside relation finders where a zero intermediate result is valid.
+- **D-10:** `lqdegree0` is documented as the **q-monomial variant** of `lqdegree` (not merely a zero-safe alias). The planner **must** read the `lqdegree0` doc page before implementing — the exact semantics differ from `lqdegree` in a way the discussion did not capture. Zero-series behaviour is a secondary question to resolve from the doc page.
+
+### Relation Finder Return Convention
+
+- **D-11:** All relation-finding functions (`findhom`, `findhomcombo`, `findlincombo`, `findpoly`, etc.) return Sage **polynomial objects** in variables `X1, X2, ...` from `PolynomialRing(QQ, ['X1','X2',...])` — not bare coefficient vectors. This matches Maple's `X[i]` global variable convention and is required for tutorial examples to print correctly.
 
 ### Claude's Discretion
 
@@ -63,7 +67,7 @@ No public q-series functions are implemented here — that is Phase 2.
 
 ### Project Planning Docs
 
-- `.planning/REQUIREMENTS.md` — FOUND-01, FOUND-02, FOUND-03 define the acceptance criteria for this phase.
+- `.planning/REQUIREMENTS.md` — FOUND-01 through FOUND-05 define the acceptance criteria for this phase.
 - `.planning/research/ARCHITECTURE.md` — module structure, data flow diagrams, interface decisions already researched.
 - `.planning/research/STACK.md` — Sage primitives to wrap, what NOT to use.
 
@@ -81,13 +85,15 @@ No local ADRs yet — all decisions are captured in this CONTEXT.md.
 ### Established Patterns
 
 - None yet. Patterns established in Phase 1 will carry forward:
-  - `LaurentSeriesRing(QQ, 'q')` as the standard series ring.
-  - `.series` attribute convention for accessing raw Sage series.
+  - `LaurentSeriesRing(R, 'q')` with pluggable `R` as the standard series ring.
+  - `QSeries(series, T, shift=r)` as the wrapper convention.
+  - `.series` attribute for accessing raw Sage series in internal modules.
 
 ### Integration Points
 
-- `__init__.py` will import `QSeries`, `EtaProduct`, `JacProduct`, and the three degree functions when they exist.
-- Phase 2 (`_building_blocks.py`) will import `QSeries` from `_series.py` and `EtaProduct`/`JacProduct` from `_symbolic.py`.
+- `__init__.py` will import `QSeries`, all five symbolic classes, and the degree functions when they exist.
+- Phase 2 (`_building_blocks.py`) will import `QSeries` from `_series.py` and symbolic classes from `_symbolic.py`.
+- Phase 5 (`_relations.py`) will import `PolynomialRing` and the `X1..Xk` return convention established here.
 
 </code_context>
 

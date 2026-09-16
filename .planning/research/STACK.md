@@ -23,7 +23,7 @@ These are the right primitives — they carry truncation order, support exact ar
 
 | Sage primitive | Wraps to qseries function | Notes |
 |---|---|---|
-| `sage.arith.misc.q_binomial(n, k, q)` | `qbin` | Check argument order — Sage uses (n,k,q), Maple uses (q,n,k) |
+| `sage.arith.misc.q_binomial(n, k, q)` | `qbin` | Argument order differs: Maple `qbin(q, m, n)` = `[n; m]_q`; Sage `q_binomial(n, m, q)`. Wrapper must reorder: `qbin(q, m, n)` → `q_binomial(n, m, q)`. |
 | `sage.functions.other.qexp_eta(q, prec)` | `etaq` | Sage returns series directly |
 | `sage.modular.etaproducts` | Reference for eta arithmetic | Do NOT expose — different API surface |
 | `sage.rings.finite_rings.GF(p)` | Coefficient ring for `*modp` functions | Use directly |
