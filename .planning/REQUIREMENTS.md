@@ -18,7 +18,7 @@ Signature legend: **[V]** verified against qseriesdoc.pdf / doc pages · **[?]**
   `JacProduct` — `∏ JAC(a,b,∞)^e` with **rational** `e` allowed (tutorial shows a square root);
   `PochProduct` — `∏ (q^a;q^b)_∞^e` (return type of `jac2prod`).
 - [x] **FOUND-04**: Relation finders return polynomials in Sage variables `X1..Xk` (or `X, Y` for `findpoly`) in a `PolynomialRing(QQ)`, mirroring Maple's global `X[i]`; not bare coefficient vectors.
-- [ ] **FOUND-05**: `qdegree`, `lqdegree`, `lqdegree0` behave as their doc pages specify. `lqdegree0` is the **q-monomial** variant per the function index (not a zero-safe alias) — verify on the doc page before implementing.
+- [x] **FOUND-05**: `qdegree`, `lqdegree`, `lqdegree0` behave as their doc pages specify. `lqdegree0` is the **q-monomial** variant per the function index (not a zero-safe alias) — verify on the doc page before implementing.
 
 ### Building Blocks
 

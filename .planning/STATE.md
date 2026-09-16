@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 01
 current_plan: 1
-status: executing
-last_updated: "2026-09-16T23:51:59.781Z"
+status: verifying
+last_updated: "2026-09-16T23:58:08.038Z"
 progress:
   total_phases: 7
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -33,7 +33,7 @@ Plan: 3 of 3
 
 - **Current phase:** 01
 - **Current plan:** 1
-- **Status:** Ready to execute
+- **Status:** Phase complete — ready for verification
 - **Last updated:** 2026-09-16
 
 ```
@@ -77,6 +77,8 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/7
 - [Phase 01]: QSeries uses LaurentSeriesRing with T=result.prec(), r as QQ rational shift, R inferred from series.parent().base_ring()
 - [Phase 01-foundation]: D-06/D-07/D-08 applied: trivial exponent suppression and space-star-space join in all five symbolic class reprs
 - [Phase 01-foundation]: Lazy import pattern in _symbolic.py to avoid parallel-wave import-order coupling
+- [Phase 01-03]: qdegree uses .degree() not .dict() on LaurentSeries — .dict() is not guaranteed API
+- [Phase 01-03]: lqdegree0 v1.0 scope: single monomials only; symbolic sums out of scope (D-15)
 
 ### Pending Decisions
 
