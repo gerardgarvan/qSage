@@ -1,0 +1,97 @@
+# State: qseries-sage
+
+## Project Reference
+
+- **Project:** qseries-sage
+- **Core value:** A researcher who knows the Maple qseries package can do the same work in a free, scriptable, HiPerGator-installable environment, with results that agree with Maple's on the reference examples.
+- **PROJECT.md:** `.planning/PROJECT.md`
+- **ROADMAP.md:** `.planning/ROADMAP.md`
+- **REQUIREMENTS.md:** `.planning/REQUIREMENTS.md`
+
+---
+
+## Current Position
+
+- **Current phase:** 0 (not started)
+- **Current plan:** -
+- **Status:** Roadmap created; awaiting Phase 1 kickoff
+- **Last updated:** 2026-09-16
+
+```
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/7 phases complete)
+```
+
+---
+
+## Phase Map
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 1 | Foundation | Not started |
+| 2 | Building Blocks & Utilities | Not started |
+| 3 | prodmake (Andrews' Algorithm) | Not started |
+| 4 | Product Conversion | Not started |
+| 5 | Relation Finding (Exact) | Not started |
+| 6 | Relation Finding (Mod-p) | Not started |
+| 7 | Packaging & Test Suite | Not started |
+
+---
+
+## Performance Metrics
+
+- **Phases complete:** 0/7
+- **Requirements addressed:** 0/28
+- **Tests passing:** 0 (test suite not yet created)
+
+---
+
+## Accumulated Context
+
+### Decisions Made
+
+- Python on SageMath (not SymPy) — exact series rings and linear algebra built in.
+- Full 41-function port in v1.0 — partial port leaves tutorial only partly runnable.
+- Oracle = Maple doc examples + identity checks — no Maple available.
+- Explicit `T` truncation argument, mirroring Maple `(f, q, T)` call sites.
+- Lightweight `EtaProduct`/`JacProduct` dataclasses, not Sage symbolic ring.
+- Granularity: standard (7 phases), overriding config.json coarse setting per roadmap instructions.
+
+### Pending Decisions
+
+- Licensing: contact Garvan before writing code; reimplement from docs or translate source. **Blocks Phase 1.**
+- Package name: `qseries` vs. `qseries_sage`. Decide before Phase 7.
+
+### Key Risks
+
+- Andrews' algorithm (prodmake) is the highest-complexity item; Phase 3 is isolated for this reason.
+- Fractional q-power prefixes in prodmake require careful handling.
+- Test oracle discipline: expected values must come from Maple docs only, never from our own code.
+- Relation ordering: test relation *sets*, not ordered lists — Sage's kernel basis differs from Maple's.
+- GF(p) functions must assert prime p; use `GF(p)`, not `ZZ/pZZ`.
+
+### Architecture Notes
+
+```
+_series.py          → QSeries wrapper (Phase 1)
+_symbolic.py        → EtaProduct, JacProduct (Phase 1)
+_building_blocks.py → 11 core functions (Phase 2)
+_utilities.py       → 8 utility functions (Phase 2)
+_prodmake.py        → Andrews' algorithm (Phase 3)
+_conversion.py      → 10 product conversion functions (Phase 4)
+_relations.py       → 11 relation finders: 9 exact (Phase 5) + 3 mod-p (Phase 6)
+```
+
+### Todos
+
+- [ ] Resolve licensing before any code is written (Phase 1, plan 1)
+- [ ] Test `sage -pip install --user .` early on target environment
+
+### Blockers
+
+- Licensing decision pending (not a code blocker yet — roadmap phase, no code written)
+
+---
+
+## Session Continuity
+
+To resume: read `.planning/STATE.md` (this file), `.planning/ROADMAP.md`, and the current phase's plan file (`.planning/phases/phase-N.md` when created).

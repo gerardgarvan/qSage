@@ -94,4 +94,51 @@
 
 ## Traceability
 
-*(Filled by roadmap — maps REQ-IDs to phases)*
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| FOUND-01 | Phase 1: Foundation | Pending |
+| FOUND-02 | Phase 1: Foundation | Pending |
+| FOUND-03 | Phase 1: Foundation | Pending |
+| BUILD-01 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-02 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-03 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-04 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-05 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-06 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-07 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-08 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-09 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-10 | Phase 2: Building Blocks & Utilities | Pending |
+| BUILD-11 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-01 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-02 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-03 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-04 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-05 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-06 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-07 | Phase 2: Building Blocks & Utilities | Pending |
+| UTIL-08 | Phase 2: Building Blocks & Utilities | Pending |
+| CONV-01 | Phase 3: prodmake (Andrews' Algorithm) | Pending |
+| CONV-02 | Phase 4: Product Conversion | Pending |
+| CONV-03 | Phase 4: Product Conversion | Pending |
+| CONV-04 | Phase 4: Product Conversion | Pending |
+| CONV-05 | Phase 4: Product Conversion | Pending |
+| CONV-06 | Phase 4: Product Conversion | Pending |
+| CONV-07 | Phase 4: Product Conversion | Pending |
+| CONV-08 | Phase 4: Product Conversion | Pending |
+| CONV-09 | Phase 4: Product Conversion | Pending |
+| CONV-10 | Phase 4: Product Conversion | Pending |
+| CONV-11 | Phase 4: Product Conversion | Pending |
+| REL-01 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-02 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-03 | Phase 6: Relation Finding (Mod-p) | Pending |
+| REL-04 | Phase 6: Relation Finding (Mod-p) | Pending |
+| REL-05 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-06 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-07 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-08 | Phase 6: Relation Finding (Mod-p) | Pending |
+| REL-09 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-10 | Phase 5: Relation Finding (Exact) | Pending |
+| REL-11 | Phase 5: Relation Finding (Exact) | Pending |
+| PKG-01 | Phase 7: Packaging & Test Suite | Pending |
+| PKG-02 | Phase 7: Packaging & Test Suite | Pending |
