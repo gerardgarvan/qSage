@@ -82,7 +82,11 @@ Plans:
   2. `jac2series(j, 20)` on a known `JacProduct` returns a series matching the Maple documentation example.
   3. `qfactor(t8, 20)` reproduces the tutorial §3.2 result: `(1-q^9)(1-q^10)(1-q^11)(1-q^16) * q^6 / ((1-q)(1-q^2)(1-q^3)(1-q^4))`.
   4. `findprod(f, q, 30)` successfully identifies the product form for at least one Maple tutorial example series.
-**Plans:** TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 04-01-PLAN.md — etamake + qetamake (_conversion.py scaffold): CONV-02, CONV-03
+- [ ] 04-02-PLAN.md — jac-family: jacprodmake, jac2prod, jac2series: CONV-04, CONV-08, CONV-09
+- [ ] 04-03-PLAN.md — misc/search: mprodmake, qfactor, zqfactor, qs2jaccombo, findprod: CONV-05, CONV-06, CONV-07, CONV-10, CONV-11
 
 ### Phase 5: Relation Finding (Exact)
 
@@ -128,7 +132,7 @@ Plans:
 | 1. Foundation | 3/3 | Complete   | 2026-09-16 |
 | 2. Building Blocks & Utilities | 6/6 | Complete   | 2026-09-17 |
 | 3. prodmake (Andrews' Algorithm) | 1/1 | Complete | 2026-09-17 |
-| 4. Product Conversion | 0/? | Not started | - |
+| 4. Product Conversion | 0/3 | Not started | - |
 | 5. Relation Finding (Exact) | 0/? | Not started | - |
 | 6. Relation Finding (Mod-p) | 0/? | Not started | - |
 | 7. Packaging & Test Suite | 0/? | Not started | - |
