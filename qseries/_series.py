@@ -24,8 +24,9 @@ class QSeries:
     """
 
     def __init__(self, series, T=20, r=None, R=None):
+        from sage.all import Infinity
         self.series = series
-        self.T = int(T)
+        self.T = T if T is Infinity else int(T)
         # Infer R from the series parent's base ring if not supplied
         parent = series.parent()
         if R is None:
@@ -39,7 +40,7 @@ class QSeries:
 
     def _wrap(self, result, r, R=None):
         """Wrap a raw Sage LaurentSeries into QSeries; T = Sage's actual precision."""
-        from sage.all import infinity
+        from sage.all import Infinity, infinity
         T = int(result.prec()) if result.prec() != infinity else self.T
         return QSeries(result, T=T, r=r, R=R or self.R)
 
