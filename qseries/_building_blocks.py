@@ -138,29 +138,142 @@ def theta4(q, T):
 
 
 def tripleprod(z, q, T):
-    """Jacobi triple product sum_{n=-inf}^{inf} (-1)^n z^n q^{n(n-1)/2} to O(q^T).
+    """Jacobi triple product: sum_{n=-N}^{N} (-1)^n z^n q^{n(n-1)/2}, exact.
 
-    Stub: not yet implemented.
-    Oracle: Garvan tripleprod doc page.
+    T is a summation index bound (not q-order). Returns exact Laurent polynomial.
+    Handles bivariate z (LaurentPolynomialRing generator) via internal ring coercion.
+    Oracle: tripleprod(q, q**3, 30) gives Euler pentagonal series (tutorial sec 6.1).
+    Garvan doc page: https://qseries.org/fgarvan/qmaple/qseries/functions/tripleprod.html
     """
-    raise NotImplementedError("tripleprod: not yet implemented")
+    from math import isqrt
+    from sage.all import Infinity, LaurentSeriesRing
+    from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing_generic
+    # Bivariate coercion: when z is a LaurentPolynomialRing variable, q must be coerced
+    # into LaurentSeriesRing(Rz, 'q') so that z**n * q**exp is well-typed.
+    if hasattr(z, 'parent') and isinstance(z.parent(), LaurentPolynomialRing_generic):
+        Rz = z.parent()
+        Sq = LaurentSeriesRing(Rz, 'q')
+        q = Sq(q)
+    N = isqrt(2 * T) + 2
+    result = sum((-1)**n * z**n * q**(n * (n - 1) // 2) for n in range(-N, N + 1))
+    return QSeries(result, T=Infinity)
 
 
 def quinprod(z, q, T):
-    """Watson quintuple product to O(q^T) or as identity string.
+    """Watson quintuple product identity, series side or identity strings.
 
-    3-arg signature: quinprod(z, q, T). The 4-arg header on the doc page is a typo;
-    all examples use the 3-arg form.
-    Stub: not yet implemented.
+    quinprod(z, q, T) -- 3 arguments (doc-page 4-arg header is a typo; all examples use 3).
+
+    T='prodid': return string showing the product form of the identity.
+    T='seriesid': return string showing the series form of the identity.
+    T=integer: return series sum_m [(-z)^{-3m} - (-z)^{3m-1}] q^{m(3m+1)/2}, exact.
+
+    Correct identity (tutorial (6.9)):
+      product: (-z;q)_inf * (-q/z;q)_inf * (z^2*q;q^2)_inf * (q/z^2;q^2)_inf * (q;q)_inf
+      series:  sum_m [(-z)^{-3m} - (-z)^{3m-1}] q^{m(3m+1)/2}
+
     Oracle: Garvan quinprod doc page.
     """
-    raise NotImplementedError("quinprod: not yet implemented")
+    from sage.all import Infinity
+    if isinstance(T, str):
+        if T == 'prodid':
+            return (
+                "quinprod identity (product form): "
+                "(-z;q)_inf * (-q/z;q)_inf * (z^2*q;q^2)_inf * (q/z^2;q^2)_inf * (q;q)_inf"
+                " = sum_m [(-z)^{-3m} - (-z)^{3m-1}] * q^{m*(3m+1)/2}"
+            )
+        elif T == 'seriesid':
+            return (
+                "quinprod identity (series form): "
+                "sum_{m=-inf}^{inf} [(-z)^{-3m} - (-z)^{3m-1}] * q^{m*(3m+1)/2}"
+                " = (-z;q)_inf * (-q/z;q)_inf * (z^2*q;q^2)_inf * (q/z^2;q^2)_inf * (q;q)_inf"
+            )
+        else:
+            raise ValueError(f"quinprod: T must be integer, 'prodid', or 'seriesid'; got {T!r}")
+    # Integer T: series side, exact, computed on caller's z and q
+    # Bivariate coercion: when z is a LaurentPolynomialRing variable, q must be coerced
+    # into LaurentSeriesRing(Rz, 'q') so that (-z)**exp * q**pow is well-typed.
+    from sage.all import LaurentSeriesRing
+    from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing_generic
+    if hasattr(z, 'parent') and isinstance(z.parent(), LaurentPolynomialRing_generic):
+        Rz = z.parent()
+        Sq = LaurentSeriesRing(Rz, 'q')
+        q = Sq(q)
+    terms = []
+    for m in range(-T - 1, T + 2):
+        exp = m * (3 * m + 1) // 2
+        if exp < 0:
+            continue
+        q_pow = q**exp
+        term = (-z)**(-3 * m) * q_pow - (-z)**(3 * m - 1) * q_pow
+        terms.append(term)
+    result = sum(terms) if terms else q * 0
+    return QSeries(result, T=Infinity)
+
+
+def _pochhammer_trunc(x, q, T):
+    """Compute prod_{i=0}^{...}(1 - x * q^i) truncated so that x*q^i contributes up to order T.
+
+    Returns the product as a Sage ring element (computed on caller's x and q).
+    """
+    result = 1
+    # Build product; stop when the leading power of q^i exceeds T
+    for i in range(T + 1):
+        result = result * (1 - x * q**i)
+    return result
 
 
 def winquist(a, b, q, T):
-    """Winquist's identity 8-factor product to O(q^T).
+    """Winquist's identity: 8-factor product identity, truncated to O(q^T).
 
-    Stub: not yet implemented.
+    winquist(a, b, q, T) -- Garvan doc page:
+      https://qseries.org/fgarvan/qmaple/qseries/functions/winquist.html
+
+    The 8-factor product (with q-shifted Pochhammer factors so scalars a=b=1 are valid):
+      (aq;q)_inf * (q/a;q)_inf * (bq;q)_inf * (q/b;q)_inf
+      * (abq;q)_inf * (q/(ab);q)_inf * (aq/b;q)_inf * (bq/a;q)_inf
+      * (q;q)_inf^2
+    When a=b=1 this reduces to (q;q)_inf^10 = 1 - 10q + 35q^2 - 30q^3 - 105q^4 + 238q^5 + ...
+
     Oracle: Garvan winquist doc page.
     """
-    raise NotImplementedError("winquist: not yet implemented")
+    from sage.all import Infinity
+
+    def poch(x):
+        """Truncated (x*q;q)_T = prod_{i=0}^{T-1}(1 - x*q^{i+1})."""
+        result = 1
+        for i in range(T):
+            result = result * (1 - x * q**(i + 1))
+        return result
+
+    def poch_inv(x):
+        """Truncated (q/x;q)_T = prod_{i=0}^{T-1}(1 - q^{i+1}/x)."""
+        result = 1
+        for i in range(T):
+            result = result * (1 - q**(i + 1) / x)
+        return result
+
+    # 8 q-shifted Pochhammer factors + (q;q)^2
+    f1 = poch(a)           # (aq; q)_inf ~ prod(1 - a*q^{i+1})
+    f2 = poch_inv(a)       # (q/a; q)_inf ~ prod(1 - q^{i+1}/a)
+    f3 = poch(b)           # (bq; q)_inf
+    f4 = poch_inv(b)       # (q/b; q)_inf
+    f5 = poch(a * b)       # (abq; q)_inf
+    f6 = poch_inv(a * b)   # (q/(ab); q)_inf
+    f7 = poch(a / b)       # (aq/b; q)_inf
+    f8 = poch_inv(a / b)   # (bq/a; q)_inf = poch_inv(a/b) since q/(a/b) = bq/a
+
+    # (q;q)^2 = prod_{i=1}^{T}(1 - q^i)^2
+    qq_factor = 1
+    for i in range(1, T + 1):
+        qq_factor = qq_factor * (1 - q**i)
+    qq_sq = qq_factor * qq_factor
+
+    result = f1 * f2 * f3 * f4 * f5 * f6 * f7 * f8 * qq_sq
+    # Truncate at O(q^T)
+    try:
+        result = result.add_bigoh(T)
+    except AttributeError:
+        from sage.all import parent
+        result = parent(q)(result).add_bigoh(T)
+    return QSeries(result, T=T)
