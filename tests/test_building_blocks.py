@@ -11,7 +11,6 @@ from sage.all import QQ, LaurentSeriesRing, LaurentPolynomialRing
 # BUILD-01: aqprod
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_aqprod_basic(q_ring):
     """aqprod(q, q, 6) = (1-q)(1-q^2)(1-q^3)(1-q^4)(1-q^5)(1-q^6). Exact polynomial, T=Infinity.
     Oracle: Garvan aqprod doc page example.
@@ -25,7 +24,6 @@ def test_aqprod_basic(q_ring):
     assert result.series[2] == -1
     assert result.T is Infinity
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_aqprod_zero_n(q_ring):
     """aqprod(q, q, 0) == 1 (empty product). Oracle: Garvan aqprod doc page."""
     from qseries._building_blocks import aqprod
@@ -33,7 +31,6 @@ def test_aqprod_zero_n(q_ring):
     result = aqprod(q, q, 0)
     assert result.series[0] == 1
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_aqprod_tutorial_canonical(q_ring):
     """aqprod(q, q, 4) = (1-q)(1-q^2)(1-q^3)(1-q^4) = 1 - q - q^2 + 2q^5 - q^8 - q^9 + q^10.
     Full expansion: coeff[5] == 2 (NOT 1 — two pentagonal paths sum there).
@@ -51,7 +48,6 @@ def test_aqprod_tutorial_canonical(q_ring):
 # BUILD-02: qbin
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_qbin_33_66(q_ring):
     """qbin(q, 3, 6) = q^9+q^8+2q^7+3q^6+3q^5+3q^4+3q^3+2q^2+q+1. Exact polynomial, T=Infinity.
     Oracle: Garvan qbin doc page.
@@ -65,7 +61,6 @@ def test_qbin_33_66(q_ring):
         assert result.series[exp] == coeff, f"qbin(q,3,6) coeff[{exp}] = {result.series[exp]}, expected {coeff}"
     assert result.T is Infinity
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_qbin_boundary(q_ring):
     """qbin(q, 0, n)==1 and qbin(q, n, n)==1. Oracle: Garvan doc page."""
     from qseries._building_blocks import qbin
@@ -73,7 +68,6 @@ def test_qbin_boundary(q_ring):
     assert qbin(q, 0, 5).series[0] == 1
     assert qbin(q, 5, 5).series[0] == 1  # should be q^0 coefficient = 1
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_qbin_out_of_range(q_ring):
     """qbin(q, 4, 3) == 0 when m > n. Oracle: Garvan doc page."""
     from qseries._building_blocks import qbin
@@ -86,7 +80,6 @@ def test_qbin_out_of_range(q_ring):
 # BUILD-03: etaq
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_etaq_k1(q_ring):
     """etaq(q, 1, 10) = prod_{n>=1}(1-q^n) to O(q^10) = 1 - q - q^2 + q^5 + q^7 - ...
     Oracle: Garvan etaq doc page; coefficients from Euler's pentagonal theorem.
@@ -104,7 +97,6 @@ def test_etaq_k1(q_ring):
     assert result.series[5] == 1
     assert result.series[7] == 1
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_etaq_k2(q_ring):
     """etaq(q, 2, 20) = prod_{n>=1}(1-q^{2n}) to O(q^20); constant term 1, q^1 coefficient 0.
     Oracle: Garvan etaq doc page.
@@ -121,7 +113,6 @@ def test_etaq_k2(q_ring):
 # BUILD-04: jacprod
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_jacprod_basic(q_ring):
     """jacprod(1, 5, q, 20) = (q;q^5)_inf * (q^4;q^5)_inf to O(q^20).
     Oracle: Garvan jacprod doc page.
@@ -138,7 +129,6 @@ def test_jacprod_basic(q_ring):
 # BUILD-05: theta (bivariate)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta_z_minus1(q_ring):
     """theta(-1, q, 10) = sum_{i=-10}^{10} (-1)^i q^{i^2}.
     At z=-1: coefficient of q^{n^2} is 2*(-1)^n for n>0, 1 for n=0.
@@ -158,7 +148,6 @@ def test_theta_z_minus1(q_ring):
     # n=±3: (-1)^3 + (-1)^{-3} = -1 + -1 = -2
     assert result.series[9] == -2
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta_bivariate_type(q_ring):
     """theta(z, q, 5) where z is a LaurentPolynomialRing generator returns a bivariate QSeries.
     Oracle: D-03 — bivariate functions return QSeries with R = LaurentPolynomialRing.
@@ -180,7 +169,6 @@ def test_theta_bivariate_type(q_ring):
 # BUILD-06: theta2
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta2_shift(q_ring):
     """theta2(q, 50).r == QQ(1, 4). Oracle: Garvan theta2 doc page; Phase 1 D-04 decision.
     theta2 returns an exact Laurent polynomial (T=Infinity), stored as q^{1/4} * (integer-power series).
@@ -191,7 +179,6 @@ def test_theta2_shift(q_ring):
     result = theta2(q, 50)
     assert result.r == QQ(1, 4)
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta2_coefficients(q_ring):
     """theta2(q, 50) series (after factoring q^{1/4}) = 2 + 2q^2 + 2q^6 + 2q^{12} + ...
     Oracle: Garvan theta2 doc page.
@@ -212,7 +199,6 @@ def test_theta2_coefficients(q_ring):
 # BUILD-07: theta3
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta3_coefficients(q_ring):
     """theta3(q, 50) = sum_{n: n^2 <= 50} q^{n^2}. Exact Laurent polynomial, T=Infinity.
     Summation bound: include all n where n^2 <= T, i.e. range(-isqrt(T), isqrt(T)+1).
@@ -250,7 +236,6 @@ def test_theta3_coefficients(q_ring):
     # T=Infinity (exact polynomial)
     assert result.T is Infinity
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta3_coefficients_T100(q_ring):
     """theta3(q, 100): n=±11 gives q^121 with coeff 2. Catches off-by-one in summation bound.
     11^2=121. isqrt(100)=10, so isqrt(100)+1=11 is included. Oracle: review §BUG section.
@@ -260,7 +245,6 @@ def test_theta3_coefficients_T100(q_ring):
     result = theta3(q, 100)
     assert result.series[121] == 2, f"theta3(q,100) coeff[121] expected 2, got {result.series[121]}"
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta3_theta4_product_identity(q_ring):
     """theta3(q,T)*theta4(q,T) = theta4(q^2,T)^2 (Jacobi identity).
     This test only works once theta4(q**2, T) honours its argument (uses caller's q).
@@ -282,7 +266,6 @@ def test_theta3_theta4_product_identity(q_ring):
 # BUILD-08: theta4
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_theta4_coefficients(q_ring):
     """theta4(q, 50) = sum_{n: |n|<=isqrt(50)+1} (-1)^n q^{n^2}. Exact polynomial, T=Infinity.
     Oracle: Garvan theta4 doc page (theta4(q,50) = 2q^64-2q^49+2q^36-2q^25+2q^16-2q^9+2q^4-2q+1).
@@ -304,7 +287,6 @@ def test_theta4_coefficients(q_ring):
 # BUILD-09: tripleprod (bivariate)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_tripleprod_euler_pentagonal(q_ring):
     """tripleprod(q, q**3, 30) = Euler's pentagonal series.
     = 1 - q - q^2 + q^5 + q^7 - q^12 - q^15 + q^22 + q^26 - ...
@@ -320,7 +302,6 @@ def test_tripleprod_euler_pentagonal(q_ring):
     for exp, coeff in expected.items():
         assert result.series[exp] == coeff, f"tripleprod coeff[{exp}] expected {coeff}"
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_tripleprod_bivariate_type(q_ring):
     """tripleprod(z, q, 5) where z is a LaurentPolynomialRing generator returns a bivariate QSeries.
     Oracle: D-03 — bivariate functions compute on caller's objects, Sage coercion picks parent.
@@ -341,7 +322,6 @@ def test_tripleprod_bivariate_type(q_ring):
 # BUILD-10: quinprod
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_quinprod_series(q_ring):
     """quinprod(z, q, 5) with integer T returns a QSeries (series side of the identity).
     3-arg signature: quinprod(z, q, T). The 4-arg header in RESEARCH.md was a doc typo.
@@ -359,7 +339,6 @@ def test_quinprod_series(q_ring):
     result = quinprod(z, q, 5)
     assert isinstance(result, QSeries)
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_quinprod_prodid_string(q_ring):
     """quinprod(z, q, 'prodid') returns a non-empty string showing the correct identity.
     Identity: (-z;q)_inf (-q/z;q)_inf (z^2 q;q^2)_inf (q/z^2;q^2)_inf (q;q)_inf = sum ...
@@ -378,7 +357,6 @@ def test_quinprod_prodid_string(q_ring):
 # BUILD-11: winquist
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_winquist_oracle(q_ring):
     """winquist(1, 1, q, 30) = 1 - 10q + 35q^2 - 30q^3 - 105q^4 + 238q^5 - ...
     This oracle is (q;q)_inf^10, a real external identity not dependent on our code.
@@ -399,7 +377,6 @@ def test_winquist_oracle(q_ring):
     assert result.series[4] == -105, f"coeff[4] expected -105, got {result.series[4]}"
     assert result.series[5] == 238,  f"coeff[5] expected 238, got {result.series[5]}"
 
-@pytest.mark.skip(reason="stub: implement after _building_blocks.py")
 def test_winquist_tutorial_call(q_ring):
     """winquist(q^5, q^3, q^11, 10) matches tutorial call. Must not raise TypeError.
     Oracle: Garvan tutorial call pattern; winquist must accept series elements as a, b.
