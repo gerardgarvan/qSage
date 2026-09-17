@@ -11,3 +11,11 @@ Requires fixing `tripleprod` (and possibly `quinprod`) in `_building_blocks.py`.
 
 These tests were unskipped in 02-02 but the implementation is incomplete for bivariate inputs.
 Deferred to a future patch of `_building_blocks.py`.
+
+## Resolved in 02-05
+
+**test_tripleprod_bivariate_type** — RESOLVED (2026-09-16). Added `LaurentPolynomialRing_generic`
+detection and `LaurentSeriesRing(Rz, 'q')` coercion in `tripleprod` (same pattern as `theta`).
+
+**test_quinprod_series** — RESOLVED (2026-09-16). Same coercion fix applied to the integer-T
+branch of `quinprod`.
