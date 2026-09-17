@@ -22,17 +22,17 @@ Signature legend: **[V]** verified against qseriesdoc.pdf / doc pages · **[?]**
 
 ### Building Blocks
 
-- [ ] **BUILD-01** [V]: `aqprod(a, q, n)` — finite rising q-factorial `(a;q)_n = (1-a)(1-aq)…(1-aq^(n-1))`. `a` may be any Laurent monomial/series in q (tutorial uses `aqprod(-q,q,n)`). Doc page marked UPDATED in 1.3 — check whether `n = infinity` is accepted.
-- [ ] **BUILD-02** [V]: `qbin(q, m, n)` — Gaussian polynomial `[n; m]_q`; returns 0 unless `0 ≤ m ≤ n`. Note argument order: lower index `m` second.
-- [ ] **BUILD-03** [V]: `etaq(q, k, T)` — `∏_{n≥1}(1-q^{kn})` to `O(q^T)`. No `q^(1/24)` factor.
-- [ ] **BUILD-04** [V]: `jacprod(a, b, q, T)` — `(q^a;q^b)_∞ (q^{b-a};q^b)_∞` to `O(q^T)`. (Note: `JAC(a,b,∞)` additionally includes `(q^b;q^b)_∞`; the two are different objects.)
-- [ ] **BUILD-05** [V]: `theta(z, q, T)` — `Σ_{i=-T}^{T} z^i q^{i²}`. Bivariate.
-- [ ] **BUILD-06** [V]: `theta2(q, T)` — `Σ q^{(n+1/2)²}` = `q^(1/4)·(2 + 2q² + 2q⁶ + …)`. Fractional shift.
-- [ ] **BUILD-07** [V]: `theta3(q, T)` — `Σ q^{n²}`.
-- [ ] **BUILD-08** [V]: `theta4(q, T)` — `Σ (-1)^n q^{n²}`.
-- [ ] **BUILD-09** [V]: `tripleprod(z, q, T)` — `Σ (-1)^n z^n q^{n(n-1)/2}` truncated; Laurent in `z`. `tripleprod(q, q^3, 10)` must reproduce Euler's pentagonal series.
-- [ ] **BUILD-10** [V]: `quinprod(z, q, T)` — if `T` is an integer, q-expansion of the quintuple-product series; if `T == 'prodid'` / `'seriesid'`, return the identity itself (product form / series form) as a displayable equation object.
-- [ ] **BUILD-11** [V]: `winquist(a, b, q, T)` — right side of Winquist's identity; Laurent in `a`, `b`.
+- [x] **BUILD-01** [V]: `aqprod(a, q, n)` — finite rising q-factorial `(a;q)_n = (1-a)(1-aq)…(1-aq^(n-1))`. `a` may be any Laurent monomial/series in q (tutorial uses `aqprod(-q,q,n)`). Doc page marked UPDATED in 1.3 — check whether `n = infinity` is accepted.
+- [x] **BUILD-02** [V]: `qbin(q, m, n)` — Gaussian polynomial `[n; m]_q`; returns 0 unless `0 ≤ m ≤ n`. Note argument order: lower index `m` second.
+- [x] **BUILD-03** [V]: `etaq(q, k, T)` — `∏_{n≥1}(1-q^{kn})` to `O(q^T)`. No `q^(1/24)` factor.
+- [x] **BUILD-04** [V]: `jacprod(a, b, q, T)` — `(q^a;q^b)_∞ (q^{b-a};q^b)_∞` to `O(q^T)`. (Note: `JAC(a,b,∞)` additionally includes `(q^b;q^b)_∞`; the two are different objects.)
+- [x] **BUILD-05** [V]: `theta(z, q, T)` — `Σ_{i=-T}^{T} z^i q^{i²}`. Bivariate.
+- [x] **BUILD-06** [V]: `theta2(q, T)` — `Σ q^{(n+1/2)²}` = `q^(1/4)·(2 + 2q² + 2q⁶ + …)`. Fractional shift.
+- [x] **BUILD-07** [V]: `theta3(q, T)` — `Σ q^{n²}`.
+- [x] **BUILD-08** [V]: `theta4(q, T)` — `Σ (-1)^n q^{n²}`.
+- [x] **BUILD-09** [V]: `tripleprod(z, q, T)` — `Σ (-1)^n z^n q^{n(n-1)/2}` truncated; Laurent in `z`. `tripleprod(q, q^3, 10)` must reproduce Euler's pentagonal series.
+- [x] **BUILD-10** [V]: `quinprod(z, q, T)` — if `T` is an integer, q-expansion of the quintuple-product series; if `T == 'prodid'` / `'seriesid'`, return the identity itself (product form / series form) as a displayable equation object.
+- [x] **BUILD-11** [V]: `winquist(a, b, q, T)` — right side of Winquist's identity; Laurent in `a`, `b`.
 
 ### Series Utilities
 
