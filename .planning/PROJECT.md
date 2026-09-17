@@ -20,8 +20,10 @@ Do everything the Maple qseries package does — build q-series, convert to eta/
 ### Active
 
 **Function parity — all 41 public functions of qseries 1.3**
-- Building blocks: `aqprod`, `qbin`, `etaq`, `jacprod`, `theta`, `theta2`, `theta3`, `theta4`, `tripleprod`, `quinprod`, `winquist`
-- Series utilities: `sift`, `qdegree`, `lqdegree`, `lqdegree0`, `checkmult`, `checkprod`, `packageversion`, `changes`
+
+*Validated in Phase 02: building-blocks-utilities* — all building-block and series-utility functions implemented, exported, and tested:
+- Building blocks: `aqprod`, `qbin`, `etaq`, `jacprod`, `theta`, `theta2`, `theta3`, `theta4`, `tripleprod`, `quinprod`, `winquist` ✓
+- Series utilities: `sift`, `qdegree`, `lqdegree`, `lqdegree0`, `checkmult`, `checkprod`, `packageversion`, `changes` ✓
 - Product conversion: `prodmake`, `etamake`, `qetamake`, `jacprodmake`, `mprodmake`, `qfactor`, `zqfactor`, `jac2prod`, `jac2series`, `qs2jaccombo`, `findprod`
 - Relation finding: `findhom`, `findhomcombo`, `findhommodp`, `findhomcombomodp`, `findnonhom`, `findnonhomcombo`, `findlincombo`, `findlincombomodp`, `findmaxind`, `findpoly`, `findcong`
 - [ ] Each signature, optional argument, and return shape documented against its Maple doc page; divergences listed.
