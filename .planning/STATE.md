@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 1
+current_plan: 3
 status: Executing Phase 04
-stopped_at: "Completed 04-01-PLAN.md: etamake + qetamake implemented"
-last_updated: "2026-09-17T13:31:45.942Z"
+stopped_at: "Completed 04-02-PLAN.md: jacprodmake + jac2prod + jac2series implemented"
+last_updated: "2026-09-17T14:30:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # State: qseries-sage
@@ -21,9 +21,9 @@ progress:
 
 Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Progress 2/7.
 
-Current Plan: 2
-Last session: 2026-09-17T13:31:45.936Z
-Stopped At: Completed 04-01-PLAN.md: etamake + qetamake implemented
+Current Plan: 3
+Last session: 2026-09-17T14:30:00.000Z
+Stopped At: Completed 04-02-PLAN.md: jacprodmake + jac2prod + jac2series implemented
 
 ## Environment
 
@@ -37,6 +37,7 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 | 02 | 01 | 25 min | 2 | 4 |
 | 03 | 01 | 25 min | 2 | 5 |
 | Phase 04-product-conversion P01 | 25 min | 3 tasks | 3 files |
+| Phase 04-product-conversion P02 | 45 min | 2 tasks | 3 files |
 
 ## Decisions (cumulative)
 
@@ -59,6 +60,8 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - `prodmake`: q argument unused in recurrence; None is acceptable when called from checkprod.
 - `etamake` greedy: multiply residual by `etaq^(c_k)` to cancel `+c_k*q^k`; record `eta(k*tau)^(-c_k)`; `EtaProduct.r = r_input - sum(k*e_k/24)`.
 - `theta2` etamake test: assert `constant==2` and numeric round-trip; `r` not gated per D-04/D-05 open question.
+- `jacprodmake` period residue: use [1..P] convention (n%P==0 maps to P), not [0..P-1]; JAC(a,P) pattern detected when residues {a, P-a, P} all equal; period slot not double-counted.
+- `jac2series` uses direct theta sum `sum_i (-1)^i q^{i*(b-2a)/2 + i^2*b/2}` (not bivariate theta call); cross-checked against Pochhammer expansion.
 
 ## Pending
 

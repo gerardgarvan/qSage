@@ -11,9 +11,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sage.all import QQ, LaurentSeriesRing
 from qseries import (
     etamake, qetamake,
+    jacprodmake, jac2prod, jac2series,
     theta2, theta3, theta4,
-    etaq,
-    EtaProduct, EProduct,
+    etaq, tripleprod,
+    EtaProduct, EProduct, JacProduct, PochProduct,
     QSeries,
 )
 
@@ -108,37 +109,131 @@ def test_qetamake_triangular():
 # CONV-04: jacprodmake (Plan 04-02)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-04: implemented in Plan 04-02")
 def test_jacprodmake_basic():
-    pass
+    """CONV-04: jacprodmake(tripleprod(q,q^5,10), q, 10) -> JacProduct with factor (1,5,1).
+
+    Oracle: Garvan jacprodmake doc page / D-08.
+    """
+    R, q = _make_ring()
+    T = 10
+    f = tripleprod(q, q**5, T)
+    result = jacprodmake(f, q, T)
+    assert isinstance(result, JacProduct)
+    assert len(result.factors) == 1
+    a, b, e = result.factors[0]
+    assert (a, b) == (1, 5)
+    assert QQ(e) == 1
+    # Numeric round-trip
+    s1 = result.to_series(T)
+    assert s1.series.add_bigoh(T) == f.series.add_bigoh(T)
 
 
-@pytest.mark.skip(reason="CONV-04: implemented in Plan 04-02 (sqrt case)")
 def test_jacprodmake_sqrt():
-    pass
+    """CONV-04 (mandatory D-08): jacprodmake(sqrt(JAC(7,14)/JAC(0,14)), q, 40) has factor (7,14,1/2).
+
+    Oracle: Garvan tutorial D-08 mandatory sqrt example.
+    """
+    R, q = _make_ring()
+    T = 40
+    # Build JAC(7,14,inf) = tripleprod(q^7, q^14, T)
+    jac7_14 = tripleprod(q**7, q**14, T)
+    # Build JAC(0,14,inf) = (q^14;q^14)_inf (Pochhammer product, not theta sum)
+    R2 = jac7_14.series.parent()
+    q_var = R2.gen()
+    jac0_14_series = R2(1).add_bigoh(T)
+    for n in range(1, T):
+        exp = 14 * n
+        if exp < T:
+            jac0_14_series = (jac0_14_series * (1 - q_var**exp)).add_bigoh(T)
+        else:
+            break
+    jac0_14 = QSeries(jac0_14_series, T=T)
+    # Ratio and sqrt
+    ratio_series = (jac7_14.series / jac0_14.series).add_bigoh(T)
+    sqrt_series = ratio_series.nth_root(2)
+    s = QSeries(sqrt_series.add_bigoh(T), T=T)
+    result = jacprodmake(s, q, T)
+    assert isinstance(result, JacProduct)
+    assert any(a == 7 and b == 14 and QQ(e) == QQ('1/2')
+               for a, b, e in result.factors), \
+        f"Expected factor (7, 14, 1/2), got factors: {result.factors}"
 
 
 # ---------------------------------------------------------------------------
 # CONV-08: jac2prod (Plan 04-02)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-08: implemented in Plan 04-02")
 def test_jac2prod_basic():
-    pass
+    """CONV-08: jac2prod(JAC(1,5,inf)) -> PochProduct with 3 factors {(1,5,1),(4,5,1),(5,5,1)}.
+
+    Oracle: Garvan jac2prod doc page.
+    """
+    j = JacProduct(factors=[(1, 5, 1)])
+    result = jac2prod(j)
+    assert isinstance(result, PochProduct)
+    assert len(result.factors) == 3
+    assert set(result.factors) == {(1, 5, 1), (4, 5, 1), (5, 5, 1)}
 
 
-@pytest.mark.skip(reason="CONV-08: implemented in Plan 04-02 (JAC(0,b) case)")
 def test_jac2prod_zero():
-    pass
+    """CONV-08: jac2prod(JAC(0,10,inf)) -> PochProduct with 1 factor (10,10,1).
+
+    Oracle: Garvan jac2prod doc page (a=0 special case).
+    """
+    j = JacProduct(factors=[(0, 10, 1)])
+    result = jac2prod(j)
+    assert isinstance(result, PochProduct)
+    assert len(result.factors) == 1
+    assert result.factors[0] == (10, 10, 1)
 
 
 # ---------------------------------------------------------------------------
 # CONV-09: jac2series (Plan 04-02)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-09: implemented in Plan 04-02")
 def test_jac2series_oracle():
-    pass
+    """CONV-09: jac2series(JAC(-4,5,inf), 20) matches the Pochhammer expansion.
+
+    Cross-check: jac2series should match jac2prod().to_series() when both are
+    expressed as full Laurent series (accounting for the r-shift in jac2series).
+
+    The full Laurent expansion of JAC(-4,5,inf) starts at q^{-4}:
+      -q^{-4} + q^{-3} + 1 - q^3 - q^9 + q^{14} + O(...)
+    """
+    from sage.all import QQ, LaurentSeriesRing
+    j = JacProduct(factors=[(-4, 5, 1)])
+    result = jac2series(j, 20)
+    assert isinstance(result, QSeries)
+
+    # Build the full Laurent representation of result:
+    # result.series is the integer-indexed polynomial (at shift r),
+    # multiply by q^r to get the actual Laurent series for comparison.
+    R = LaurentSeriesRing(QQ, 'q')
+    q = R.gen()
+    r = QQ(result.r)
+    assert r.denominator() == 1, f"Expected integer r, got {r}"
+    # The actual Laurent series = result.series * q^r
+    actual_laurent = (result.series * q**int(r)).add_bigoh(15)
+
+    # Build expected from Pochhammer expansion of JAC(-4,5):
+    # (q^{-4};q^5) * (q^9;q^5) * (q^5;q^5)
+    def poch_product(start, step, T):
+        s = R(1).add_bigoh(T)
+        for k in range(50):
+            exp = start + k * step
+            if exp >= T:
+                break
+            s = (s * (1 - q**exp)).add_bigoh(T)
+        return s
+
+    expected_laurent = (
+        poch_product(-4, 5, 15) *
+        poch_product(9, 5, 15) *
+        poch_product(5, 5, 15)
+    ).add_bigoh(15)
+
+    assert actual_laurent == expected_laurent, \
+        f"jac2series mismatch:\n  got: {actual_laurent}\n  exp: {expected_laurent}"
 
 
 # ---------------------------------------------------------------------------

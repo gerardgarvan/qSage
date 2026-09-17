@@ -108,7 +108,7 @@ def theta2(q, T):
     from sage.all import Infinity, QQ
     # Integer exponent part: (n+1/2)^2 = n^2 + n + 1/4, factoring out q^{1/4}
     result = sum(q**(i * i + i) for i in range(-T, T + 1))
-    return QSeries(result, T=Infinity, r=QQ(1, 4))
+    return QSeries(result, T=Infinity, r=QQ('1/4'))
 
 
 def theta3(q, T):

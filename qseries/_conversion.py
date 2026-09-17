@@ -20,9 +20,12 @@ raise ImportError. Functions not yet implemented raise NotImplementedError.
 from sage.all import QQ
 from collections import defaultdict
 
+from math import isqrt
+
 from qseries._series import QSeries
-from qseries._symbolic import EtaProduct, EProduct, QProduct
+from qseries._symbolic import EtaProduct, EProduct, QProduct, JacProduct, PochProduct
 from qseries._building_blocks import etaq
+from qseries._prodmake import prodmake
 
 
 # ---------------------------------------------------------------------------
@@ -185,8 +188,109 @@ def qetamake(f, q, T):
 # ---------------------------------------------------------------------------
 
 def jacprodmake(f, q, T, base=None):
-    """Jacobi product identification (CONV-04). Implemented in Plan 04-02."""
-    raise NotImplementedError("jacprodmake: implemented in Plan 04-02")
+    """Jacobi product identification (CONV-04, D-08).
+
+    Given a QSeries f, identifies it as a JacProduct by detecting the period of
+    the exponent sequence returned by prodmake.
+
+    Oracle: jacprodmake(tripleprod(q,q^5,10), q, 10) -> JAC(1,5,inf)
+    Mandatory: jacprodmake(sqrt(JAC(7,14)/JAC(0,14)), q, 40) -> factor (7,14,1/2)
+    base: if given, search only divisors of base for the period P.
+    """
+    from sage.all import QQ as _QQ, divisors as sage_divisors
+
+    r_input = _QQ(f.r)
+    if r_input != 0:
+        raise ValueError(
+            f"jacprodmake: input has fractional q-shift r={r_input}; strip it first"
+        )
+
+    # Strip leading constant
+    c = _QQ(f.series[0])
+    if c == 0:
+        raise ValueError("jacprodmake: leading coefficient is zero")
+    normalized_series = (f.series / c).add_bigoh(T)
+    f_norm = QSeries(normalized_series, T=T)
+
+    # Call prodmake to get exponent dict {n: e_n}
+    qprod = prodmake(f_norm, q, T)
+    exponents = qprod.exponents  # {n: e_n} nonzero only
+
+    if not exponents:
+        return JacProduct(constant=c, r=r_input, factors=[])
+
+    # Find smallest period P
+    if base is not None:
+        candidates = sorted(sage_divisors(int(base)))
+    else:
+        max_n = max(exponents.keys())
+        candidates = range(1, max_n + 1)
+
+    def _residue(n, P):
+        """Residue of n mod P in range [1, P] (so multiples of P map to P, not 0)."""
+        r = n % P
+        return r if r != 0 else P
+
+    P = None
+    for candidate in candidates:
+        if all(exponents.get(n, 0) == exponents.get(_residue(n, candidate), 0)
+               for n in range(1, T)):
+            P = candidate
+            break
+    if P is None:
+        P = max(exponents.keys())
+
+    # Build JacProduct factors from residue classes mod P.
+    #
+    # JAC(a,P) contributes prodmake exponents e at residues a, P-a, and P(=0 mod P).
+    # JAC(0,P) contributes exponent e at residue P only.
+    #
+    # Algorithm:
+    #   1. Get e at residue P.
+    #   2. Scan pairs (a, P-a) for a in 1..floor(P/2).
+    #      If e_a == e_{P-a} == e_P (and e_P != 0): JAC(a,P)^e_P; mark residue P accounted.
+    #      If a == P/2: JAC(P/2,P)^(e_{P/2}/2) — the D-08 mandatory half-exponent case.
+    #      Otherwise: record individual residues (non-standard case).
+    #   3. If residue P still unaccounted: add JAC(0,P) factor.
+
+    e_period = _QQ(exponents.get(P, 0))   # exponent at the "zero" residue (multiples of P)
+    factors = []
+    period_accounted = False
+
+    seen = set()
+    for a in range(1, P):
+        if a in seen:
+            continue
+        paired = P - a
+        seen.add(a)
+        seen.add(paired)
+        e_a = _QQ(exponents.get(a, 0))
+        e_pa = _QQ(exponents.get(paired, 0))
+
+        if a == paired:
+            # P even, a == P/2: D-08 mandatory case — half exponent
+            if e_a != 0:
+                factors.append((a, P, e_a / 2))
+        elif e_a != 0 or e_pa != 0:
+            if e_a == e_pa == e_period and e_period != 0:
+                # Standard JAC(a,P)^e pattern: residues a, P-a, P all equal
+                factors.append((a, P, e_a))
+                period_accounted = True
+            elif e_a == e_pa and e_a != 0:
+                # Paired but different from e_period: non-standard
+                factors.append((a, P, e_a))
+            else:
+                # Unequal: record individually
+                if e_a != 0:
+                    factors.append((a, P, e_a))
+                if e_pa != 0:
+                    factors.append((paired, P, e_pa))
+
+    # Add JAC(0,P) only if residue-P exponent not yet accounted for
+    if not period_accounted and e_period != 0:
+        factors.append((0, P, e_period))
+
+    return JacProduct(constant=c, r=r_input, factors=factors)
 
 
 # ---------------------------------------------------------------------------
@@ -194,8 +298,24 @@ def jacprodmake(f, q, T, base=None):
 # ---------------------------------------------------------------------------
 
 def jac2prod(jacexpr):
-    """Convert JacProduct to PochProduct (CONV-08). Implemented in Plan 04-02."""
-    raise NotImplementedError("jac2prod: implemented in Plan 04-02")
+    """Convert JacProduct to PochProduct (CONV-08).
+
+    JAC(a,b,inf) with a!=0 -> (q^a;q^b)_inf * (q^{b-a};q^b)_inf * (q^b;q^b)_inf
+    JAC(0,b,inf)            -> (q^b;q^b)_inf only
+
+    Oracle: jac2prod(JAC(1,5,inf)) -> (q;q^5)*(q^4;q^5)*(q^5;q^5)
+    Oracle: jac2prod(JAC(0,10,inf)) -> (q^10;q^10)
+    """
+    factors = []
+    for a, b, e in jacexpr.factors:
+        e_int = int(QQ(e))
+        if a == 0:
+            factors.append((b, b, e_int))
+        else:
+            factors.append((a, b, e_int))
+            factors.append((b - a, b, e_int))
+            factors.append((b, b, e_int))
+    return PochProduct(factors=factors)
 
 
 # ---------------------------------------------------------------------------
@@ -203,8 +323,73 @@ def jac2prod(jacexpr):
 # ---------------------------------------------------------------------------
 
 def jac2series(jacexpr, T):
-    """Expand JacProduct to QSeries (CONV-09). Implemented in Plan 04-02."""
-    raise NotImplementedError("jac2series: implemented in Plan 04-02")
+    """Expand JacProduct to QSeries via theta substitution (CONV-09).
+
+    JAC(a,b,inf) -> sum_{i} (-1)^i * q^{i*(b-2a)/2 + i^2*b/2}
+
+    Oracle: jac2series(JAC(-4,5,inf), 20) = (1 - q - q^4 - q^7 - q^13 - q^18) * q^{-4}
+    Reference: Garvan jac2series doc page.
+    """
+    from sage.all import LaurentSeriesRing, QQ as _QQ
+
+    R = LaurentSeriesRing(_QQ, 'q')
+    q_sym = R.gen()
+
+    result_series = R(_QQ(jacexpr.constant)).add_bigoh(T)
+    total_r = _QQ(jacexpr.r)
+
+    for a, b, e in jacexpr.factors:
+        a_q = _QQ(a)
+        b_q = _QQ(b)
+        e_q = _QQ(e)
+
+        shift = (b_q - 2 * a_q) / 2   # exponent of q for z = -q^{(b-2a)/2}
+        step = b_q / 2                 # exponent step for q^{b/2}
+
+        N = isqrt(int(T)) + 2
+        terms = {}
+        for i in range(-N, N + 1):
+            exp = _QQ(i) * shift + _QQ(i * i) * step
+            coeff = (-1) ** i
+            terms[exp] = terms.get(exp, _QQ(0)) + _QQ(coeff)
+
+        # Remove zero terms
+        terms = {exp: coeff for exp, coeff in terms.items() if coeff != 0}
+
+        if not terms:
+            continue
+
+        min_exp = min(terms.keys())
+
+        # Build as integer-indexed series with rational shift min_exp
+        s = R(0).add_bigoh(T)
+        for exp, coeff in terms.items():
+            int_idx = exp - min_exp
+            if int_idx.denominator() != 1:
+                raise ValueError(
+                    f"Non-integer index {int_idx} in jac2series; "
+                    "rational shift not reducible to integer"
+                )
+            idx = int(int_idx)
+            if idx < T:
+                s = s + R(coeff) * q_sym ** idx
+        s = s.add_bigoh(T)
+
+        theta_qs = QSeries(s, T=T, r=min_exp)
+
+        if e_q.denominator() != 1:
+            raise ValueError(f"jac2series: non-integer exponent {e_q} not supported")
+        e_int = int(e_q)
+        if e_int >= 0:
+            for _ in range(e_int):
+                result_series = (result_series * theta_qs.series).add_bigoh(T)
+                total_r += theta_qs.r
+        else:
+            for _ in range(-e_int):
+                result_series = (result_series / theta_qs.series).add_bigoh(T)
+                total_r -= theta_qs.r
+
+    return QSeries(result_series, T=T, r=total_r)
 
 
 # ---------------------------------------------------------------------------
