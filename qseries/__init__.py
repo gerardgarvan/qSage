@@ -13,6 +13,20 @@ from qseries._symbolic import (
     PochProduct,
 )
 from qseries._utilities import qdegree, lqdegree, lqdegree0
+from qseries._building_blocks import (
+    aqprod,
+    qbin,
+    etaq,
+    jacprod,
+    theta,
+    theta2,
+    theta3,
+    theta4,
+    tripleprod,
+    quinprod,
+    winquist,
+)
+from qseries._utilities import sift, checkmult, checkprod, packageversion, changes
 
 __all__ = [
     # Core wrapper
@@ -23,9 +37,27 @@ __all__ = [
     "EProduct",
     "JacProduct",
     "PochProduct",
-    # Degree utilities (FOUND-05)
+    # Degree utilities (FOUND-05) — UTIL-02, UTIL-03, UTIL-04
     "qdegree",
     "lqdegree",
     "lqdegree0",
+    # Building blocks (BUILD-01 through BUILD-11)
+    "aqprod",
+    "qbin",
+    "etaq",
+    "jacprod",
+    "theta",
+    "theta2",
+    "theta3",
+    "theta4",
+    "tripleprod",
+    "quinprod",
+    "winquist",
+    # Series utilities (UTIL-01 through UTIL-08)
+    "sift",
+    "checkmult",
+    "checkprod",
+    "packageversion",
+    "changes",
 ]
 __version__ = "1.3.0"
