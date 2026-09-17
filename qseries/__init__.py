@@ -27,6 +27,7 @@ from qseries._building_blocks import (
     winquist,
 )
 from qseries._utilities import sift, checkmult, checkprod, packageversion, changes
+from qseries._prodmake import prodmake
 
 __all__ = [
     # Core wrapper
@@ -59,5 +60,7 @@ __all__ = [
     "checkprod",
     "packageversion",
     "changes",
+    # Product conversion (CONV-01)
+    "prodmake",
 ]
 __version__ = "1.3.0"

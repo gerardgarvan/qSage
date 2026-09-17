@@ -268,11 +268,14 @@ def test_checkmult_non_multiplicative(q_ring):
 # ---------------------------------------------------------------------------
 
 def test_checkprod_raises():
-    """checkprod raises NotImplementedError in Phase 2 (per D-08).
-    Oracle: D-08; CONTEXT.md.
+    """checkprod raises ValueError when passed None (not a QSeries).
+    Phase 3 replaced the stub; passing None now fails in prodmake with AttributeError
+    or similar — just verify it no longer raises NotImplementedError.
+    Oracle: Phase 3 implementation; checkprod doc page.
     """
     from qseries._utilities import checkprod
-    with pytest.raises(NotImplementedError):
+    # Phase 3 checkprod is implemented; passing None raises AttributeError not NotImplementedError
+    with pytest.raises((AttributeError, TypeError, ValueError)):
         checkprod(None, 10, 10)
 
 

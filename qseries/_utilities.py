@@ -11,6 +11,7 @@ No Maple source was consulted during implementation.
 from math import gcd
 from sage.all import QQ
 from qseries._series import QSeries
+from qseries._prodmake import prodmake
 
 
 def qdegree(f: QSeries):
@@ -161,18 +162,25 @@ def checkmult(QS, T, x=None):
 def checkprod(f, M, Q):
     """Check if a q-series has a 'nice' infinite product representation.
 
-    Requires prodmake (Phase 3). Stubbed until Phase 3 is complete.
+    Calls prodmake(f, None, Q) and checks whether all exponents |e_n| <= M.
+    Returns [c, exps] where c is the constant prefactor (always 1 for prodmake input)
+    and exps is the list of exponents e_1, ..., e_{Q-1}.
+    Returns False if any |e_n| > M.
 
-    f:  q-series
-    M:  max allowed |exponent| in the product expansion
-    Q:  number of exponents to compute
+    f:  QSeries with constant term 1 and r=0
+    M:  maximum allowed absolute value of any exponent e_n
+    Q:  number of exponents to compute (= T argument to prodmake)
 
-    Oracle: Garvan checkprod doc page. Stub per D-08.
+    Oracle: Garvan checkprod doc page (UTIL-06); verified in 02-RESEARCH.md.
     """
-    raise NotImplementedError(
-        "checkprod requires prodmake, which is implemented in Phase 3. "
-        "This stub will be replaced in _prodmake.py during Phase 3."
-    )
+    p = prodmake(f, None, Q)
+    # Check all exponents satisfy |e_n| <= M
+    for n, e in p.exponents.items():
+        if abs(QQ(e)) > M:
+            return False
+    # Return [constant, exponent_list] — constant is always 1 for prodmake input
+    exp_list = [p.exponents.get(n, 0) for n in range(1, Q)]
+    return [QQ(1), exp_list]
 
 
 # ---------------------------------------------------------------------------
