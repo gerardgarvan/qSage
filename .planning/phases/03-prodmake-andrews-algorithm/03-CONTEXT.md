@@ -13,68 +13,85 @@ from a truncated q-series, returning a `QProduct`. It also fills in the `checkpr
 was deliberately left as `NotImplementedError` in Phase 2.
 
 No other conversion functions (`etamake`, `qetamake`, `jacprodmake`, etc.) belong here — those
-are Phase 4, and they build on `prodmake`.
+are Phase 4, and they build on `prodmake`. Fractional q-power prefix handling belongs in Phase 4
+(etamake), not here.
 
 </domain>
 
 <decisions>
 ## Implementation Decisions
 
-### Normalization & Leading-Term Contract
+### The Algorithm — State It Explicitly
 
-- **D-01:** The Andrews recurrence requires the series to start with constant term 1.
-  How `prodmake` handles a leading coefficient ≠ 1 is **Claude's discretion** — read the
-  `prodmake` CONV-01 doc page first and match Maple's behavior exactly (either raise or
-  normalize internally). Do not invent behavior; derive it from the doc page.
+The algorithm is two nested loops over exact arithmetic. Do NOT leave it to the planner to
+rediscover from a vague description.
 
-- **D-02:** When the input `QSeries` has a fractional q-power prefix `r ≠ 0` (e.g., `theta2`
-  with `r = 1/4`), behavior is also **Claude's discretion** — but CONV-01 success criterion 3
-  explicitly requires that `prodmake` on a series with a fractional q-power prefix returns the
-  correct rational prefactor alongside the integer exponent list. The planner must implement
-  this. `QProduct` already has a `r` field in `_symbolic.py` for this purpose.
+Given `f = Σ_{n≥0} b_n q^n` with `b_0 = 1`, find exponents `a_n` such that
+`f = ∏_{n≥1} (1 − q^n)^(−a_n)`.
 
-### Recurrence & Stopping Rule
+**Step 1 — compute auxiliary sequence `c_n`:**
 
-- **D-03:** How many exponents to compute (e.g., all n from 1 to T−1, or only nonzero ones)
-  is **Claude's discretion** — choose whatever makes `QProduct.to_series(T)` round-trip
-  cleanest and matches Maple's output format.
+```
+c_n = n·b_n − Σ_{k=1}^{n−1} b_{n−k} · c_k      for n = 1, 2, …, T−1
+```
 
-- **D-04:** Degenerate input (series that equals 1 + O(q^T) with all higher coefficients zero)
-  behavior is **Claude's discretion** — but the result must be mathematically correct.
+**Step 2 — recover exponents `a_n`:**
 
-- **D-05:** Exponent type (Python `int` vs Sage `Integer`) is **Claude's discretion** — choose
-  what causes fewest surprises when exponents are later used in Sage ring arithmetic in Phase 4.
+```
+a_n = (c_n − Σ_{d | n, d < n} d · a_d) / n      for n = 1, 2, …, T−1
+```
 
-- **D-06:** **Integer exponents only** in Phase 3. The Andrews recurrence on a proper q-series
-  produces integer exponents. Rational exponents (needed for `jacprodmake` in Phase 4) are
-  explicitly deferred to Phase 4.
+These two recurrences run in order n = 1, 2, … using only previously computed values.
+No linear algebra. Arithmetic is exact over `QQ` throughout (Sage's rational field).
+`divisors(n)` from `sage.all` gives the divisors of n; filter `d < n` in the inner sum.
 
-### checkprod Integration
+The exponents `a_n` come out as rational numbers from the division by n; for a proper q-series
+with integer coefficients they will be integers. Store them as Sage rationals (the division
+produces them naturally) — integer-valued rationals are fine.
 
-- **D-07:** Fill the `checkprod` stub from Phase 2 in this phase. The stub currently raises
-  `NotImplementedError("checkprod requires prodmake, available after Phase 3")`.
+- **D-01:** `prodmake` **requires `r == 0` and `b_0 == 1`; raise `ValueError` otherwise.**
+  Maple's `prodmake` takes a plain q-series starting at 1. If `f.r != 0` (fractional prefix)
+  or the constant term is not 1, raise immediately. Do not strip-and-restore; do not silently
+  normalize. The doc page decides if there is any exception to this — but the default is raise.
+  Fractional-prefix handling belongs in `etamake` (Phase 4), which calls `prodmake` after
+  stripping the prefix.
 
-- **D-08:** `checkprod` must accept **both** a `QSeries` (Maple's calling convention — calls
-  `prodmake` internally) and a `QProduct` (direct exponent inspection, avoids recomputation).
-  Use `isinstance` dispatch.
+- **D-02:** Exponents for `n = 1, …, T−1` are computed and stored in `QProduct.exponents`.
+  Zero exponents MAY be omitted (matching how `QProduct.__repr__` already works) or stored;
+  Claude's discretion — choose whichever makes `to_series(T)` round-trip cleanest.
 
-- **D-09:** The "nice product" criterion for `checkprod` is **Claude's discretion** — the
-  planner MUST fetch the `checkprod` doc page (UTIL-06 [?]) before implementing. The criterion
-  is unknown from discussion alone; do not guess it.
+- **D-03:** For the degenerate input `f = 1 + O(q^T)` (all coefficients zero past 0), the
+  recurrence correctly produces all `a_n = 0`. Return `QProduct(exponents={})`, representing
+  the empty product (= 1). This is mathematically correct and should not raise.
+
+### checkprod — Use the Phase 2 Research Result
+
+The `checkprod` signature was **already resolved** in Phase 2 research (02-RESEARCH.md,
+"Resolved Unknowns"). Do NOT send the planner back to the doc page.
+
+- **D-04:** `checkprod(f, M, Q)` — takes a q-series `f`, upper bound `M`, and base `Q`.
+  Returns `[c, n]` (the "nice product" representation). This is the exact signature from
+  the Maple doc page, already verified in Phase 2 research.
+
+- **D-05:** `checkprod` calls `prodmake` internally on `f`. It does NOT accept a `QProduct`
+  directly — there is no Maple counterpart for that path and it was an invention. `checkprod`
+  fills the stub in `_utilities.py` using the resolved signature; the planner reads
+  `.planning/phases/02-building-blocks-utilities/02-RESEARCH.md` for the resolved details.
+
+- **D-06:** Fill the stub: replace the `raise NotImplementedError(...)` body in `_utilities.py`
+  with the real implementation. The function signature in `_utilities.py` must be updated to
+  match `checkprod(f, M, Q)` (the stub currently has `checkprod(f)` from Phase 2).
 
 ### Module Location
 
-- **D-10:** Implement `prodmake` in a new file `qseries/_prodmake.py`. Import and re-export
+- **D-07:** Implement `prodmake` in a new file `qseries/_prodmake.py`. Import and re-export
   from `__init__.py`. Do not add it to `_building_blocks.py` or `_utilities.py`.
 
-### Claude's Discretion (Summary)
+### Claude's Discretion
 
-- Leading-coefficient normalization strategy (raise vs divide internally) — derive from doc page
-- Fractional-prefix handling internals (how `r` is stripped, recurrence run, and `r` restored)
-- Stopping rule (n range stored in QProduct.exponents)
-- Degenerate-input handling (all-zero series)
-- Exponent type (int vs Sage Integer)
-- "Nice product" criterion in checkprod — derive from doc page
+- Whether zero exponents are stored or omitted in `QProduct.exponents`.
+- Exact type of stored exponents (Sage rational vs integer — whichever the recurrence produces
+  naturally without extra conversion).
 
 </decisions>
 
@@ -86,33 +103,27 @@ are Phase 4, and they build on `prodmake`.
 ### Garvan qseries Documentation
 
 - `https://qseries.org/fgarvan/qmaple/qseries/` — function index; links to individual doc pages
-- `https://qseries.org/fgarvan/qmaple/qseries/qseriesdoc.pdf` — tutorial; §3.1 contains the
-  Rogers–Ramanujan example (success criterion 2 for CONV-01); §3 contains other prodmake examples
-- **prodmake doc page** (linked from function index) — MUST read for: normalization contract,
-  recurrence formula, what happens with leading coefficient ≠ 1, exact return format
-- **checkprod doc page** (UTIL-06 [?], linked from function index) — MUST read for: full
-  argument signature, "nice product" criterion, return type, any optional arguments
+- `https://qseries.org/fgarvan/qmaple/qseries/qseriesdoc.pdf` — tutorial §3.1: Rogers–Ramanujan
+  example with full expected exponent table; §3 contains other `prodmake` examples
+- **prodmake doc page** (linked from function index) — MUST read for: exact recurrence formula
+  confirmation, what Maple does with leading coefficient ≠ 1, return format
 
 ### Project Planning Docs
 
-- `.planning/REQUIREMENTS.md` — CONV-01 (prodmake) and UTIL-06 (checkprod) define acceptance
-  criteria; CONV-01 success criteria 1–3 are the exact test oracle
-- `.planning/phases/01-foundation/01-CONTEXT.md` — QSeries API decisions (D-03 through D-15)
-  that prodmake must respect (shift rules, T propagation, etc.)
-- `.planning/phases/02-building-blocks-utilities/02-CONTEXT.md` — D-08/D-09 established the
-  checkprod stub and the expectation that Phase 3 fills it in
+- `.planning/REQUIREMENTS.md` — CONV-01 (prodmake) and UTIL-06 (checkprod) define acceptance criteria
+- `.planning/phases/02-building-blocks-utilities/02-RESEARCH.md` — "Resolved Unknowns" section:
+  `checkprod(f, M, Q)` returning `[c, n]` already verified; planner reads this, not the doc page again
+- `.planning/phases/01-foundation/01-CONTEXT.md` — QSeries API (shift rules, T propagation)
+- `.planning/phases/02-building-blocks-utilities/02-CONTEXT.md` — D-08/D-09: checkprod stub
+  location and export
 
 ### Existing Code (read before planning)
 
-- `qseries/_symbolic.py` — `QProduct` class (already built): its `exponents` dict, `__repr__`,
-  and `to_series(T)` method define the return contract for `prodmake`
-- `qseries/_series.py` — `QSeries` wrapper: `.series`, `.T`, `.r`, `.R` attributes
-- `qseries/_utilities.py` — contains the `checkprod` stub at `NotImplementedError`; Phase 3
-  replaces the body
-- `qseries/__init__.py` — current exports; extend with `prodmake` (and update `checkprod`)
-- `qseries/_building_blocks.py` — `etaq`, `aqprod` available for use in tests
-
-No local ADRs — all decisions captured here and in prior phase CONTEXT.md files.
+- `qseries/_symbolic.py` — `QProduct`: `exponents` dict, `__repr__`, `to_series(T)`
+- `qseries/_series.py` — `QSeries`: `.series`, `.T`, `.r`, `.R`
+- `qseries/_utilities.py` — `checkprod` stub to be replaced
+- `qseries/__init__.py` — current exports; extend with `prodmake`
+- `qseries/_building_blocks.py` — `etaq`, `aqprod` for test inputs
 
 </canonical_refs>
 
@@ -121,52 +132,81 @@ No local ADRs — all decisions captured here and in prior phase CONTEXT.md file
 
 ### Reusable Assets
 
-- `QProduct` (`_symbolic.py`) — the exact return type; `exponents` dict maps `n → e_n`;
-  `to_series(T)` already implemented and round-trippable; `__repr__` already suppresses zero exponents.
-  `prodmake` constructs and returns a `QProduct` instance — no new class needed.
-- `QSeries` (`_series.py`) — input type; `.series` gives the raw Sage `LaurentSeries`;
-  `.r` gives the rational q-power shift; `.T` gives truncation order.
-- `checkprod` stub (`_utilities.py`) — currently: `raise NotImplementedError(...)`. Phase 3
-  replaces only the function body; the function signature may need updating after reading the doc page.
-- `aqprod`, `etaq` (`_building_blocks.py`) — useful for constructing test inputs to `prodmake`.
+- `QProduct` (`_symbolic.py`) — exact return type; `exponents` dict maps `n → e_n`;
+  `to_series(T)` already round-trippable; `__repr__` suppresses zero exponents.
+- `QSeries` (`_series.py`) — input type; `.series` is raw Sage `LaurentSeries`; `.r` is
+  rational shift; `.T` is truncation order.
+- `aqprod`, `etaq` (`_building_blocks.py`) — for constructing test inputs.
+- `sage.all.divisors(n)` — returns divisors of n; use directly in the recurrence inner sum.
 
 ### Established Patterns
 
-- New module per functional group: `_prodmake.py` follows the pattern of `_building_blocks.py`,
-  `_utilities.py`, `_symbolic.py`.
-- Explicit `T` parameter everywhere — `prodmake(f, q, T)` matches Maple's argument order.
-- `from sage.all import QQ, ZZ, divisors` etc. — use `sage.all` imports only.
-- Tests in `tests/test_prodmake.py` (new file); expected values from Maple docs only.
+- New module per functional group: `_prodmake.py` follows `_building_blocks.py` / `_utilities.py`.
+- Explicit `T` parameter — `prodmake(f, q, T)` matches Maple's argument order.
+- `from sage.all import QQ, ZZ, divisors` — `sage.all` imports only.
+- Tests in `tests/test_prodmake.py`; expected values from Maple docs only, never from running
+  the code being tested.
 
 ### Integration Points
 
-- `__init__.py`: add `prodmake` to `__all__`; `checkprod` is already exported (stub).
-- Phase 4 (`_conversion.py`): `etamake` and `jacprodmake` call `prodmake` internally.
-  Phase 3 must make `prodmake` importable as `from qseries._prodmake import prodmake`.
-- `checkprod` in `_utilities.py` will import `prodmake` from `_prodmake.py` — avoid circular
-  imports (utilities imports from prodmake, not the reverse).
+- `__init__.py`: add `prodmake` to `__all__`; `checkprod` already exported (stub needs update).
+- Phase 4 calls `prodmake` internally — must be importable as
+  `from qseries._prodmake import prodmake`.
+- `checkprod` in `_utilities.py` imports `prodmake` from `_prodmake`; no circular import
+  (utilities → prodmake, not the reverse).
 
 </code_context>
 
 <specifics>
-## Specific Ideas
+## Test Oracles — Concrete Expected Values
 
-- **CONV-01 success criterion 2**: `prodmake` on the Rogers–Ramanujan series must give
-  exponents −1 at n ≡ ±1 mod 5. This is the canonical tutorial §3.1 example and MUST be
-  a test case with the expected value taken from the Maple doc page, not from running the code.
-- **CONV-01 success criterion 1**: `prodmake(aqprod(q, q, 30), q, 30)` must round-trip —
-  re-expand via `aqprod` and match original to order 30.
-- **CONV-01 success criterion 3**: fractional q-power prefix (e.g., `r = 1/4`) must round-trip
-  through `prodmake` → `QProduct.to_series()`.
+Tests that only check "exponent −1 at n ≡ ±1 mod 5" will pass on a wrong implementation that
+gets n ≡ 0, ±2 wrong. Every test must check the full exponent dict, not a subset.
+
+### Oracle 1 — Identity round-trip via etaq
+
+```python
+f = etaq(q, 1, 20)   # = prod_{n>=1}(1-q^n) to O(q^20)
+p = prodmake(f, q, 20)
+# Expected: QProduct(exponents={1: -1})  — i.e., a_1 = -1, all others 0
+# because etaq(q,1,T) = (1-q^1)^1 * (1-q^2)^1 * ... from prodmake's perspective
+# WAIT: etaq = prod(1-q^n), so prodmake should give a_n = 1 for all n, not -1.
+# The sign depends on the product convention: f = prod(1-q^n)^(-a_n) means
+# if f = prod(1-q^n)^1 then a_n = -1 for all n up to T-1.
+# Planner: verify this sign convention against the doc page before writing the test.
+```
+
+**Simpler oracle:** `prodmake(1 + q + q^2 + ... (geometric), q, T)` where the exact expected
+exponents are known by hand. Use `prodmake(aqprod(q, q, 20), q, 20)` and re-expand:
+`QProduct.to_series(20)` must equal `aqprod(q, q, 20)` to `O(q^20)`. This is a round-trip
+test, not a fixed-value test — but it's meaningful because `QProduct.to_series` is independent
+of `prodmake`.
+
+### Oracle 2 — Rogers–Ramanujan (tutorial §3.1)
+
+The Rogers–Ramanujan series is `R(q) = sum_{n>=0} q^{n^2} / (q;q)_n` (or the G-series form
+shown in the tutorial). `prodmake(R, q, T)` must return a `QProduct` where:
+
+- `a_n = 1` for n ≡ ±1 (mod 5) — i.e., n = 1, 4, 6, 9, 11, 14, ...
+- `a_n = 0` for all other n
+
+**The test must assert the full `exponents` dict up to T−1**, not just check a few values.
+Pull the exact expected dict from tutorial §3.1 — do not compute it from the code.
+
+### Oracle 3 — A series with known product form from the tutorial
+
+Pick any other `prodmake` example from §3 of the tutorial where Maple prints the full
+`QProduct`. Use that as a third fixed-value test. Planner: read §3 and pick one with a
+short, checkable exponent list (e.g., fewer than 10 nonzero terms up to order 20).
 
 </specifics>
 
 <deferred>
 ## Deferred Ideas
 
-- Rational exponents in `QProduct.exponents` — deferred to Phase 4 (jacprodmake needs them;
-  prodmake on a proper q-series produces integer exponents only).
-- `checkprod` with a bound parameter (if doc page reveals one) — implement per doc page, not ahead of it.
+- Fractional q-power prefix handling in `prodmake` — belongs in `etamake` (Phase 4). CONV-01
+  success criterion 3 is moved to Phase 4; it does not apply to `prodmake` directly.
+- Rational exponents in `QProduct.exponents` — deferred to Phase 4 (jacprodmake).
 
 </deferred>
 
