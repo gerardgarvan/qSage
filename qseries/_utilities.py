@@ -8,7 +8,7 @@ Clean reimplementation from Garvan's qseries documentation only.
 Reference: https://qseries.org/fgarvan/qmaple/qseries/
 No Maple source was consulted during implementation.
 """
-from sage.rings.rational_field import QQ
+from sage.all import QQ
 from qseries._series import QSeries
 
 

@@ -3,8 +3,8 @@
 All expected values traced to Garvan qseries documentation examples.
 """
 import pytest
-from sage.rings.rational_field import QQ
-from sage.rings.laurent_series_ring import LaurentSeriesRing
+from sage.all import QQ
+from sage.all import LaurentSeriesRing
 from qseries._series import QSeries
 
 

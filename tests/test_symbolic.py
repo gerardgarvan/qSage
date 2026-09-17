@@ -98,7 +98,7 @@ def test_etaproduct_single_exponent_one_suppressed():
 
 def test_etaproduct_with_constant_and_r():
     from qseries._symbolic import EtaProduct
-    from sage.rings.rational_field import QQ
+    from sage.all import QQ
     result = repr(EtaProduct(2, QQ(1) / 4, [(4, 2), (2, -1)]))
     assert result == "2 * q^(1/4) * eta(2*tau)^-1 * eta(4*tau)^2"
 
@@ -126,7 +126,7 @@ def test_jacproduct_exponent_two():
 
 def test_jacproduct_rational_exponent():
     from qseries._symbolic import JacProduct
-    from sage.rings.rational_field import QQ
+    from sage.all import QQ
     result = repr(JacProduct(factors=[(1, 2, QQ(1) / 2)]))
     assert result == "JAC(1,2,infinity)^(1/2)"
 
@@ -139,7 +139,7 @@ def test_jacproduct_multi_factor():
 
 def test_jacproduct_with_r_prefix():
     from qseries._symbolic import JacProduct
-    from sage.rings.rational_field import QQ
+    from sage.all import QQ
     result = repr(JacProduct(constant=1, r=QQ(1) / 2, factors=[(0, 1, 1)]))
     assert result == "q^(1/2) * JAC(0,1,infinity)"
 

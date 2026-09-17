@@ -12,8 +12,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Any
 
-from sage.rings.rational_field import QQ
-from sage.rings.laurent_series_ring import LaurentSeriesRing
+from sage.all import QQ
+from sage.all import LaurentSeriesRing
 
 
 def _get_QSeries():

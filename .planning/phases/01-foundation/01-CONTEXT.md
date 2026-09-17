@@ -47,6 +47,22 @@ No public q-series functions are implemented here — that is Phase 2.
 
 - **D-11:** All relation-finding functions (`findhom`, `findhomcombo`, `findlincombo`, `findpoly`, etc.) return Sage **polynomial objects** in variables `X1, X2, ...` from `PolynomialRing(QQ, ['X1','X2',...])` — not bare coefficient vectors. This matches Maple's `X[i]` global variable convention and is required for tutorial examples to print correctly.
 
+### Arithmetic Shift Propagation
+
+- **D-12:** Arithmetic shift rules on `QSeries`:
+  - `*`: r_out = r1 + r2
+  - `/`: r_out = r1 − r2
+  - `+`/`−`: if r1 == r2, keep it; if r1 − r2 is an integer k, multiply the leading series by q^k and use the smaller r; if r1 − r2 is not an integer, raise `ValueError` (Maple would return a symbolic sum — out of scope for v1).
+- **D-13:** `T` after any QSeries operation is `result.prec()` (Sage's actual precision after the operation), not `min(T1, T2)`. The two agree when no relative-precision loss occurs, but division can reduce it. Tests should assert `qs.T == qs.series.prec()`.
+
+### JacProduct Representation
+
+- **D-14:** `JacProduct` carries `constant` and `r` fields (same as `EtaProduct`). `to_series` handles `a == 0` as `JAC(0,b,∞) = (q^b;q^b)_∞` only (single Pochhammer, not three factors). Rational exponent `e` is expanded via `jac.nth_root(den) ** num`.
+
+### Degree Function Domain
+
+- **D-15:** `lqdegree` and `lqdegree0` v1 domain: `QSeries` and the symbolic classes (`EtaProduct`, `JacProduct`, etc. — any object with a `.r` attribute). Symbolic sums of JAC terms (e.g. `c1*JAC(...) + c2*JAC(...)`) are out of scope for v1. This is a documented divergence from the Maple doc-page examples which show `lqdegree` on such sums.
+
 ### Claude's Discretion
 
 - Exact internal field names on `EtaProduct` and `JacProduct` dataclasses (beyond `__repr__` and `.to_series()`).

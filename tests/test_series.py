@@ -3,10 +3,10 @@
 Run with: sage -python -m pytest tests/test_series.py -x -q
 """
 import pytest
-from sage.rings.rational_field import QQ
-from sage.rings.finite_rings.finite_field_constructor import GF
-from sage.rings.laurent_series_ring import LaurentSeriesRing
-from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+from sage.all import QQ
+from sage.all import GF
+from sage.all import LaurentSeriesRing
+from sage.all import LaurentPolynomialRing
 
 from qseries._series import QSeries
 

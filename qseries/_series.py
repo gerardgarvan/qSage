@@ -8,8 +8,8 @@
 # specifications and examples. The qseries package is copyright Frank Garvan; this
 # Python reimplementation is an independent work for research use in SageMath environments.
 
-from sage.rings.rational_field import QQ
-from sage.rings.laurent_series_ring import LaurentSeriesRing
+from sage.all import QQ
+from sage.all import LaurentSeriesRing
 
 
 class QSeries:
@@ -39,7 +39,7 @@ class QSeries:
 
     def _wrap(self, result, r, R=None):
         """Wrap a raw Sage LaurentSeries into QSeries; T = Sage's actual precision."""
-        from sage.rings.infinity import infinity
+        from sage.all import infinity
         T = int(result.prec()) if result.prec() != infinity else self.T
         return QSeries(result, T=T, r=r, R=R or self.R)
 
@@ -56,7 +56,7 @@ class QSeries:
         delta = self.r - other.r
         if delta == 0:
             return self.series.add_bigoh(T), other.series.add_bigoh(T), self.r, T
-        from sage.rings.integer_ring import ZZ
+        from sage.all import ZZ
         if delta in ZZ:
             k = int(delta)
             q = self.series.parent().gen()

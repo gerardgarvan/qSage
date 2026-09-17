@@ -6,8 +6,8 @@ import pytest
 # Insert project root so `qseries` package is importable without installing
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from sage.rings.rational_field import QQ
-from sage.rings.laurent_series_ring import LaurentSeriesRing
+from sage.all import QQ
+from sage.all import LaurentSeriesRing
 from qseries._series import QSeries
 
 
