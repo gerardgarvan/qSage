@@ -5,7 +5,7 @@
 **Granularity:** Standard (7 phases)
 **Requirements:** 30 v1 requirements (FOUND-01 through PKG-02)
 **Coverage:** 30/30 ✓
-**Last updated:** 2026-09-16
+**Last updated:** 2026-09-17
 
 ---
 
@@ -99,7 +99,11 @@ Plans:
   3. `findmaxind(f_list, q, T)` returns a maximal independent subset whose size matches the Maple documentation example.
   4. `findpoly(x, y, q, 3, 1, 60)` recovers `(X+6)^3*Y - 27*(X+2)^2` (tutorial §4 example).
   5. `findcong(P, 1000)` returns the set `{[4,5,5], [5,7,7], [6,11,11], [24,25,25]}` (tutorial §7 example).
-**Plans:** TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 05-01-PLAN.md — Test scaffold + _relations.py skeleton (Wave 0): REL-01..REL-11
+- [ ] 05-02-PLAN.md — Core matrix-kernel family: findhom, findhomcombo, findnonhom, findnonhomcombo, findlincombo: REL-01, REL-02, REL-05, REL-06, REL-07
+- [ ] 05-03-PLAN.md — findmaxind, findpoly, findcong + __init__.py exports: REL-09, REL-10, REL-11
 
 ### Phase 6: Relation Finding (Mod-p)
 
@@ -133,7 +137,7 @@ Plans:
 | 2. Building Blocks & Utilities | 6/6 | Complete   | 2026-09-17 |
 | 3. prodmake (Andrews' Algorithm) | 1/1 | Complete | 2026-09-17 |
 | 4. Product Conversion | 0/3 | Not started | - |
-| 5. Relation Finding (Exact) | 0/? | Not started | - |
+| 5. Relation Finding (Exact) | 0/3 | Not started | - |
 | 6. Relation Finding (Mod-p) | 0/? | Not started | - |
 | 7. Packaging & Test Suite | 0/? | Not started | - |
 
