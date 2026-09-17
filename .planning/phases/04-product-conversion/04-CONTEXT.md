@@ -31,6 +31,7 @@ No relation-finding functions (Phase 5/6) belong here.
   - Plan 04-01: `etamake` + `qetamake`
   - Plan 04-02: jac-family (`jacprodmake`, `jac2prod`, `jac2series`)
   - Plan 04-03: misc/unknowns (`mprodmake`, `qfactor`, `zqfactor`, `qs2jaccombo`, `findprod`)
+    — `findprod` may move to Phase 5 if researcher confirms it requires relation-finding (see D-09)
 
   This matches the prior phases' pattern of 2-3 focused plans and lets the executor parallelize
   within each plan.
@@ -46,20 +47,68 @@ No relation-finding functions (Phase 5/6) belong here.
 ### etamake Greedy Algorithm
 
 - **D-04:** `etamake(f, q, T)` uses a greedy loop:
-  1. Strip the fractional q-power prefix (accumulate `r`) and the scalar constant (accumulate `c`).
-  2. At each step find the lowest-degree non-unit coefficient `c_k` (at `q^k`).
-  3. Multiply by `etaq(q, k, T)^(-c_k)` to eliminate it; accumulate `eta(k*tau)^(-c_k)` into
-     the `EtaProduct` factors list.
-  4. **Termination: convergence check** — stop when the remaining series equals `1 + O(q^T)`
-     (all coefficients from degree 1 onward are zero). This is the mathematically correct
-     stopping condition.
-  5. If the series does not converge to 1 within `T` iterations, **raise
-     `ValueError("not an eta product")`**. Silent partial results are not acceptable.
+  1. Strip the fractional q-power prefix `q^r_input` (record as `r_input`) and scalar constant
+     `c` (record separately). The returned `r` is computed at the end (see step 5).
+  2. At each step find the lowest-degree non-unit coefficient `c_k` (at `q^k`) in the residual.
+  3. **Sign:** multiply the residual by `etaq(q, k, T)^(c_k)` (positive exponent) to cancel the
+     `+c_k q^k` term — dividing out the factor. Record `eta(k*tau)^(-c_k)` (negative exponent)
+     in the `EtaProduct` factors list.
+     - Check: `theta4 = 1 - 2q + ...` → `c_1 = -2`, multiply residual by `etaq(q,1,T)^(-2)`,
+       record `eta(tau)^2`. ✓
+  4. **Termination:** the loop always terminates in ≤ T−1 steps because each iteration
+     eliminates the leading non-unit term, raising the lowest non-unit degree by at least 1.
+     Stop when the residual equals `1 + O(q^T)`. **Do not raise `ValueError`**; a series that
+     isn't a clean eta product simply returns a long product (matching Maple's behaviour).
+  5. **Eta q-shift correction:** each `eta(k*tau)` factor carries `q^(k/24)`, so the accumulated
+     eta exponents shift the q-power. The returned `EtaProduct.r` is:
+     ```
+     r = r_input - sum(k * e_k / 24  for each recorded factor (k, e_k))
+     ```
+     where `e_k` is the exponent recorded in step 3 (i.e. `-c_k`).
+     - Check: `theta2` has `r_input = 1/4`; factors `eta(4τ)^2, eta(2τ)^(-1)` contribute
+       `(4*2 + 2*(-1))/24 = 6/24 = 1/4`; so `r = 1/4 - 1/4 = 0`... wait — the returned
+       `EtaProduct` for `theta2` is `2·q^(-1/4)·eta(4τ)²/eta(2τ)`, meaning `r = -1/4`.
+       Maple prints `q^(-1/4)` as part of the `EtaProduct`. The total shift from factors is
+       `(4·2 + 2·(-1))/24 = 6/24 = 1/4`. So `r = r_input - 1/4 = 1/4 - 1/4 = 0`... this
+       needs the researcher to verify against the exact Maple output. **Researcher must check
+       the `etamake(theta2(q,T), q, T)` result on the doc page to confirm the sign convention
+       for `EtaProduct.r` vs the q-shift stripped in step 1.**
+     - The `theta2` test is mandatory precisely because `theta3` and `theta4` have zero net
+       q-shift, so they would not expose a sign error in the r computation.
 
 - **D-05:** `etamake` returns an `EtaProduct` with the accumulated `constant`, `r`, and `factors`
   list. Must reproduce the Phase 4 success criterion:
   - `etamake(theta3(q,100), q, 100)` → `eta(2*tau)^5 / (eta(4*tau)^2 * eta(tau)^2)`
-  - Also verify: `theta2` → `2*eta(4*tau)^2/eta(2*tau)`, `theta4` → `eta(tau)^2/eta(2*tau)`.
+  - `etamake(theta2(q,100), q, 100)` → `2 * q^(-1/4) * eta(4*tau)^2 / eta(2*tau)` — mandatory
+    test for the q-shift correction (theta3/theta4 both have zero net shift and would not catch
+    an error here)
+  - `etamake(theta4(q,100), q, 100)` → `eta(tau)^2 / eta(2*tau)`
+
+### jacprodmake Algorithm
+
+- **D-08:** `jacprodmake(f, q, T [, base])` method:
+  1. Call `prodmake(f, q, T)` to get exponent sequence `{n: e_n}`.
+  2. Find the smallest period `P` of the exponent sequence (i.e. smallest `P` such that
+     `e_n = e_{n mod P}` for all `n`). The optional 4th argument `base` overrides `P` directly.
+  3. For each residue class `a` in `0..P-1`:
+     - `a == 0`: contributes `JAC(0, P, ∞)^(e_0)` (special case: single Pochhammer factor).
+     - `a` and `P-a` (with `a < P-a`): if `e_a == e_{P-a}`, contributes `JAC(a, P, ∞)^(e_a)`.
+       If `e_a ≠ e_{P-a}`, contributes fractional exponents — e.g. the sqrt case
+       `JAC(a,P,∞)^(e_a/2) * JAC(P-a,P,∞)^(e_{P-a}/2)` (or equivalent rational exponents).
+     - `a == P/2` (if `P` even): `e_{P/2}` forms its own class → `JAC(P/2, P, ∞)^(e_{P/2}/2)`.
+  4. Return `JacProduct` with the accumulated factors. `JacProduct` already supports rational
+     exponents (implemented in `_symbolic.py`).
+  - **Mandatory test:** the tutorial's `sqrt(JAC(7,14,∞) / JAC(0,14,∞))` example exercises
+    fractional exponents from unequal paired residue classes — researcher must locate and use
+    this exact example.
+
+### findprod — Phase Assignment
+
+- **D-09:** `findprod` (CONV-11) is described as "products that are a linear combination of
+  q-series". If the researcher confirms from the doc page that `findprod` requires the relation-
+  finding machinery (linear algebra over a basis of products), **move `findprod` to Phase 5**
+  rather than stubbing it in Phase 4. Researcher makes this determination and notes it in
+  RESEARCH.md; planner adjusts plan grouping accordingly.
 
 ### qfactor Input and Return Type
 
