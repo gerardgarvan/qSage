@@ -12,14 +12,12 @@ Do everything the Maple qseries package does — build q-series, convert to eta/
 
 ### Validated
 
-(None yet)
+**Series foundation** — Validated in Phase 01: foundation
+- [x] One internal truncated q-series representation on Sage `PowerSeriesRing`/`LaurentSeriesRing` over `QQ` (and `GF(p)` for mod-p functions), truncation order propagated through arithmetic.
+- [x] Printable, series-convertible output types for eta-products (`eta(k*tau)` factors with rational q-power prefactor) and Jacobi products (`JAC(a,b,infinity)`).
+- [x] Degree/lowest-degree/coefficient conventions matching Maple on Laurent polynomials in q.
 
 ### Active
-
-**Series foundation**
-- [ ] One internal truncated q-series representation on Sage `PowerSeriesRing`/`LaurentSeriesRing` over `QQ` (and `GF(p)` for mod-p functions), truncation order propagated through arithmetic.
-- [ ] Printable, series-convertible output types for eta-products (`eta(k*tau)` factors with rational q-power prefactor) and Jacobi products (`JAC(a,b,infinity)`).
-- [ ] Degree/lowest-degree/coefficient conventions matching Maple on Laurent polynomials in q.
 
 **Function parity — all 41 public functions of qseries 1.3**
 - Building blocks: `aqprod`, `qbin`, `etaq`, `jacprod`, `theta`, `theta2`, `theta3`, `theta4`, `tripleprod`, `quinprod`, `winquist`
@@ -74,4 +72,9 @@ Do everything the Maple qseries package does — build q-series, convert to eta/
 Updated at phase transitions (`/gsd:transition`): move validated/invalidated requirements, log decisions, check "What This Is". Full review at `/gsd:complete-milestone`.
 
 ---
-*Last updated: 2026-09-16 after initialization*
+## Current State
+
+Phase 01 (foundation) complete — package scaffold, QSeries wrapper, five symbolic output classes, three degree functions, and pytest scaffold are in place. Next: Phase 02 (building-blocks-&-utilities).
+
+---
+*Last updated: 2026-09-17 after Phase 01 completion*
