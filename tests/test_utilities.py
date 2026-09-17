@@ -170,3 +170,127 @@ def test_lqdegree0_type_error():
     from qseries._utilities import lqdegree0
     with pytest.raises(TypeError):
         lqdegree0(42)
+
+
+# ---------------------------------------------------------------------------
+# UTIL-01: sift
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py sift")
+def test_sift_e0(q_ring):
+    """sift(etaq(q,1,500), q, 5, 0, 499): extract every 5th coefficient starting at 0.
+    Expected: E0 = 1 + q - q^3 - q^7 - q^8 - q^14 + q^20 + q^29 + q^31 + q^42 - q^52 - q^66 - q^69 - q^85 + q^99
+    (from Garvan tutorial §6.2, not an eta quotient — its product form is
+     (q^5;q^5)(q^2;q^5)(q^3;q^5)/((q;q^5)(q^4;q^5))).
+    Assert these specific coefficients by position.
+    Oracle: Garvan tutorial §6.2, verbatim E0 expansion.
+    """
+    from qseries._building_blocks import etaq
+    from qseries._utilities import sift
+    q = q_ring.gen()
+    f = etaq(q, 1, 500)
+    E0 = sift(f, q, 5, 0, 499)
+    # Coefficients from tutorial §6.2 verbatim:
+    expected = {
+        0: 1, 1: 1, 2: 0, 3: -1, 4: 0, 5: 0, 6: 0, 7: -1, 8: -1, 9: 0,
+        10: 0, 11: 0, 12: 0, 13: 0, 14: -1, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0,
+        20: 1, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 1,
+        30: 0, 31: 1, 32: 0, 33: 0, 34: 0, 35: 0, 36: 0, 37: 0, 38: 0, 39: 0,
+        40: 0, 41: 0, 42: 1, 43: 0, 44: 0, 45: 0, 46: 0, 47: 0, 48: 0, 49: 0,
+        50: 0, 51: 0, 52: -1, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0, 58: 0, 59: 0,
+        60: 0, 61: 0, 62: 0, 63: 0, 64: 0, 65: 0, 66: -1, 67: 0, 68: 0, 69: -1,
+        70: 0, 71: 0, 72: 0, 73: 0, 74: 0, 75: 0, 76: 0, 77: 0, 78: 0, 79: 0,
+        80: 0, 81: 0, 82: 0, 83: 0, 84: 0, 85: -1, 86: 0, 87: 0, 88: 0, 89: 0,
+        90: 0, 91: 0, 92: 0, 93: 0, 94: 0, 95: 0, 96: 0, 97: 0, 98: 0, 99: 1,
+    }
+    for pos, coeff in expected.items():
+        assert E0.series[pos] == coeff, f"E0 coeff[{pos}] expected {coeff}, got {E0.series[pos]}"
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py sift")
+def test_sift_basic(q_ring):
+    """sift picks residue class n=2, k=0 from 1+q+q^2+q^3+q^4+q^5.
+    sift gives 1 + q + q^2 (coefficients at positions 0,2,4 become 0,1,2).
+    Oracle: sift doc page definition sift(s,q,n,k,T) = sum a[n*i+k]*q^i.
+    Also: sift must use s.series.parent() for output ring, not build a fresh QQ ring,
+    so that GF(p) inputs survive.
+    """
+    from qseries._utilities import sift
+    q = q_ring.gen()
+    # Build series sum_{i=0}^{5} q^i
+    s_raw = sum(q**i for i in range(6)).add_bigoh(10)
+    from qseries._series import QSeries
+    s = QSeries(s_raw, T=10)
+    result = sift(s, q, 2, 0, 9)
+    # a[0]=1, a[2]=1, a[4]=1 -> result = 1 + q + q^2
+    assert result.series[0] == 1
+    assert result.series[1] == 1
+    assert result.series[2] == 1
+
+
+# ---------------------------------------------------------------------------
+# UTIL-05: checkmult
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py checkmult")
+def test_checkmult_tau_function(q_ring):
+    """checkmult(etaq(q,1,T)**24, T) returns True — Ramanujan tau is multiplicative.
+    Oracle: tau(2)=-24, tau(3)=252, tau(6)=-6048 = tau(2)*tau(3). External oracle, not self-referential.
+    This test uses etaq(q,1,T)**24 = sum tau(n)*q^n (up to q-shift) as a real multiplicative example.
+    """
+    from qseries._building_blocks import etaq
+    from qseries._utilities import checkmult
+    q = q_ring.gen()
+    T = 30
+    # etaq(q,1,T)**24 = Delta(q)*q^{-1} = sum_{n>=1} tau(n)*q^{n-1} shifted
+    # Just verify checkmult returns True (tau IS multiplicative)
+    f = etaq(q, 1, T) ** 24
+    assert checkmult(f, T) is True
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py checkmult")
+def test_checkmult_non_multiplicative(q_ring):
+    """checkmult returns False for a non-multiplicative series.
+    Craft: a(1)=1, a(2)=1, a(3)=1, a(6)=5 -> a(6) != a(2)*a(3) -> not multiplicative.
+    Oracle: D-07; checkmult doc page.
+    """
+    from qseries._utilities import checkmult
+    q = q_ring.gen()
+    from qseries._series import QSeries
+    # Craft: a(1)=1, a(2)=1, a(3)=1, a(6)=5 -> a(6)!=a(2)*a(3) -> not multiplicative
+    raw = (1 + q + q**2 + q**3 + q**4 + q**5 + 5*q**6).add_bigoh(30)
+    f = QSeries(raw, T=30)
+    assert checkmult(f, 30) is False
+
+
+# ---------------------------------------------------------------------------
+# UTIL-06: checkprod (stub)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py checkprod")
+def test_checkprod_raises():
+    """checkprod raises NotImplementedError in Phase 2 (per D-08).
+    Oracle: D-08; CONTEXT.md.
+    """
+    from qseries._utilities import checkprod
+    with pytest.raises(NotImplementedError):
+        checkprod(None, 10, 10)
+
+
+# ---------------------------------------------------------------------------
+# UTIL-07/08: packageversion and changes
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py packageversion/changes")
+def test_packageversion():
+    """packageversion() returns a non-empty string. Oracle: Garvan packageversion doc page."""
+    from qseries._utilities import packageversion
+    v = packageversion()
+    assert isinstance(v, str)
+    assert len(v) > 0
+
+@pytest.mark.skip(reason="stub: implement after _utilities.py packageversion/changes")
+def test_changes():
+    """changes() returns a non-empty string. Oracle: Garvan changes doc page."""
+    from qseries._utilities import changes
+    result = changes()
+    assert isinstance(result, str)
+    assert len(result) > 0
