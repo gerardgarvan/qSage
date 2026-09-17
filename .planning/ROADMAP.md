@@ -86,7 +86,7 @@ Plans:
 Plans:
 - [x] 04-01-PLAN.md — etamake + qetamake (_conversion.py scaffold): CONV-02, CONV-03
 - [x] 04-02-PLAN.md — jac-family: jacprodmake, jac2prod, jac2series: CONV-04, CONV-08, CONV-09
-- [ ] 04-03-PLAN.md — misc/search: mprodmake, qfactor, zqfactor, qs2jaccombo, findprod: CONV-05, CONV-06, CONV-07, CONV-10, CONV-11
+- [x] 04-03-PLAN.md — misc/search: mprodmake, qfactor, zqfactor, qs2jaccombo, findprod: CONV-05, CONV-06, CONV-07, CONV-10, CONV-11
 
 ### Phase 5: Relation Finding (Exact)
 
@@ -168,16 +168,16 @@ Plans:
 | UTIL-07 | Phase 2 | Pending |
 | UTIL-08 | Phase 2 | Pending |
 | CONV-01 | Phase 3 | Complete |
-| CONV-02 | Phase 4 | Pending |
-| CONV-03 | Phase 4 | Pending |
-| CONV-04 | Phase 4 | Pending |
-| CONV-05 | Phase 4 | Pending |
-| CONV-06 | Phase 4 | Pending |
-| CONV-07 | Phase 4 | Pending |
-| CONV-08 | Phase 4 | Pending |
-| CONV-09 | Phase 4 | Pending |
-| CONV-10 | Phase 4 | Pending |
-| CONV-11 | Phase 4 | Pending |
+| CONV-02 | Phase 4 | Complete |
+| CONV-03 | Phase 4 | Complete |
+| CONV-04 | Phase 4 | Complete |
+| CONV-05 | Phase 4 | Complete |
+| CONV-06 | Phase 4 | Complete |
+| CONV-07 | Phase 4 | Stub (deferred Phase 5) |
+| CONV-08 | Phase 4 | Complete |
+| CONV-09 | Phase 4 | Complete |
+| CONV-10 | Phase 4 | Complete |
+| CONV-11 | Phase 4 | Complete |
 | REL-01 | Phase 5 | Pending |
 | REL-02 | Phase 5 | Pending |
 | REL-03 | Phase 6 | Pending |
