@@ -50,7 +50,12 @@ Plans:
   2. `theta3(q, 20)` and `theta4(q, 20)` produce series whose product matches the known identity to order 20.
   3. `sift(etaq(q, 1, 500), q, 5, 0, 499)` equals the `E0` series printed in tutorial §6.2.
   4. `packageversion()` and `changes()` return non-empty strings; `checkmult` and `checkprod` each pass on a known matching pair and raise/return False on a mismatch.
-**Plans:** TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 02-00-PLAN.md — Test scaffolding + _building_blocks.py skeleton: BUILD-01..11, UTIL-01, UTIL-05..08
+- [ ] 02-01-PLAN.md — Core building blocks: aqprod, qbin, etaq, jacprod, theta, theta2, theta3, theta4: BUILD-01..08
+- [ ] 02-02-PLAN.md — Bivariate building blocks: tripleprod, quinprod, winquist: BUILD-09..11
+- [ ] 02-03-PLAN.md — Series utilities + __init__.py exports: sift, checkmult, checkprod, packageversion, changes: UTIL-01..08
 
 ### Phase 3: prodmake (Andrews' Algorithm)
 
@@ -117,7 +122,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-09-16 |
-| 2. Building Blocks & Utilities | 0/? | Not started | - |
+| 2. Building Blocks & Utilities | 0/4 | Not started | - |
 | 3. prodmake (Andrews' Algorithm) | 0/? | Not started | - |
 | 4. Product Conversion | 0/? | Not started | - |
 | 5. Relation Finding (Exact) | 0/? | Not started | - |
