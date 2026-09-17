@@ -8,6 +8,7 @@ Clean reimplementation from Garvan's qseries documentation only.
 Reference: https://qseries.org/fgarvan/qmaple/qseries/
 No Maple source was consulted during implementation.
 """
+from math import gcd
 from sage.all import QQ
 from qseries._series import QSeries
 
@@ -71,3 +72,136 @@ def lqdegree0(f):
     if hasattr(f, 'r'):
         return QQ(f.r)
     raise TypeError(f"lqdegree0: cannot extract q-degree from {type(f)}")
+
+
+# ---------------------------------------------------------------------------
+# sift — UTIL-01
+# ---------------------------------------------------------------------------
+
+def sift(s, q, n, k, T):
+    """Extract residue class from a q-series.
+
+    Returns sum_{i=0}^{T//n} a[n*i + k] * q^i where a[j] = coefficient of q^j in s.
+
+    s:  QSeries input
+    q:  unused symbolic q variable (kept for Maple interface fidelity)
+    n:  period (integer >= 1)
+    k:  offset (0 <= k < n)
+    T:  upper bound on source index (use s.T or explicit limit)
+
+    Uses s.series.parent() as the output ring to preserve the coefficient ring
+    (e.g. GF(p) input survives).
+
+    Oracle: Garvan sift doc page; tutorial sec 6.2 (E0 = sift(etaq(q,1,500), q, 5, 0, 499)).
+    """
+    R = s.series.parent()  # preserves coefficient ring (GF(p), QQ, etc.)
+    qvar = R.gen()
+    result = R.zero()
+    i = 0
+    while True:
+        idx = n * i + k
+        if idx >= T:
+            break
+        # Guard against reading past precision (Pitfall 7)
+        if idx >= s.series.prec():
+            break
+        coeff = s.series[idx]
+        result += coeff * qvar**i
+        i += 1
+    T_out = i  # number of terms collected
+    return QSeries(result.add_bigoh(T_out), T=T_out)
+
+
+# ---------------------------------------------------------------------------
+# checkmult — UTIL-05
+# ---------------------------------------------------------------------------
+
+def checkmult(QS, T, x=None):
+    """Test whether the coefficients of QS satisfy multiplicativity.
+
+    Checks a(m*n) == a(m) * a(n) for all coprime pairs (m, n) with m < n, m*n <= T.
+    Returns True if multiplicative, False otherwise.
+
+    QS:  QSeries (coefficients a[1], a[2], ..., a[T])
+    T:   upper bound on product m*n to test
+    x:   "yes" = verbose (print failing pairs); None = silent
+
+    Return type: Python bool (not Maple's 1/0). See D-07.
+    Oracle: Garvan checkmult doc page; RESEARCH.md Pattern 5.
+    """
+    verbose = (x == "yes")
+    is_mult = True
+    for m in range(1, T + 1):
+        for n in range(m + 1, T + 1):
+            mn = m * n
+            if mn > T:
+                break
+            if gcd(m, n) != 1:
+                continue
+            # Skip pairs where any index is at or beyond precision (unknown coefficient)
+            prec = QS.series.prec()
+            if m >= prec or n >= prec or mn >= prec:
+                continue
+            am = QS.series[m]
+            an = QS.series[n]
+            amn = QS.series[mn]
+            if amn != am * an:
+                if verbose:
+                    print(f"checkmult: a({mn}) = {amn} != a({m})*a({n}) = {am}*{an} = {am * an}")
+                    is_mult = False
+                else:
+                    return False
+    return bool(is_mult)
+
+
+# ---------------------------------------------------------------------------
+# checkprod — UTIL-06 (stub)
+# ---------------------------------------------------------------------------
+
+def checkprod(f, M, Q):
+    """Check if a q-series has a 'nice' infinite product representation.
+
+    Requires prodmake (Phase 3). Stubbed until Phase 3 is complete.
+
+    f:  q-series
+    M:  max allowed |exponent| in the product expansion
+    Q:  number of exponents to compute
+
+    Oracle: Garvan checkprod doc page. Stub per D-08.
+    """
+    raise NotImplementedError(
+        "checkprod requires prodmake, which is implemented in Phase 3. "
+        "This stub will be replaced in _prodmake.py during Phase 3."
+    )
+
+
+# ---------------------------------------------------------------------------
+# packageversion — UTIL-07
+# ---------------------------------------------------------------------------
+
+def packageversion():
+    """Return the qseries package version string.
+
+    Reads __version__ from the qseries package.
+    Oracle: Garvan packageversion doc page.
+    """
+    import qseries
+    return qseries.__version__
+
+
+# ---------------------------------------------------------------------------
+# changes — UTIL-08
+# ---------------------------------------------------------------------------
+
+def changes():
+    """Return a changelog string listing recent changes to qseries-sage.
+
+    Oracle: Garvan changes doc page (returns a list of changes as a string).
+    """
+    return (
+        "qseries-sage v1.3.0 (2026-09-16):\n"
+        "  Phase 2: All 11 building-block functions and 8 utility functions implemented.\n"
+        "  Phase 1: QSeries wrapper, five symbolic output types, degree conventions.\n"
+        "  Clean reimplementation from Garvan qseries v1.3 documentation only.\n"
+        "  Reference: https://qseries.org/fgarvan/qmaple/qseries/"
+    )

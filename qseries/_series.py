@@ -100,6 +100,19 @@ class QSeries:
     def __rmul__(self, other):
         return self.__mul__(other)
 
+    def __pow__(self, n):
+        """Raise QSeries to a non-negative integer power."""
+        if not isinstance(n, (int,)) or n < 0:
+            raise TypeError(f"QSeries ** n requires a non-negative integer exponent, got {n!r}")
+        if n == 0:
+            from sage.all import Integer
+            one = self.series.parent().one()
+            return self._wrap(one.add_bigoh(self.T), QQ(0))
+        result = self
+        for _ in range(n - 1):
+            result = result * self
+        return result
+
     def __truediv__(self, other):
         if isinstance(other, QSeries):
             T = min(self.T, other.T)
