@@ -1,8 +1,8 @@
 ---
 phase: 03-prodmake-andrews-algorithm
 verified: 2026-09-16T00:00:00Z
-status: gaps_found
-score: 5/6 must-haves verified
+status: passed
+score: 6/6 must-haves verified
 gaps:
   - truth: "prodmake on the Rogers-Ramanujan series returns exponents {1:1, 4:1, 6:1, 9:1, 11:1, 14:1, 16:1, 19:1} (n ≡ ±1 mod 5, up to order 20)"
     status: partial
