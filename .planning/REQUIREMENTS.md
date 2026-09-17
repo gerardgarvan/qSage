@@ -36,14 +36,14 @@ Signature legend: **[V]** verified against qseriesdoc.pdf / doc pages · **[?]**
 
 ### Series Utilities
 
-- [ ] **UTIL-01** [V]: `sift(s, q, n, k, T)` — from `s = Σ a_i q^i + O(q^T)` return `Σ a_{ni+k} q^i + O(q^{T/n})`.
-- [ ] **UTIL-02** [V]: `qdegree(f)` — degree in q (`qdegree(P)` with one argument in the install example; check whether `(f, q)` is also accepted).
-- [ ] **UTIL-03** [?]: `lqdegree(f, …)` — lowest degree in q of a q-polynomial.
-- [ ] **UTIL-04** [?]: `lqdegree0(f, …)` — lowest degree in q of a q-monomial.
-- [ ] **UTIL-05** [?]: `checkmult(f, …)` — test whether the coefficients `a(n)` are multiplicative (`a(mn) = a(m)a(n)` for coprime `m, n`).
-- [ ] **UTIL-06** [?]: `checkprod(f, …)` — test whether a q-series is a "nice" product (bounded exponents from `prodmake`).
-- [ ] **UTIL-07** [V]: `packageversion()` — version string.
-- [ ] **UTIL-08** [V]: `changes()` — prints recent changes; content is this package's own changelog, not Maple's.
+- [x] **UTIL-01** [V]: `sift(s, q, n, k, T)` — from `s = Σ a_i q^i + O(q^T)` return `Σ a_{ni+k} q^i + O(q^{T/n})`.
+- [x] **UTIL-02** [V]: `qdegree(f)` — degree in q (`qdegree(P)` with one argument in the install example; check whether `(f, q)` is also accepted).
+- [x] **UTIL-03** [?]: `lqdegree(f, …)` — lowest degree in q of a q-polynomial.
+- [x] **UTIL-04** [?]: `lqdegree0(f, …)` — lowest degree in q of a q-monomial.
+- [x] **UTIL-05** [?]: `checkmult(f, …)` — test whether the coefficients `a(n)` are multiplicative (`a(mn) = a(m)a(n)` for coprime `m, n`).
+- [x] **UTIL-06** [?]: `checkprod(f, …)` — test whether a q-series is a "nice" product (bounded exponents from `prodmake`).
+- [x] **UTIL-07** [V]: `packageversion()` — version string.
+- [x] **UTIL-08** [V]: `changes()` — prints recent changes; content is this package's own changelog, not Maple's.
 
 ### Product Conversion
 
