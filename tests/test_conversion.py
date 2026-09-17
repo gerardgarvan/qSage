@@ -12,6 +12,8 @@ from sage.all import QQ, LaurentSeriesRing
 from qseries import (
     etamake, qetamake,
     jacprodmake, jac2prod, jac2series,
+    mprodmake, qfactor, zqfactor, qs2jaccombo, findprod,
+    MProduct, QFactorResult,
     theta2, theta3, theta4,
     etaq, tripleprod,
     EtaProduct, EProduct, JacProduct, PochProduct,
@@ -240,42 +242,96 @@ def test_jac2series_oracle():
 # CONV-05: mprodmake (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-05: implemented in Plan 04-03")
 def test_mprodmake():
-    pass
+    """CONV-05: mprodmake(etaq(q,2,T)^2/etaq(q,4,T)/etaq(q,1,T), q, 17)
+    -> MProduct([1,3,5,7,9,11,13,15,17])
+
+    Oracle: Garvan mprodmake doc page.
+    """
+    R, q = _make_ring()
+    T = 18
+    EP = etaq(q, 2, T) ** 2 * (etaq(q, 4, T) ** (-1)) * (etaq(q, 1, T) ** (-1))
+    result = mprodmake(EP, q, 17)
+    assert isinstance(result, MProduct)
+    assert sorted(result.exponents) == [1, 3, 5, 7, 9, 11, 13, 15, 17]
 
 
 # ---------------------------------------------------------------------------
 # CONV-06: qfactor (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-06: implemented in Plan 04-03")
 def test_qfactor_t8():
-    pass
+    """CONV-06: qfactor of t8 rational back-computation.
+
+    t8 = q^6*(1-q^9)*(1-q^10)*(1-q^11)*(1-q^16) / ((1-q)*(1-q^2)*(1-q^3)*(1-q^4))
+    -> QFactorResult(numerator={9,10,11,16}, denominator={1,2,3,4}, r=6)
+
+    Oracle: Garvan qfactor doc page / D-06/D-07.
+    """
+    from sage.all import PolynomialRing
+    Rq = PolynomialRing(QQ, 'q')
+    q_poly = Rq.gen()
+    # Pass as (numerator, denominator) tuple to avoid Sage fraction field auto-simplification
+    num_poly = q_poly**6 * (1 - q_poly**9) * (1 - q_poly**10) * (1 - q_poly**11) * (1 - q_poly**16)
+    den_poly = (1 - q_poly) * (1 - q_poly**2) * (1 - q_poly**3) * (1 - q_poly**4)
+    result = qfactor((num_poly, den_poly), 20)
+    assert isinstance(result, QFactorResult)
+    assert QQ(result.r) == 6
+    assert set(result.numerator.exponents.keys()) == {9, 10, 11, 16}
+    assert set(result.denominator.exponents.keys()) == {1, 2, 3, 4}
+    assert all(e == 1 for e in result.numerator.exponents.values())
+    assert all(e == 1 for e in result.denominator.exponents.values())
 
 
 # ---------------------------------------------------------------------------
 # CONV-07: zqfactor (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-07: implemented in Plan 04-03")
 def test_zqfactor():
-    pass
+    """CONV-07: zqfactor is a documented best-effort stub for v1.0.
+    Returns None and emits UserWarning; does not raise.
+    Full bivariate factorization deferred to Phase 5.
+    """
+    import warnings
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = zqfactor(None, None, None, 10)
+    assert result is None
+    assert any(issubclass(w.category, UserWarning) for w in caught), \
+        "zqfactor must emit a UserWarning"
 
 
 # ---------------------------------------------------------------------------
 # CONV-10: qs2jaccombo (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-10: implemented in Plan 04-03")
 def test_qs2jaccombo():
-    pass
+    """CONV-10: qs2jaccombo([theta3, theta4], q, T) -> list of 2 JacProducts.
+
+    Oracle: qs2jaccombo on 2-term list returns list of 2 JacProduct objects.
+    """
+    R, q = _make_ring()
+    T = 30
+    term1 = theta3(q, T)
+    term2 = theta4(q, T)
+    result = qs2jaccombo([term1, term2], q, T)
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert all(isinstance(j, JacProduct) for j in result)
 
 
 # ---------------------------------------------------------------------------
 # CONV-11: findprod (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="CONV-11: implemented in Plan 04-03")
 def test_findprod_trivial():
-    pass
+    """CONV-11: findprod([etaq(q,1,T)], 1, 3, 20) -> at least one entry.
+
+    Oracle: trivial case — etaq itself with coefficient 1 is a nice product.
+    """
+    R, q = _make_ring()
+    T = 25
+    FL = [etaq(q, 1, T)]
+    result = findprod(FL, 1, 3, 20)
+    assert isinstance(result, list)
+    assert len(result) >= 1

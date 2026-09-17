@@ -39,6 +39,8 @@ from qseries._conversion import (
     zqfactor,
     qs2jaccombo,
     findprod,
+    MProduct,
+    QFactorResult,
 )
 
 __all__ = [
@@ -81,11 +83,14 @@ __all__ = [
     "jacprodmake",
     "jac2prod",
     "jac2series",
-    # Product conversion — misc (CONV-05 through CONV-07, CONV-10, CONV-11) — stubs
+    # Product conversion — misc (CONV-05 through CONV-07, CONV-10, CONV-11)
     "mprodmake",
     "qfactor",
     "zqfactor",
     "qs2jaccombo",
     "findprod",
+    # Return types for mprodmake and qfactor
+    "MProduct",
+    "QFactorResult",
 ]
 __version__ = "1.3.0"
