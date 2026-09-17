@@ -68,7 +68,9 @@ Plans:
   1. `prodmake(aqprod(q, q, 30), q, 30)` returns an exponent structure that, when re-expanded via `aqprod`, matches the original series to order 30.
   2. `prodmake(x, q, 40)` on the Rogers–Ramanujan series gives exponents −1 at n ≡ ±1 mod 5 (tutorial §3.1).
   3. `prodmake` on a series with a fractional q-power prefix returns the correct rational prefactor alongside the integer exponent list.
-**Plans:** TBD
+**Plans:** 1 plan
+Plans:
+- [ ] 03-01-PLAN.md — prodmake (_prodmake.py) + checkprod stub replacement + tests: CONV-01
 
 ### Phase 4: Product Conversion
 
@@ -125,7 +127,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-09-16 |
 | 2. Building Blocks & Utilities | 6/6 | Complete   | 2026-09-17 |
-| 3. prodmake (Andrews' Algorithm) | 0/? | Not started | - |
+| 3. prodmake (Andrews' Algorithm) | 0/1 | In progress | - |
 | 4. Product Conversion | 0/? | Not started | - |
 | 5. Relation Finding (Exact) | 0/? | Not started | - |
 | 6. Relation Finding (Mod-p) | 0/? | Not started | - |
