@@ -70,7 +70,7 @@ Plans:
   3. `prodmake` on a series with a fractional q-power prefix returns the correct rational prefactor alongside the integer exponent list.
 **Plans:** 1 plan
 Plans:
-- [ ] 03-01-PLAN.md — prodmake (_prodmake.py) + checkprod stub replacement + tests: CONV-01
+- [x] 03-01-PLAN.md — prodmake (_prodmake.py) + checkprod stub replacement + tests: CONV-01
 
 ### Phase 4: Product Conversion
 
@@ -127,7 +127,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-09-16 |
 | 2. Building Blocks & Utilities | 6/6 | Complete   | 2026-09-17 |
-| 3. prodmake (Andrews' Algorithm) | 0/1 | In progress | - |
+| 3. prodmake (Andrews' Algorithm) | 1/1 | Complete | 2026-09-17 |
 | 4. Product Conversion | 0/? | Not started | - |
 | 5. Relation Finding (Exact) | 0/? | Not started | - |
 | 6. Relation Finding (Mod-p) | 0/? | Not started | - |
@@ -163,7 +163,7 @@ Plans:
 | UTIL-06 | Phase 2 | Pending |
 | UTIL-07 | Phase 2 | Pending |
 | UTIL-08 | Phase 2 | Pending |
-| CONV-01 | Phase 3 | Pending |
+| CONV-01 | Phase 3 | Complete |
 | CONV-02 | Phase 4 | Pending |
 | CONV-03 | Phase 4 | Pending |
 | CONV-04 | Phase 4 | Pending |

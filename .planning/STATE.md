@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-last_updated: "2026-09-17T02:42:02.627Z"
+current_plan: 2
+status: Executing Phase 03
+last_updated: "2026-09-17T03:20:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 10
+  completed_plans: 10
 ---
 
 # State: qseries-sage
@@ -18,10 +18,11 @@ progress:
 
 ## Position
 
-Phase 1 complete (2026-09-16). Phase 2 in progress. Plan 02-01 complete. Progress 1/7.
+Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Progress 2/7.
 
-Current Plan: Not started
-Last session: 2026-09-17T02:42:02.622Z
+Current Plan: 2
+Last session: 2026-09-17T03:20:00.000Z
+Stopped At: Completed 03-01-PLAN.md
 
 ## Environment
 
@@ -33,6 +34,7 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 |-------|------|----------|-------|-------|
 | 02 | 00 | 15 min | 4 | 4 |
 | 02 | 01 | 25 min | 2 | 4 |
+| 03 | 01 | 25 min | 2 | 5 |
 
 ## Decisions (cumulative)
 
@@ -51,6 +53,8 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - `checkmult` skips pairs where m, n, or m*n is at/beyond series precision (avoids false negatives from truncation).
 - `QSeries.__pow__` added for non-negative integer exponents via iterative multiplication.
 - tau multiplicativity test: use `q * etaq(q,1,T)**24` (= Delta) so tau(n) sits at index n.
+- `prodmake`: QProduct exponents store e_n = -a_n (Maple a_n from f=prod(1-q^n)^(-a_n)); G-series has exponents -1 (reciprocal product).
+- `prodmake`: q argument unused in recurrence; None is acceptable when called from checkprod.
 
 ## Pending
 
