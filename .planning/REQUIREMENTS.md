@@ -48,8 +48,8 @@ Signature legend: **[V]** verified against qseriesdoc.pdf / doc pages · **[?]**
 ### Product Conversion
 
 - [ ] **CONV-01** [V]: `prodmake(f, q, T)` — Andrews' algorithm via the recurrence `n·b_n = Σ_{j=1}^{n} b_{n-j} Σ_{d|j} d·a_d`, solved for `a_n` (divisor-sum inversion). No linear algebra. Requires `f = 1 + O(q)` after normalising the leading term; returns `QProduct` with exponents for `n < T`.
-- [ ] **CONV-02** [V]: `etamake(f, q, T)` — greedy: at each step `f = c·q^r(1 + c_k q^k + …)`, multiply by `etaq(q,k,T)^(-c_k)`; return `EtaProduct` with constant, rational `q^r`, and `eta(kτ)` exponents. Must reproduce `theta2 = 2·eta(4τ)²/eta(2τ)` (via `q^(1/4)` shift), `theta3 = eta(2τ)^5/(eta(4τ)²eta(τ)²)`, `theta4 = eta(τ)²/eta(2τ)`.
-- [ ] **CONV-03** [V]: `qetamake(f, q, T)` — same search, output in `_E(q^k)` form with no fractional q-power (e.g. `_E(q²)²/_E(q)` for the triangular-number series).
+- [x] **CONV-02** [V]: `etamake(f, q, T)` — greedy: at each step `f = c·q^r(1 + c_k q^k + …)`, multiply by `etaq(q,k,T)^(-c_k)`; return `EtaProduct` with constant, rational `q^r`, and `eta(kτ)` exponents. Must reproduce `theta2 = 2·eta(4τ)²/eta(2τ)` (via `q^(1/4)` shift), `theta3 = eta(2τ)^5/(eta(4τ)²eta(τ)²)`, `theta4 = eta(τ)²/eta(2τ)`.
+- [x] **CONV-03** [V]: `qetamake(f, q, T)` — same search, output in `_E(q^k)` form with no fractional q-power (e.g. `_E(q²)²/_E(q)` for the triangular-number series).
 - [ ] **CONV-04** [V]: `jacprodmake(f, q, T [, base])` — run `prodmake`, detect periodicity in the exponent sequence, return `JacProduct`. 4th argument forces a period. Leading coefficient need not be 1 (v1.1 change). Rational exponents possible.
 - [ ] **CONV-05** [?]: `mprodmake(f, q, T)` — write `f` as `(1+q^{n1})(1+q^{n2})…`.
 - [ ] **CONV-06** [V]: `qfactor(f [, T])` — `f` is a **polynomial or rational function** in q (not a truncated series): factor over `QQ[q]`, then use `prodmake` on the cyclotomic part to express as a finite q-product; `T` bounds exponents, default `4d+3`. Must reproduce `qfactor(t8,20) = (1-q^9)(1-q^10)(1-q^11)(1-q^16) q^6 / ((1-q)(1-q^2)(1-q^3)(1-q^4))`.

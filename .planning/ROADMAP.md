@@ -84,7 +84,7 @@ Plans:
   4. `findprod(f, q, 30)` successfully identifies the product form for at least one Maple tutorial example series.
 **Plans:** 3 plans
 Plans:
-- [ ] 04-01-PLAN.md — etamake + qetamake (_conversion.py scaffold): CONV-02, CONV-03
+- [x] 04-01-PLAN.md — etamake + qetamake (_conversion.py scaffold): CONV-02, CONV-03
 - [ ] 04-02-PLAN.md — jac-family: jacprodmake, jac2prod, jac2series: CONV-04, CONV-08, CONV-09
 - [ ] 04-03-PLAN.md — misc/search: mprodmake, qfactor, zqfactor, qs2jaccombo, findprod: CONV-05, CONV-06, CONV-07, CONV-10, CONV-11
 

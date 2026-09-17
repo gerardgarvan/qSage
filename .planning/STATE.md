@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Phase 4 plans verified and ready
-last_updated: "2026-09-17T03:39:53.084Z"
+current_plan: 1
+status: Executing Phase 04
+stopped_at: "Completed 04-01-PLAN.md: etamake + qetamake implemented"
+last_updated: "2026-09-17T13:31:45.942Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # State: qseries-sage
@@ -21,9 +21,9 @@ progress:
 
 Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Progress 2/7.
 
-Current Plan: Not started
-Last session: 2026-09-17T03:39:53.080Z
-Stopped At: Phase 4 plans verified and ready
+Current Plan: 2
+Last session: 2026-09-17T13:31:45.936Z
+Stopped At: Completed 04-01-PLAN.md: etamake + qetamake implemented
 
 ## Environment
 
@@ -36,6 +36,7 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 | 02 | 00 | 15 min | 4 | 4 |
 | 02 | 01 | 25 min | 2 | 4 |
 | 03 | 01 | 25 min | 2 | 5 |
+| Phase 04-product-conversion P01 | 25 min | 3 tasks | 3 files |
 
 ## Decisions (cumulative)
 
@@ -56,6 +57,8 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - tau multiplicativity test: use `q * etaq(q,1,T)**24` (= Delta) so tau(n) sits at index n.
 - `prodmake`: QProduct exponents store e_n = -a_n (Maple a_n from f=prod(1-q^n)^(-a_n)); G-series has exponents -1 (reciprocal product).
 - `prodmake`: q argument unused in recurrence; None is acceptable when called from checkprod.
+- `etamake` greedy: multiply residual by `etaq^(c_k)` to cancel `+c_k*q^k`; record `eta(k*tau)^(-c_k)`; `EtaProduct.r = r_input - sum(k*e_k/24)`.
+- `theta2` etamake test: assert `constant==2` and numeric round-trip; `r` not gated per D-04/D-05 open question.
 
 ## Pending
 
