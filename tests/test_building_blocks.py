@@ -386,3 +386,27 @@ def test_winquist_tutorial_call(q_ring):
     result = winquist(q**5, q**3, q**11, 10)
     from qseries._series import QSeries
     assert isinstance(result, QSeries)
+
+
+def test_theta2_shift_scales_with_argument(q_ring):
+    """theta2(q^k) carries q^(k/4), since k(n+1/2)^2 = k(n^2+n) + k/4. Oracle: theta2 definition (doc page)."""
+    from qseries._building_blocks import theta2
+    from sage.all import QQ
+    q = q_ring.gen()
+    assert theta2(q, 10).r == QQ('1/4')
+    assert theta2(q**3, 10).r == QQ('3/4')
+    assert theta2(q**3, 10).series[6] == 2   # n = 1 and n = -2 give 3(n^2+n) = 6
+
+
+def test_etaq_large_T_matches_pentagonal(q_ring):
+    """etaq(q,1,1001) matches Euler's pentagonal number theorem through q^1000, and runs fast."""
+    from qseries._building_blocks import etaq
+    import time
+    q = q_ring.gen()
+    t0 = time.time()
+    e = etaq(q, 1, 1001)
+    elapsed = time.time() - t0
+    expected = {m * (3 * m - 1) // 2: (-1) ** (m % 2) for m in range(-30, 31)}
+    for n in range(1001):
+        assert e.series[n] == expected.get(n, 0), f"coefficient of q^{n}"
+    assert elapsed < 30, f"etaq(q,1,1001) took {elapsed:.1f}s"

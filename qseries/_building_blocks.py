@@ -48,7 +48,10 @@ def etaq(q, k, T):
     Direct product on caller's q — does NOT use qexp_eta (sage.modular.etaproducts, banned).
     Oracle: Garvan etaq doc page.
     """
-    result = 1
+    from sage.all import parent as _parent
+    # Start from 1 + O(q^T) so every partial product is truncated at O(q^T);
+    # multiplying exact polynomials and truncating only at the end is very slow for large T.
+    result = _parent(q).one().add_bigoh(T)
     for n in range(1, T // k + 1):
         result = result * (1 - q**(k * n))
     # Truncate at O(q^T): add_bigoh if result supports it, else wrap in series
@@ -102,6 +105,24 @@ def theta(z, q, T):
     return QSeries(result, T=Infinity)
 
 
+def _theta2_shift(q):
+    """Rational prefactor exponent for theta2 at q = g^k (g the series generator): k/4.
+
+    theta2(q^k) = sum q^(k(n+1/2)^2) = q^(k/4) * sum q^(k(n^2+n)).
+    Falls back to 1/4 with a warning if q is not a pure power of the generator.
+    """
+    from sage.all import QQ
+    try:
+        v = q.valuation()
+        if v > 0 and q == q.parent().gen() ** v:
+            return QQ(v) / 4
+    except (AttributeError, TypeError, ValueError):
+        pass
+    import warnings
+    warnings.warn("theta2: argument is not a power of the series generator; using q^(1/4) prefactor")
+    return QQ(1) / 4
+
+
 def theta2(q, T):
     """Jacobi theta2 = sum_{n=-T}^{T} q^{(n+1/2)^2}, stored as q^{1/4} * (integer-power poly).
 
@@ -112,7 +133,7 @@ def theta2(q, T):
     from sage.all import Infinity, QQ
     # Integer exponent part: (n+1/2)^2 = n^2 + n + 1/4, factoring out q^{1/4}
     result = sum(q**(i * i + i) for i in range(-T, T + 1))
-    return QSeries(result, T=Infinity, r=QQ('1/4'))
+    return QSeries(result, T=Infinity, r=_theta2_shift(q))
 
 
 def theta3(q, T):

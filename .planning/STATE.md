@@ -71,13 +71,13 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - Phase 5: `findcong` implication filter (A2 | A, B = B2 mod A2, M | M2) reproduces the oracle as written.
 - Phase 2 fixes (2026-11-05): `(-1)**(n % 2)` for exact signs in `theta4`/`tripleprod` (`(-1)**n` with n < 0 is a float -> RDF series); `aqprod` starts at `parent(q).one()`; `theta` gets bivariate z coercion; tests: `QQ('1/4')`, tripleprod q^0 coefficient is `1 - z`.
 
+- Phase 2 follow-up (2026-11-05): `etaq` starts from `1 + O(q^T)` so partial products stay truncated (etaq(q,1,1001): ~100 s -> under a second); `theta2(q^k)` sets r = k/4 via `_theta2_shift` (warns and uses 1/4 if the argument is not a power of the generator).
+
 ## Pending
 
 - Package name `qseries` vs `qseries_sage` (before Phase 7).
 - Merge Phase 6 into Phase 5: resolved - kept separate (05-CONTEXT D-01).
 
-- `theta2(q**k, T)` keeps r = 1/4 for every k (should be k/4); findpoly test works around it.
-- `etaq` truncates only at the end; `etaq(q, 1, 1001)` takes ~100 s. Truncate inside the loop.
 
 ## Risks
 

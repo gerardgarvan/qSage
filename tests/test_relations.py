@@ -57,15 +57,6 @@ def UE(q, k, p, trunk):
     return QSeries(R(x).add_bigoh(trunk + 1), T=trunk + 1)
 
 
-def theta2_q3(q, T):
-    """
-    theta2(q^3) with the correct q^(3/4) shift.  theta2(q**3, T) in _building_blocks keeps
-    r = 1/4 regardless of its argument (Phase 2 issue, see 05-03-SUMMARY), so fix r here.
-    """
-    t = theta2(q**3, T)
-    return QSeries(t.series, T=t.T, r=QQ('3/4'))
-
-
 # ---------------------------------------------------------------------------
 # REL-01: findhom
 # ---------------------------------------------------------------------------
@@ -281,7 +272,7 @@ def test_findpoly_tutorial_example(capsys):
     """
     T = 100
     R, q = make_q(T)
-    t2q3 = theta2_q3(q, 40)
+    t2q3 = theta2(q**3, 40)
     x = theta2(q, T)**2 / t2q3**2 + theta3(q, T)**2 / theta3(q**3, 40)**2
     a = theta3(q, T) * theta3(q**3, 40) + theta2(q, T) * t2q3
     c = QSeries(3 * etaq(q, 3, T).series**3 / etaq(q, 1, T).series, T, r=QQ('1/3'))
