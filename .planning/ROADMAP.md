@@ -16,7 +16,7 @@
 - [x] **Phase 3: prodmake (Andrews' Algorithm)** — Standalone implementation of the core product-recovery algorithm
 - [x] **Phase 4: Product Conversion** — Remaining 10 product conversion functions built on prodmake
 - [x] **Phase 5: Relation Finding (Exact)** — 8 exact relation finders over QQ (completed 2026-11-05)
-- [ ] **Phase 6: Relation Finding (Mod-p)** — 3 GF(p) relation finders
+- [x] **Phase 6: Relation Finding (Mod-p)** — 3 GF(p) relation finders (completed 2026-11-05)
 - [ ] **Phase 7: Packaging & Test Suite** — pyproject.toml, install validation, full pytest coverage
 
 ---
@@ -110,7 +110,9 @@ Plans:
   1. `findhommodp(f_list, q, p, 2, 0)` returns homogeneous degree-2 relations over GF(p) consistent with Maple's documented result (signatures to be verified against mod-p doc pages).
   2. `findlincombomodp(f, f_list, q, p, ...)` returns a GF(p) linear combination that evaluates to zero mod p (signatures to be verified against doc pages).
   3. Passing a non-prime `p` to any mod-p function raises a `ValueError` before any computation.
-**Plans:** TBD
+**Plans:** 1/1 plans complete
+Plans:
+- [x] 06-01 - findhommodp, findhomcombomodp, findlincombomodp (single plan; see 06-01-SUMMARY.md): REL-03, REL-04, REL-08
 
 ### Phase 7: Packaging & Test Suite
 
@@ -134,7 +136,7 @@ Plans:
 | 3. prodmake (Andrews' Algorithm) | 1/1 | Complete | 2026-09-17 |
 | 4. Product Conversion | 3/3 | Complete | 2026-09-17 |
 | 5. Relation Finding (Exact) | 3/3 | Complete | 2026-11-05 |
-| 6. Relation Finding (Mod-p) | 0/? | Not started | - |
+| 6. Relation Finding (Mod-p) | 1/1 | Complete | 2026-11-05 |
 | 7. Packaging & Test Suite | 0/? | Not started | - |
 
 ---
@@ -180,12 +182,12 @@ Plans:
 | CONV-11 | Phase 4 | Pending |
 | REL-01 | Phase 5 | Complete |
 | REL-02 | Phase 5 | Complete |
-| REL-03 | Phase 6 | Pending |
-| REL-04 | Phase 6 | Pending |
+| REL-03 | Phase 6 | Complete |
+| REL-04 | Phase 6 | Complete |
 | REL-05 | Phase 5 | Complete |
 | REL-06 | Phase 5 | Complete |
 | REL-07 | Phase 5 | Complete |
-| REL-08 | Phase 6 | Pending |
+| REL-08 | Phase 6 | Complete |
 | REL-09 | Phase 5 | Complete |
 | REL-10 | Phase 5 | Complete |
 | REL-11 | Phase 5 | Complete |

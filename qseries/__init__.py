@@ -51,6 +51,9 @@ from qseries._relations import (
     findmaxind,
     findpoly,
     findcong,
+    findhommodp,
+    findhomcombomodp,
+    findlincombomodp,
 )
 
 __all__ = [
@@ -111,5 +114,9 @@ __all__ = [
     "findmaxind",
     "findpoly",
     "findcong",
+    # Relation finding — mod p (REL-03, REL-04, REL-08)
+    "findhommodp",
+    "findhomcombomodp",
+    "findlincombomodp",
 ]
 __version__ = "1.3.0"

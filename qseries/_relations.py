@@ -5,7 +5,8 @@
 # No Maple source code was used.
 #
 # Phase 5 (exact, over QQ): findhom, findhomcombo, findnonhom, findnonhomcombo,
-# findlincombo, findmaxind, findpoly, findcong.  The mod-p variants are Phase 6.
+# findlincombo, findmaxind, findpoly, findcong.
+# Phase 6 (mod p, over GF(p)): findhommodp, findhomcombomodp, findlincombomodp.
 
 from sage.all import (
     matrix, QQ, GF, ZZ, IntegerVectors, PolynomialRing, is_prime, infinity
@@ -153,8 +154,28 @@ def _build_combo_polys(kern, mono_exps, R):
     return result
 
 
-def _xring(k):
-    return PolynomialRing(QQ, ['X%d' % (i + 1) for i in range(k)])
+def _xring(k, F=QQ):
+    return PolynomialRing(F, ['X%d' % (i + 1) for i in range(k)])
+
+
+def _check_prime(p):
+    """Mod-p functions: p must be a prime integer; checked before any computation."""
+    if isinstance(p, bool) or p not in ZZ or not is_prime(ZZ(p)):
+        raise ValueError(f"p must be a prime, got {p!r}")
+    return GF(ZZ(p))
+
+
+def _to_field(rows, F):
+    """Reduce QQ coefficient rows into the field F (identity for QQ)."""
+    if F is QQ:
+        return rows
+    try:
+        return [[F(c) for c in row] for row in rows]
+    except ZeroDivisionError:
+        raise ValueError(
+            f"A coefficient has a denominator divisible by {F.characteristic()}; "
+            "the series cannot be reduced mod p"
+        )
 
 
 def _gcd_list(vals):
@@ -200,8 +221,11 @@ def _print_etaoption(result, L, q):
                 pass
 
 
-def _kernel_search(f, L, q, mono_exps, args, is_combo):
-    """Shared body of findhom / findnonhom / findhomcombo / findnonhomcombo / findlincombo."""
+def _kernel_search(f, L, q, mono_exps, args, is_combo, F=QQ):
+    """
+    Shared body of findhom / findnonhom / findhomcombo / findnonhomcombo / findlincombo
+    and the mod-p variants (F = GF(p)).
+    """
     topshift, etaoption = _parse_optional_args(args)
     k = len(L)
     if k == 0:
@@ -218,9 +242,9 @@ def _kernel_search(f, L, q, mono_exps, args, is_combo):
     items = [_eval_monomial(e, L) for e in mono_exps]
     if is_combo:
         items.append((f.series, f.r))
-    M = matrix(QQ, _coefficient_rows(items, N))
+    M = matrix(F, _to_field(_coefficient_rows(items, N), F))
     kern = M.left_kernel()
-    R = _xring(k)
+    R = _xring(k, F)
     if is_combo:
         result = _build_combo_polys(kern, mono_exps, R)
     else:
@@ -298,6 +322,56 @@ def findlincombo(f, L, SL, q, topshift=0):
     '%NOT A LINEAR COMBO.%' and returns an empty set if there is none.  REL-07.
     """
     result = _kernel_search(f, L, q, _hom_monomials(1, len(L)), (topshift,), is_combo=True)
+    if not result:
+        print("%NOT A LINEAR COMBO.%")
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Mod-p variants (Phase 6)
+# ---------------------------------------------------------------------------
+
+def findhommodp(L, p, q, n, *args):
+    """
+    Set of homogeneous degree-n polynomial relations mod p among the series in L.
+
+    findhommodp(L, p, q, n)
+    findhommodp(L, p, q, n, topshift)
+
+    Mod-p version of findhom: same monomials and N = rows + 21 + topshift, but the kernel
+    is computed over GF(p).  Returns polynomials in X1..Xk over GF(p).  REL-03.
+    Raises ValueError if p is not prime (before any computation).
+    """
+    F = _check_prime(p)
+    return _kernel_search(None, L, q, _hom_monomials(n, len(L)), args, is_combo=False, F=F)
+
+
+def findhomcombomodp(f, L, p, q, n, *args):
+    """
+    Express f mod p as a homogeneous degree-n polynomial in the series of L.
+
+    findhomcombomodp(f, L, p, q, n [, topshift] [, etaoption])   (doc-page calling sequence)
+
+    Mod-p version of findhomcombo (N = rows + 20 + topshift).  Returns a set of
+    polynomials P over GF(p) with f = P(L) mod p.  REL-04.
+    """
+    F = _check_prime(p)
+    return _kernel_search(f, L, q, _hom_monomials(n, len(L)), args, is_combo=True, F=F)
+
+
+def findlincombomodp(f, L, SL, p, q, topshift=0):
+    """
+    Express f mod p as a linear combination of the series in L.
+
+    findlincombomodp(f, L, SL, p, q, topshift)   (doc-page calling sequence)
+
+    SL (names for display) is accepted for interface fidelity; the result is a set of
+    degree-1 polynomials in X1..Xk over GF(p).  Prints 'nx = , k' like Maple, and
+    '%NOT A LINEAR COMBO.%' with an empty set when there is none.  REL-08.
+    """
+    F = _check_prime(p)
+    print(f"nx = , {len(L)}")
+    result = _kernel_search(f, L, q, _hom_monomials(1, len(L)), (topshift,), is_combo=True, F=F)
     if not result:
         print("%NOT A LINEAR COMBO.%")
     return result

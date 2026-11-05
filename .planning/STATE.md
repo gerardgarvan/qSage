@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 3
 status: Executing Phase 04
-stopped_at: Phase 5 complete
-last_updated: "2026-11-05T20:44:10.000Z"
+stopped_at: Phase 6 complete
+last_updated: "2026-11-05T20:54:10.000Z"
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 16
-  completed_plans: 16
+  completed_phases: 6
+  total_plans: 17
+  completed_plans: 17
 ---
 
 # State: qseries-sage
@@ -22,8 +22,8 @@ progress:
 Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Progress 2/7.
 
 Current Plan: 3
-Last session: 2026-11-05T20:44:10.000Z
-Stopped At: Phase 5 complete; next: plan Phase 6
+Last session: 2026-11-05T20:54:10.000Z
+Stopped At: Phase 6 complete; next: plan Phase 7
 
 ## Environment
 
@@ -72,6 +72,11 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - Phase 2 fixes (2026-11-05): `(-1)**(n % 2)` for exact signs in `theta4`/`tripleprod` (`(-1)**n` with n < 0 is a float -> RDF series); `aqprod` starts at `parent(q).one()`; `theta` gets bivariate z coercion; tests: `QQ('1/4')`, tripleprod q^0 coefficient is `1 - z`.
 
 - Phase 2 follow-up (2026-11-05): `etaq` starts from `1 + O(q^T)` so partial products stay truncated (etaq(q,1,1001): ~100 s -> under a second); `theta2(q^k)` sets r = k/4 via `_theta2_shift` (warns and uses 1/4 if the argument is not a power of the generator).
+
+- Phase 6: mod-p finders reuse `_kernel_search(..., F=GF(p))`; rows reduced with `_to_field` (ValueError if a denominator is divisible by p); results are polynomials over GF(p).
+- Phase 6: signatures `findhomcombomodp(f, L, p, q, n, topshift, etaoption)` and `findlincombomodp(f, L, SL, p, q, topshift)` from the doc pages; `findhommodp(L, p, q, n, topshift)` inferred from them (doc page not reachable) - verify.
+- Phase 6: `_check_prime(p)` runs before any computation; non-prime p raises ValueError.
+- Phase 6: doc oracle reproduced: findlincombomodp(F1, BB13, SBB13, 13, q, -8) = -6*X1, 'nx = , 6', '# of terms , 19'.
 
 ## Pending
 
