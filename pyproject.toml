@@ -12,3 +12,7 @@ dependencies = []
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["qseries*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["qSage", ".git", ".benchmarks", "__pycache__"]

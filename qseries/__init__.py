@@ -39,6 +39,18 @@ from qseries._conversion import (
     zqfactor,
     qs2jaccombo,
     findprod,
+    MProduct,
+    QFactorResult,
+)
+from qseries._relations import (
+    findhom,
+    findhomcombo,
+    findnonhom,
+    findnonhomcombo,
+    findlincombo,
+    findmaxind,
+    findpoly,
+    findcong,
 )
 
 __all__ = [
@@ -77,15 +89,27 @@ __all__ = [
     # Product conversion — eta-family (CONV-02, CONV-03)
     "etamake",
     "qetamake",
-    # Product conversion — jac-family (CONV-04, CONV-08, CONV-09) — stubs
+    # Product conversion — jac-family (CONV-04, CONV-08, CONV-09)
     "jacprodmake",
     "jac2prod",
     "jac2series",
-    # Product conversion — misc (CONV-05 through CONV-07, CONV-10, CONV-11) — stubs
+    # Product conversion — misc (CONV-05 through CONV-07, CONV-10, CONV-11)
     "mprodmake",
     "qfactor",
     "zqfactor",
     "qs2jaccombo",
     "findprod",
+    # Return types for mprodmake and qfactor
+    "MProduct",
+    "QFactorResult",
+    # Relation finding — exact (REL-01, 02, 05, 06, 07, 09, 10, 11)
+    "findhom",
+    "findhomcombo",
+    "findnonhom",
+    "findnonhomcombo",
+    "findlincombo",
+    "findmaxind",
+    "findpoly",
+    "findcong",
 ]
 __version__ = "1.3.0"

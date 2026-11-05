@@ -21,7 +21,8 @@ def aqprod(a, q, n):
     from sage.all import Infinity
     if n < 0:
         raise NotImplementedError("aqprod: negative n not yet supported")
-    result = 1
+    from sage.all import parent
+    result = parent(q).one()
     for i in range(n):
         result = result * (1 - a * q**i)
     return QSeries(result, T=Infinity)
@@ -93,7 +94,10 @@ def theta(z, q, T):
     Works for scalar z (e.g. z=-1) and ring-variable z.
     Oracle: Garvan theta doc page; tutorial section 2.2.2.
     """
-    from sage.all import Infinity
+    from sage.all import Infinity, LaurentSeriesRing
+    from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing_generic
+    if hasattr(z, 'parent') and isinstance(z.parent(), LaurentPolynomialRing_generic):
+        q = LaurentSeriesRing(z.parent(), 'q')(q)
     result = sum(z**i * q**(i * i) for i in range(-T, T + 1))
     return QSeries(result, T=Infinity)
 
@@ -133,7 +137,7 @@ def theta4(q, T):
     """
     from sage.all import Infinity, isqrt
     bound = isqrt(T) + 1
-    result = sum((-1)**n * q**(n * n) for n in range(-bound, bound + 1))
+    result = sum((-1)**(n % 2) * q**(n * n) for n in range(-bound, bound + 1))
     return QSeries(result, T=Infinity)
 
 
@@ -155,7 +159,7 @@ def tripleprod(z, q, T):
         Sq = LaurentSeriesRing(Rz, 'q')
         q = Sq(q)
     N = isqrt(2 * T) + 2
-    result = sum((-1)**n * z**n * q**(n * (n - 1) // 2) for n in range(-N, N + 1))
+    result = sum((-1)**(n % 2) * z**n * q**(n * (n - 1) // 2) for n in range(-N, N + 1))
     return QSeries(result, T=Infinity)
 
 

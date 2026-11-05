@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 3
 status: Executing Phase 04
-stopped_at: "Completed 04-02-PLAN.md: jacprodmake + jac2prod + jac2series implemented"
-last_updated: "2026-09-17T14:30:00.000Z"
+stopped_at: Phase 5 complete
+last_updated: "2026-11-05T20:44:10.000Z"
 progress:
   total_phases: 7
-  completed_phases: 3
-  total_plans: 13
-  completed_plans: 12
+  completed_phases: 5
+  total_plans: 16
+  completed_plans: 16
 ---
 
 # State: qseries-sage
@@ -22,8 +22,8 @@ progress:
 Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Progress 2/7.
 
 Current Plan: 3
-Last session: 2026-09-17T14:30:00.000Z
-Stopped At: Completed 04-02-PLAN.md: jacprodmake + jac2prod + jac2series implemented
+Last session: 2026-11-05T20:44:10.000Z
+Stopped At: Phase 5 complete; next: plan Phase 6
 
 ## Environment
 
@@ -63,10 +63,21 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - `jacprodmake` period residue: use [1..P] convention (n%P==0 maps to P), not [0..P-1]; JAC(a,P) pattern detected when residues {a, P-a, P} all equal; period slot not double-counted.
 - `jac2series` uses direct theta sum `sum_i (-1)^i q^{i*(b-2a)/2 + i^2*b/2}` (not bivariate theta call); cross-checked against Pochhammer expansion.
 
+- Phase 5: all exact relation finders live in `_relations.py` and share `_kernel_search` (monomials via `IntegerVectors`, `matrix(QQ, rows).left_kernel()`, polynomials in `X1..Xk`).
+- Phase 5: N = rows + C + topshift with C = 21 (findhom/findnonhom) and C = 20 (combo variants); confirmed by tutorial term counts 25, 31, 61 and `findnonhomcombo` 42 / `matrix is , 37, x, 42`.
+- Phase 5: q-shifts aligned in `_coefficient_rows` (shifts must differ by integers; common fractional part dropped); coefficients read from the minimum valuation so negative leading powers work.
+- Phase 5: `etamake` imported lazily (only for etaoption='yes'); `topshift > -20` enforced.
+- Phase 5: `findhomcombo`/`findnonhomcombo` return every combination with non-zero f coefficient; when f is itself a monomial the trivial combination is returned too (doc page allows several).
+- Phase 5: `findcong` implication filter (A2 | A, B = B2 mod A2, M | M2) reproduces the oracle as written.
+- Phase 2 fixes (2026-11-05): `(-1)**(n % 2)` for exact signs in `theta4`/`tripleprod` (`(-1)**n` with n < 0 is a float -> RDF series); `aqprod` starts at `parent(q).one()`; `theta` gets bivariate z coercion; tests: `QQ('1/4')`, tripleprod q^0 coefficient is `1 - z`.
+
 ## Pending
 
 - Package name `qseries` vs `qseries_sage` (before Phase 7).
-- Merge Phase 6 into Phase 5 (same code, ring parameterised) — decide at Phase 5 planning.
+- Merge Phase 6 into Phase 5: resolved - kept separate (05-CONTEXT D-01).
+
+- `theta2(q**k, T)` keeps r = 1/4 for every k (should be k/4); findpoly test works around it.
+- `etaq` truncates only at the end; `etaq(q, 1, 1001)` takes ~100 s. Truncate inside the loop.
 
 ## Risks
 

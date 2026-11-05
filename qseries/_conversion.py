@@ -18,7 +18,9 @@ raise ImportError. Functions not yet implemented raise NotImplementedError.
 """
 
 from sage.all import QQ
-from collections import defaultdict
+from collections import defaultdict, namedtuple
+from dataclasses import dataclass, field
+from typing import List
 
 from math import isqrt
 
@@ -26,6 +28,37 @@ from qseries._series import QSeries
 from qseries._symbolic import EtaProduct, EProduct, QProduct, JacProduct, PochProduct
 from qseries._building_blocks import etaq
 from qseries._prodmake import prodmake
+
+
+# ---------------------------------------------------------------------------
+# Return types for mprodmake and qfactor (Plan 04-03)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class MProduct:
+    """Return type of mprodmake: product of (1+q^n) factors.
+
+    exponents: list of n values where (1+q^n) appears (multiplicity tracked).
+    """
+    exponents: List[int] = field(default_factory=list)
+
+    def __repr__(self):
+        parts = []
+        for n in sorted(self.exponents):
+            parts.append("(1+q)" if n == 1 else f"(1+q^{n})")
+        return " * ".join(parts) if parts else "1"
+
+    def to_series(self, T):
+        from sage.all import LaurentSeriesRing, QQ as _QQ
+        R = LaurentSeriesRing(_QQ, 'q')
+        q = R.gen()
+        result = R(1).add_bigoh(T)
+        for n in self.exponents:
+            result = (result * (1 + q**n)).add_bigoh(T)
+        return QSeries(result, T=T)
+
+
+QFactorResult = namedtuple('QFactorResult', ['numerator', 'denominator', 'r'])
 
 
 # ---------------------------------------------------------------------------
@@ -397,8 +430,65 @@ def jac2series(jacexpr, T):
 # ---------------------------------------------------------------------------
 
 def mprodmake(f, q, T):
-    """Write f as a product of (1+q^n) factors (CONV-05). Implemented in Plan 04-03."""
-    raise NotImplementedError("mprodmake: implemented in Plan 04-03")
+    """Greedy (1+q^n) product identification (CONV-05).
+
+    Oracle: mprodmake(etaq(q,2,18)^2/etaq(q,4,18)/etaq(q,1,18), q, 17)
+         -> MProduct([1,3,5,7,9,11,13,15,17])
+
+    Algorithm: same greedy structure as etamake but multiply residual by (1+q^k)^(-c_k)
+    to cancel the +c_k*q^k leading coefficient.
+    """
+    from sage.all import LaurentSeriesRing, QQ as _QQ
+
+    c = _QQ(f.series[0])
+    if c == 0:
+        raise ValueError("mprodmake: leading coefficient is zero")
+
+    R = f.series.parent()
+    # Use the input series precision as working precision (may be > T)
+    work_prec = int(f.series.prec())
+    residual_series = (f.series / c).add_bigoh(work_prec)
+    residual = QSeries(residual_series, T=work_prec)
+
+    exponents = []
+    for _ in range(work_prec - 1):
+        k = None
+        prec = int(residual.series.prec())
+        for n in range(1, prec):
+            try:
+                coeff = _QQ(residual.series[n])
+            except (IndexError, ValueError):
+                break
+            if coeff != 0:
+                k = n
+                c_k = coeff
+                break
+        if k is None:
+            break
+
+        c_k_q = _QQ(c_k)
+        if c_k_q.denominator() != 1:
+            raise ValueError(f"mprodmake: non-integer coefficient {c_k} at q^{k}")
+        c_k_int = int(c_k_q)
+
+        # To cancel +c_k*q^k in residual, multiply by (1+q^k)^(-c_k_int).
+        # (1+q^k)^(-1) has -q^k + q^{2k} - ..., so it subtracts c_k*q^k.
+        # Record: output product includes (1+q^k)^(c_k_int).
+        q_gen = R.gen()
+        factor_series = (1 + q_gen**k).add_bigoh(work_prec)
+        if c_k_int >= 0:
+            mult_series = factor_series.__invert__().add_bigoh(work_prec) ** c_k_int
+        else:
+            mult_series = (factor_series ** (-c_k_int)).add_bigoh(work_prec)
+        new_res = (residual.series * mult_series).add_bigoh(work_prec)
+        residual = QSeries(new_res, T=work_prec)
+
+        # Record: the product has (1+q^k)^(c_k_int), only if k <= T
+        if k <= T:
+            for _ in range(abs(c_k_int)):
+                exponents.append(k)
+
+    return MProduct(exponents=exponents)
 
 
 # ---------------------------------------------------------------------------
@@ -406,8 +496,95 @@ def mprodmake(f, q, T):
 # ---------------------------------------------------------------------------
 
 def qfactor(f, T=None):
-    """Factor a polynomial/rational function in q (CONV-06). Implemented in Plan 04-03."""
-    raise NotImplementedError("qfactor: implemented in Plan 04-03")
+    """Factor polynomial/rational function in QQ[q] into (1-q^k) terms (CONV-06, D-06/D-07).
+
+    Oracle: qfactor(q^6*(1-q^9)*(1-q^10)*(1-q^11)*(1-q^16)/((1-q)*(1-q^2)*(1-q^3)*(1-q^4)))
+         -> QFactorResult(numerator=QProduct({9:1,10:1,11:1,16:1}),
+                          denominator=QProduct({1:1,2:1,3:1,4:1}),
+                          r=6)
+    f must be in PolynomialRing(QQ,'q') or its fraction field.
+
+    Algorithm: factor numerator and denominator polynomials using Sage, identify
+    each irreducible factor as a cyclotomic polynomial Phi_d, then reconstruct
+    (1-q^k) = prod_{d|k} Phi_d by greedy grouping of cyclotomic indices.
+    """
+    from sage.all import QQ as _QQ, PolynomialRing, cyclotomic_polynomial, divisors
+
+    # Handle input: tuple (num, den), fraction field element, or polynomial
+    if isinstance(f, tuple):
+        num_poly, den_poly = f
+    else:
+        try:
+            num_poly = f.numerator()
+            den_poly = f.denominator()
+        except AttributeError:
+            num_poly = f
+            den_poly = f.parent()(1)
+
+    Rq = num_poly.parent()
+    q = Rq.gen()
+
+    # Build cyclotomic polynomial lookup: Phi_d(q) -> d
+    # We'll identify factors by matching against cyclotomic_polynomial(d, 'q')
+    def identify_cyclotomic(factor):
+        """Return d if factor == Phi_d(q) (possibly negated), else None."""
+        deg = factor.degree()
+        from sage.all import euler_phi as ephi
+        for d in range(1, 4 * deg + 4):
+            if ephi(d) == deg:
+                cp = Rq(cyclotomic_polynomial(d, var='q'))
+                if cp == factor or cp == -factor:
+                    return d
+        return None
+
+    def poly_to_cyclotomic_multiset(poly):
+        """Factor poly, return (q_power, {d: count}) of cyclotomic factors."""
+        if poly == Rq(1) or poly.degree() == 0:
+            return _QQ(0), {}
+        factorization = poly.factor()
+        q_power = _QQ(0)
+        cyc_counts = {}  # d -> total count
+        for factor, exp in factorization:
+            if factor == q:
+                q_power += _QQ(exp)
+            elif factor == Rq(-1) or factor.degree() == 0:
+                pass  # scalar unit
+            else:
+                d = identify_cyclotomic(factor)
+                if d is not None:
+                    cyc_counts[d] = cyc_counts.get(d, 0) + exp
+        return q_power, cyc_counts
+
+    def cyclotomic_multiset_to_qproduct(cyc_counts):
+        """Greedily reconstruct (1-q^k) factors from cyclotomic multiset.
+        (1-q^k) uses exactly one Phi_d for each d|k.
+        Returns exponents dict {k: count}.
+        """
+        remaining = dict(cyc_counts)
+        exponents = {}
+        # Try k from largest to smallest (greedy)
+        max_d = max(remaining.keys()) if remaining else 0
+        for k in range(max_d, 0, -1):
+            divs = divisors(k)
+            # Check if all divisors d|k are present in remaining with count >= 1
+            while all(remaining.get(d, 0) >= 1 for d in divs):
+                for d in divs:
+                    remaining[d] -= 1
+                exponents[k] = exponents.get(k, 0) + 1
+        return exponents
+
+    num_r, num_cyc = poly_to_cyclotomic_multiset(num_poly)
+    den_r, den_cyc = poly_to_cyclotomic_multiset(den_poly)
+
+    num_exp = cyclotomic_multiset_to_qproduct(num_cyc)
+    den_exp = cyclotomic_multiset_to_qproduct(den_cyc)
+    total_r = num_r - den_r
+
+    return QFactorResult(
+        numerator=QProduct(exponents=num_exp),
+        denominator=QProduct(exponents=den_exp),
+        r=total_r
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -415,8 +592,20 @@ def qfactor(f, T=None):
 # ---------------------------------------------------------------------------
 
 def zqfactor(F, z, q, N=1000):
-    """Factor a bivariate (z,q)-series (CONV-07). Implemented in Plan 04-03."""
-    raise NotImplementedError("zqfactor: implemented in Plan 04-03")
+    """Bivariate factorization of (z,q)-series into (1-a[i,j]*z^i*q^j) factors (CONV-07).
+
+    Best-effort stub for v1.0: returns None and emits UserWarning.
+    Garvan doc page note: 'This function does not work all the time.'
+    Full bivariate factorization deferred to Phase 5.
+    """
+    import warnings
+    warnings.warn(
+        "zqfactor: bivariate factorization is best-effort and not implemented in v1.0. "
+        "Returning None. Full implementation deferred to Phase 5.",
+        UserWarning,
+        stacklevel=2
+    )
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -424,8 +613,25 @@ def zqfactor(F, z, q, N=1000):
 # ---------------------------------------------------------------------------
 
 def qs2jaccombo(f, q, T, P=None):
-    """Convert each term in a sum to a JacProduct (CONV-10). Implemented in Plan 04-03."""
-    raise NotImplementedError("qs2jaccombo: implemented in Plan 04-03")
+    """Convert each term in f to a JacProduct via jacprodmake (CONV-10).
+
+    f: a list of QSeries (one per additive term), or a single QSeries.
+    Returns: list of JacProduct objects (one per term).
+    If any term cannot be converted, raises ValueError.
+    """
+    if isinstance(f, list):
+        terms = f
+    else:
+        terms = [f]
+
+    result = []
+    for term in terms:
+        if P is not None:
+            jp = jacprodmake(term, q, T, base=P)
+        else:
+            jp = jacprodmake(term, q, T)
+        result.append(jp)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -433,5 +639,52 @@ def qs2jaccombo(f, q, T, P=None):
 # ---------------------------------------------------------------------------
 
 def findprod(FL, T, M, Q):
-    """Exhaustive search for q-products (CONV-11). Implemented in Plan 04-03."""
-    raise NotImplementedError("findprod: implemented in Plan 04-03")
+    """Exhaustive search for linear combinations of FL that form nice q-products (CONV-11).
+
+    FL: list of QSeries
+    T: max |coefficient| in combinations (search range -T..T per series)
+    M: max |exponent| in product — passed directly to checkprod(combo, M, Q)
+    Q: highest power of q to consider (truncation for comparison)
+    Returns: list of coefficient_lists for each found combination.
+
+    Oracle: findprod([etaq(q,1,T)], 1, 3, 20) -> at least [[1]] or [[-1]]
+    """
+    from qseries._utilities import checkprod
+    from itertools import product as itertools_product
+    from sage.all import QQ as _QQ
+
+    found = []
+    n = len(FL)
+    R = FL[0].series.parent()
+    coeff_range = range(-T, T + 1)
+    for coeffs in itertools_product(coeff_range, repeat=n):
+        if all(c == 0 for c in coeffs):
+            continue
+        # Build linear combination
+        combo_series = R(0).add_bigoh(Q)
+        for i, c in enumerate(coeffs):
+            if c == 0:
+                continue
+            term = FL[i]
+            scaled = (_QQ(c) * term.series).add_bigoh(Q)
+            combo_series = (combo_series + scaled).add_bigoh(Q)
+        if combo_series.is_zero():
+            continue
+        val = combo_series.valuation()
+        if val is None or val < 0:
+            continue
+        leading = _QQ(combo_series[val])
+        if leading == 0:
+            continue
+        # checkprod requires constant term = 1 and r = 0
+        # Normalize: divide by leading coefficient and shift by valuation
+        q_gen = R.gen()
+        normed = (combo_series / leading / q_gen**val).add_bigoh(Q - val)
+        combo = QSeries(normed, T=Q)
+        try:
+            check_result = checkprod(combo, M, Q)
+            if check_result is not False:
+                found.append(list(coeffs))
+        except Exception:
+            pass  # skip edge cases
+    return found

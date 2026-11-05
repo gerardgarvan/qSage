@@ -101,17 +101,25 @@ class QSeries:
         return self.__mul__(other)
 
     def __pow__(self, n):
-        """Raise QSeries to a non-negative integer power."""
-        if not isinstance(n, (int,)) or n < 0:
-            raise TypeError(f"QSeries ** n requires a non-negative integer exponent, got {n!r}")
+        """Raise QSeries to an integer power (negative exponents use series inversion)."""
+        if not isinstance(n, int):
+            raise TypeError(f"QSeries ** n requires an integer exponent, got {n!r}")
         if n == 0:
-            from sage.all import Integer
             one = self.series.parent().one()
             return self._wrap(one.add_bigoh(self.T), QQ(0))
-        result = self
-        for _ in range(n - 1):
-            result = result * self
-        return result
+        if n > 0:
+            result = self
+            for _ in range(n - 1):
+                result = result * self
+            return result
+        else:
+            # Negative exponent: invert then raise to positive power
+            inv_series = self.series.__invert__().add_bigoh(self.T)
+            inv = self._wrap(inv_series, -self.r)
+            result = inv
+            for _ in range(-n - 1):
+                result = result * inv
+            return result
 
     def __truediv__(self, other):
         if isinstance(other, QSeries):

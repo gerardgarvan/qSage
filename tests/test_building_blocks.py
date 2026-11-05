@@ -177,7 +177,7 @@ def test_theta2_shift(q_ring):
     from qseries._building_blocks import theta2
     q = q_ring.gen()
     result = theta2(q, 50)
-    assert result.r == QQ(1, 4)
+    assert result.r == QQ('1/4')
 
 def test_theta2_coefficients(q_ring):
     """theta2(q, 50) series (after factoring q^{1/4}) = 2 + 2q^2 + 2q^6 + 2q^{12} + ...
@@ -315,7 +315,7 @@ def test_tripleprod_bivariate_type(q_ring):
     result = tripleprod(z, q, 10)
     assert isinstance(result, QSeries), "tripleprod must return QSeries"
     assert result.R is not None, "bivariate tripleprod must set R"
-    assert result.series[0] == Rz.one(), f"q^0 coefficient expected 1, got {result.series[0]}"
+    assert result.series[0] == Rz.one() - z, f"q^0 coefficient expected 1 - z, got {result.series[0]}"
 
 
 # ---------------------------------------------------------------------------
