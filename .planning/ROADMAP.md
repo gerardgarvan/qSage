@@ -100,9 +100,9 @@ Plans:
   5. `findcong(P, 1000)` returns the set `{[4,5,5], [5,7,7], [6,11,11], [24,25,25]}` (tutorial §7 example).
 **Plans:** 3 plans
 Plans:
-- [ ] 05-01-PLAN.md — Test scaffold + _relations.py skeleton (Wave 0): REL-01..REL-11
-- [ ] 05-02-PLAN.md — Core matrix-kernel family: findhom, findhomcombo, findnonhom, findnonhomcombo, findlincombo: REL-01, REL-02, REL-05, REL-06, REL-07
-- [ ] 05-03-PLAN.md — findmaxind, findpoly, findcong + __init__.py exports: REL-09, REL-10, REL-11
+- [x] 05-01-PLAN.md — Test scaffold + _relations.py skeleton (Wave 0): REL-01..REL-11
+- [x] 05-02-PLAN.md — Core matrix-kernel family: findhom, findhomcombo, findnonhom, findnonhomcombo, findlincombo: REL-01, REL-02, REL-05, REL-06, REL-07
+- [x] 05-03-PLAN.md — findmaxind, findpoly, findcong + __init__.py exports: REL-09, REL-10, REL-11
 
 ### Phase 6: Relation Finding (Mod-p)
 
