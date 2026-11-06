@@ -1,26 +1,12 @@
 # qseries-sage vs Maple qseries: parity report
 
-Battery seed 20261106, 130 cases. Maple: Maple 2026.2, X86 64 WINDOWS, Oct 31 2026, Build ID 2051430. qseries: [].
+Battery seed 20261106, 130 cases. Maple: Maple 2026.2, X86 64 WINDOWS, Oct 31 2026, Build ID 2051430. qseries: []. (qs2jaccombo_1 was run by hand in Maple 2026.2: the battery file used for this run predated that case.)
 
 | status | count |
 |---|---|
-| DIFFER | 1 |
 | KNOWN-MAPLE | 5 |
-| MATCH | 123 |
+| MATCH | 124 |
 | VALUE-MATCH | 1 |
-
-## DIFFER (1)
-
-### `qs2jaccombo_1` (jaccombo)
-
-Note: Maple splits the unexpanded sum into its two product terms
-
-Maple [(2, 0, ()), (4, 4, ()), (4, 16, ()), (4, 36, ())] vs Python [(-1, 1, (((0, 8), 1/2), ((2, 8), 1), ((4, 8), 1/2))), (1, 0, (((0, 4), 1/2), ((1, 4), 1), ((2, 4), 1/2)))]
-
-- Maple input: `qs2jaccombo(etaq(q,1,60)*etaq(q,4,60)-q*etaq(q,2,60)*etaq(q,8,60),q,50)`
-- Maple result: `4*q^36+4*q^16+4*q^4+2`
-- Python result: `JAC(0,4,infinity)^(1/2) * JAC(1,4,infinity) * JAC(2,4,infinity)^(1/2) - q^(1) * JAC(0,8,infinity)^(1/2) * JAC(2,8,infinity) * JAC(4,8,infinity)^(1/2)`
-
 
 ## KNOWN-MAPLE (5)
 
@@ -73,10 +59,10 @@ overlapping but not identical sets of combinations
 
 - Maple input: `findnonhomcombo(S(q^2*etaq(q,7,100)^8/etaq(q,1,100)^8,100),[S(q*etaq(q,7,100)^4/etaq(q,1,100)^4,100),S(q^2*etaq(q,49,100)/etaq(q,1,100),100)],q,7,-15)`
 - Maple result: `{X[1]^2}`
-- Python result: `{343*X2^7 + 343*X2^6 + 147*X2^5 + 49*X1*X2^3 + 49*X2^4 + 35*X1*X2^2 + 21*X2^3 + 7*X1*X2 + 7*X2^2 + X2, X1^2}`
+- Python result: `{X1^2, 343*X2^7 + 343*X2^6 + 147*X2^5 + 49*X1*X2^3 + 49*X2^4 + 35*X1*X2^2 + 21*X2^3 + 7*X1*X2 + 7*X2^2 + X2}`
 
 
-## MATCH (123)
+## MATCH (124)
 
 - `aqprod_1` (coeffs)
 - `aqprod_2` (coeffs)
@@ -178,6 +164,7 @@ overlapping but not identical sets of combinations
 - `zqfactor_doc` (zq)
 - `zqfactor_plus` (zq)
 - `findprod_1` (list)
+- `qs2jaccombo_1` (jaccombo)
 - `checkprod_1` (list)
 - `findhom_theta_1` (rels)
 - `findhom_theta_2` (rels)
