@@ -591,22 +591,8 @@ def qfactor(f, T=None):
 # CONV-07: zqfactor (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-def zqfactor(F, z, q, N=1000):
-    """Bivariate factorization of (z,q)-series into (1-a[i,j]*z^i*q^j) factors (CONV-07).
-
-    Best-effort stub for v1.0: returns None and emits UserWarning.
-    Garvan doc page note: 'This function does not work all the time.'
-    Full bivariate factorization deferred to Phase 5.
-    """
-    import warnings
-    warnings.warn(
-        "zqfactor: bivariate factorization is best-effort and not implemented in v1.0. "
-        "Returning None. Full implementation deferred to Phase 5.",
-        UserWarning,
-        stacklevel=2
-    )
-    return None
-
+# zqfactor (CONV-07) is implemented in qseries/_zqfactor.py (Phase 7).
+from qseries._zqfactor import zqfactor, ZQProduct  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # CONV-10: qs2jaccombo (Plan 04-03)

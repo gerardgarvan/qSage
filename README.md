@@ -56,14 +56,15 @@ and a rational q-power shift `r` (so `theta2` can carry its `q^(1/4)` factor).
 | Relations (mod p) | `findhommodp`, `findhomcombomodp`, `findlincombomodp` |
 
 Output types: `QSeries`, `QProduct`, `EtaProduct`, `EProduct`, `JacProduct`, `PochProduct`,
-`MProduct`, `QFactorResult`.
+`MProduct`, `QFactorResult`, `ZQProduct`.
 
 ### Differences from the Maple package
 
 - Relations are returned as Sage polynomials in `X1..Xk` (or `X, Y` for `findpoly`) instead of
   Maple's global `X[i]`; the `SL` name lists of `findlincombo*` are accepted but not used.
 - `findcong` returns a set of `(B, A, M)` tuples.
-- `zqfactor` is not implemented in this release: it warns and returns `None`.
+- `zqfactor` returns a `ZQProduct` of factors `(1 - a z^i q^j)^e`. Like Maple's version it is
+  best-effort: when it cannot find such a product it warns and returns `None`.
 
 ## Tests
 

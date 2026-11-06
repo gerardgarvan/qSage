@@ -36,12 +36,12 @@ from qseries._conversion import (
     jac2series,
     mprodmake,
     qfactor,
-    zqfactor,
     qs2jaccombo,
     findprod,
     MProduct,
     QFactorResult,
 )
+from qseries._zqfactor import zqfactor, ZQProduct
 from qseries._relations import (
     findhom,
     findhomcombo,
@@ -105,6 +105,8 @@ __all__ = [
     # Return types for mprodmake and qfactor
     "MProduct",
     "QFactorResult",
+    # Return type for zqfactor (CONV-07)
+    "ZQProduct",
     # Relation finding — exact (REL-01, 02, 05, 06, 07, 09, 10, 11)
     "findhom",
     "findhomcombo",

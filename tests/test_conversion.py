@@ -287,19 +287,7 @@ def test_qfactor_t8():
 # CONV-07: zqfactor (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-def test_zqfactor():
-    """CONV-07: zqfactor is a documented best-effort stub for v1.0.
-    Returns None and emits UserWarning; does not raise.
-    Full bivariate factorization deferred to Phase 5.
-    """
-    import warnings
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        result = zqfactor(None, None, None, 10)
-    assert result is None
-    assert any(issubclass(w.category, UserWarning) for w in caught), \
-        "zqfactor must emit a UserWarning"
-
+# test_zqfactor moved to tests/test_zqfactor.py (full implementation, Phase 7).
 
 # ---------------------------------------------------------------------------
 # CONV-10: qs2jaccombo (Plan 04-03)
