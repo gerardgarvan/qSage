@@ -74,3 +74,20 @@ sage -python -m pytest -q
 
 Expected values in the tests come from Garvan's documentation and tutorial, or from stated
 mathematical identities — never from this package's own output.
+
+## License and credits
+
+qseries-sage is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, either version 2 of the
+License, or (at your option) any later version. See [LICENSE](LICENSE).
+
+The qseries package for Maple, its function set and its documentation are the work of
+Frank Garvan (University of Florida): <https://qseries.org/fgarvan/qmaple/qseries/>.
+This port is an independent, clean reimplementation in Python/SageMath written from that
+public documentation and the tutorial
+
+> F. G. Garvan, *A q-product tutorial for a q-series MAPLE package*,
+> Séminaire Lotharingien de Combinatoire 42 (1999), Article B42d. arXiv:math/9812092.
+
+No Maple source code was used. If you use this package in research, please cite Garvan's
+qseries package and tutorial.
