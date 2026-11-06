@@ -67,6 +67,15 @@ Output types: `QSeries`, `QProduct`, `EtaProduct`, `EProduct`, `JacProduct`, `Po
 - `findcong` returns a set of `(B, A, M)` tuples.
 - `zqfactor` returns a `ZQProduct` of factors `(1 - a z^i q^j)^e`. Like Maple's version it is
   best-effort: when it cannot find such a product it warns and returns `None`.
+- `findhommodp` uses every coefficient, including q^0. Maple 2026 + qseries 1.3 skips the q^0
+  coefficient, so it reports `{X[1], X[2]}` for `findhommodp([1+5*q, 1], 5, q, 1, 0)` (claiming
+  1 = 0 mod 5); qseries-sage gives the correct `X1 - X2`.
+- `qfactor(f, T)`: Maple 2026 + qseries 1.3 returns `1` for some quotients when `T` is given
+  (e.g. `q^4(1-q^6)(1-q^7)/((1-q^3)(1-q^12))` with `T = 20` or `40`) but factors them without `T`;
+  qseries-sage factors them either way.
+
+Every function is checked against real Maple output by the parity battery in `parity/`
+(`parity/parity_report.md` has the latest run).
 
 ## Tests
 

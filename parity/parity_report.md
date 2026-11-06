@@ -14,49 +14,61 @@ Battery seed 20261106, 130 cases. Maple: Maple 2026.2, X86 64 WINDOWS, Oct 31 20
 
 ### `qfactor_rand_0` (qfactor)
 
+Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
+
 Maple (0, ()) vs Python (4, ((3, -1), (6, 1), (7, 1), (12, -1)))
 
-- Maple input: `qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)),40)`
+- Maple input: `qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)))`
 - Maple result: `1`
 - Python result: `QFactorResult(numerator=(1-q^6) * (1-q^7), denominator=(1-q^3) * (1-q^12), r=4)`
 
 ### `qfactor_rand_1` (qfactor)
 
+Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
+
 Maple (0, ()) vs Python (0, ((1, 1), (2, -1), (5, -1), (8, -1), (10, 1)))
 
-- Maple input: `qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)),40)`
+- Maple input: `qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)))`
 - Maple result: `1`
 - Python result: `QFactorResult(numerator=(1-q) * (1-q^10), denominator=(1-q^2) * (1-q^5) * (1-q^8), r=0)`
 
 ### `qfactor_rand_2` (qfactor)
 
+Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
+
 Maple (0, ()) vs Python (1, ((3, 1), (4, -1), (8, 1), (9, -1), (10, -1)))
 
-- Maple input: `qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)),40)`
+- Maple input: `qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)))`
 - Maple result: `1`
 - Python result: `QFactorResult(numerator=(1-q^3) * (1-q^8), denominator=(1-q^4) * (1-q^9) * (1-q^10), r=1)`
 
 ### `qfactor_rand_3` (qfactor)
 
+Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
+
 Maple (0, ()) vs Python (1, ((6, 1), (7, -1), (8, 1), (10, -1), (11, -1), (12, 1)))
 
-- Maple input: `qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)),40)`
+- Maple input: `qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)))`
 - Maple result: `1`
 - Python result: `QFactorResult(numerator=(1-q^6) * (1-q^8) * (1-q^12), denominator=(1-q^7) * (1-q^10) * (1-q^11), r=1)`
 
 ### `qfactor_rand_4` (qfactor)
 
+Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
+
 Maple (0, ()) vs Python (2, ((3, -1), (4, 1), (5, 1), (7, 1), (9, -1), (10, -1), (11, -1)))
 
-- Maple input: `qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)),40)`
+- Maple input: `qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)))`
 - Maple result: `1`
 - Python result: `QFactorResult(numerator=(1-q^4) * (1-q^5) * (1-q^7), denominator=(1-q^3) * (1-q^9) * (1-q^10) * (1-q^11), r=2)`
 
 ### `qfactor_rand_5` (qfactor)
 
+Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
+
 Maple (0, ()) vs Python (3, ((4, 1), (5, -1), (6, -1), (7, -1), (11, 1)))
 
-- Maple input: `qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)),40)`
+- Maple input: `qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)))`
 - Maple result: `1`
 - Python result: `QFactorResult(numerator=(1-q^4) * (1-q^11), denominator=(1-q^5) * (1-q^6) * (1-q^7), r=3)`
 

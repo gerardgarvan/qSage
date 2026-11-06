@@ -371,27 +371,27 @@ try res := qfactor(q^6*(1-q^9)*(1-q^10)*(1-q^11)*(1-q^16)/((1-q)*(1-q^2)*(1-q^3)
 
 # qfactor_rand_0 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)),40): WR("qfactor_rand_0", t0, res) catch: WE("qfactor_rand_0", t0) end try:
+try res := qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12))): WR("qfactor_rand_0", t0, res) catch: WE("qfactor_rand_0", t0) end try:
 
 # qfactor_rand_1 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)),40): WR("qfactor_rand_1", t0, res) catch: WE("qfactor_rand_1", t0) end try:
+try res := qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8))): WR("qfactor_rand_1", t0, res) catch: WE("qfactor_rand_1", t0) end try:
 
 # qfactor_rand_2 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)),40): WR("qfactor_rand_2", t0, res) catch: WE("qfactor_rand_2", t0) end try:
+try res := qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10))): WR("qfactor_rand_2", t0, res) catch: WE("qfactor_rand_2", t0) end try:
 
 # qfactor_rand_3 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)),40): WR("qfactor_rand_3", t0, res) catch: WE("qfactor_rand_3", t0) end try:
+try res := qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11))): WR("qfactor_rand_3", t0, res) catch: WE("qfactor_rand_3", t0) end try:
 
 # qfactor_rand_4 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)),40): WR("qfactor_rand_4", t0, res) catch: WE("qfactor_rand_4", t0) end try:
+try res := qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11))): WR("qfactor_rand_4", t0, res) catch: WE("qfactor_rand_4", t0) end try:
 
 # qfactor_rand_5 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)),40): WR("qfactor_rand_5", t0, res) catch: WE("qfactor_rand_5", t0) end try:
+try res := qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7))): WR("qfactor_rand_5", t0, res) catch: WE("qfactor_rand_5", t0) end try:
 
 # mprodmake_doc (mprod)
 t0 := time():

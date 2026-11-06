@@ -169,8 +169,9 @@ def build_cases():
         mden = "*".join("(1-q^%d)" % k for k in dk)
         pnum = "t**%d*%s" % (r0, "*".join("(1-t**%d)" % k for k in nk))
         pden = "*".join("(1-t**%d)" % k for k in dk)
-        add(Case("qfactor_rand_%d" % i, "qfactor", "qfactor(expand(%s)/expand(%s),40)" % (mnum, mden),
-                 "qfactor((P(%s), P(%s)), 40)" % (pnum, pden)))
+        add(Case("qfactor_rand_%d" % i, "qfactor", "qfactor(expand(%s)/expand(%s))" % (mnum, mden),
+                 "qfactor((P(%s), P(%s)))" % (pnum, pden),
+                 opts={"note": "no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these"}))
 
     add(Case("mprodmake_doc", "mprod", "mprodmake(S(etaq(q,2,100)^2/etaq(q,4,100)/etaq(q,1,100),100),q,17)",
              "mprodmake(etaq(q,2,100)**2*etaq(q,4,100)**(-1)*etaq(q,1,100)**(-1),q,17)"))
