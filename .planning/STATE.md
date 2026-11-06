@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_plan: 3
-status: Executing Phase 04
-stopped_at: Phase 6 complete
-last_updated: "2026-11-05T20:54:10.000Z"
+status: Milestone complete
+stopped_at: Milestone v1.0 complete
+last_updated: "2026-11-06T02:56:13.000Z"
 progress:
   total_phases: 7
-  completed_phases: 6
-  total_plans: 17
-  completed_plans: 17
+  completed_phases: 7
+  total_plans: 18
+  completed_plans: 18
 ---
 
 # State: qseries-sage
@@ -22,8 +22,8 @@ progress:
 Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Progress 2/7.
 
 Current Plan: 3
-Last session: 2026-11-05T20:54:10.000Z
-Stopped At: Phase 6 complete; next: plan Phase 7
+Last session: 2026-11-06T02:56:13.000Z
+Stopped At: Milestone v1.0 complete
 
 ## Environment
 
@@ -78,11 +78,17 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - Phase 6: `_check_prime(p)` runs before any computation; non-prime p raises ValueError.
 - Phase 6: doc oracle reproduced: findlincombomodp(F1, BB13, SBB13, 13, q, -8) = -6*X1, 'nx = , 6', '# of terms , 19'.
 
+- Phase 7: package metadata in setup.cfg (Ubuntu 22.04's setuptools 59 ignores [project] and builds UNKNOWN-0.0.0); `sage -pip install --user .` verified; distribution `qseries-sage`, import name `qseries` (package-name question resolved).
+- Phase 7: zqfactor implemented in `_zqfactor.py` (two-variable Andrews algorithm, q^0 coefficient factored over ZZ into binomials and cyclotomics, (1 - x)^-1 (1 - x^2) shown as (1 + x)); returns `ZQProduct`; reproduces the doc-page example; `_conversion.zqfactor` re-exports it. N caps the result at N - 1 factors (matches the doc example).
+- Phase 7: every test docstring carries an `Oracle:` line (doc page, tutorial section, identity, construction, or design decision); 144 tests.
+
 ## Pending
 
-- Package name `qseries` vs `qseries_sage` (before Phase 7).
+- Package name: resolved - distribution `qseries-sage`, import `qseries` (Phase 7).
 - Merge Phase 6 into Phase 5: resolved - kept separate (05-CONTEXT D-01).
 
+
+- Confirm `findhommodp(L, p, q, n, topshift)` argument order against its doc page (inferred, not read).
 
 ## Risks
 

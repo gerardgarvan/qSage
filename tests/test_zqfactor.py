@@ -106,6 +106,9 @@ def test_zqfactor_fails_gracefully(zq):
 
 
 def test_zqfactor_type_error():
-    """Design decision: input must be a QSeries."""
+    """Design decision: input must be a QSeries.
+
+    Oracle: Design decision (Phase 7): input must be a QSeries.
+    """
     with pytest.raises(TypeError):
         zqfactor(None, None, None, 10)

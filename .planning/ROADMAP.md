@@ -17,8 +17,7 @@
 - [x] **Phase 4: Product Conversion** — Remaining 10 product conversion functions built on prodmake
 - [x] **Phase 5: Relation Finding (Exact)** — 8 exact relation finders over QQ (completed 2026-11-05)
 - [x] **Phase 6: Relation Finding (Mod-p)** — 3 GF(p) relation finders (completed 2026-11-05)
-- [ ] **Phase 7: Packaging & Test Suite** — pyproject.toml, install validation, full pytest coverage
-
+- [x] **Phase 7: Packaging & Test Suite** — pyproject.toml, install validation, full pytest coverage (completed 2026-11-05)
 ---
 
 ## Phase Details
@@ -123,7 +122,9 @@ Plans:
   1. `sage -pip install --user .` in a clean directory completes without errors and `python -c "from qseries import *; print(packageversion())"` prints the version string.
   2. `sage -python -m pytest` runs to completion with zero failures and covers all 41 public functions (one test per function minimum).
   3. Every test's expected value is annotated with a reference to a specific Maple documentation page or function, not derived from the package's own output.
-**Plans:** TBD
+**Plans:** 1/1 plans complete
+Plans:
+- [x] 07-01 - packaging (setup.cfg), README, zqfactor, oracle labels on every test (see 07-01-SUMMARY.md): PKG-01, PKG-02, CONV-07
 
 ---
 
@@ -137,7 +138,7 @@ Plans:
 | 4. Product Conversion | 3/3 | Complete | 2026-09-17 |
 | 5. Relation Finding (Exact) | 3/3 | Complete | 2026-11-05 |
 | 6. Relation Finding (Mod-p) | 1/1 | Complete | 2026-11-05 |
-| 7. Packaging & Test Suite | 0/? | Not started | - |
+| 7. Packaging & Test Suite | 1/1 | Complete | 2026-11-05 |
 
 ---
 
@@ -175,7 +176,7 @@ Plans:
 | CONV-04 | Phase 4 | Pending |
 | CONV-05 | Phase 4 | Pending |
 | CONV-06 | Phase 4 | Pending |
-| CONV-07 | Phase 4 | Pending |
+| CONV-07 | Phase 4 | Complete (implemented in Phase 7) |
 | CONV-08 | Phase 4 | Pending |
 | CONV-09 | Phase 4 | Pending |
 | CONV-10 | Phase 4 | Pending |
@@ -191,5 +192,5 @@ Plans:
 | REL-09 | Phase 5 | Complete |
 | REL-10 | Phase 5 | Complete |
 | REL-11 | Phase 5 | Complete |
-| PKG-01 | Phase 7 | Pending |
-| PKG-02 | Phase 7 | Pending |
+| PKG-01 | Phase 7 | Complete |
+| PKG-02 | Phase 7 | Complete |

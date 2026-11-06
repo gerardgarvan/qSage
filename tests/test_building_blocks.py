@@ -399,7 +399,10 @@ def test_theta2_shift_scales_with_argument(q_ring):
 
 
 def test_etaq_large_T_matches_pentagonal(q_ring):
-    """etaq(q,1,1001) matches Euler's pentagonal number theorem through q^1000, and runs fast."""
+    """etaq(q,1,1001) matches Euler's pentagonal number theorem through q^1000, and runs fast.
+
+    Oracle: Euler's pentagonal number theorem, prod(1-q^n) = sum (-1)^m q^(m(3m-1)/2) (etaq doc page, tutorial sec. 2); the 30 s bound is a Phase 2 follow-up design decision.
+    """
     from qseries._building_blocks import etaq
     import time
     q = q_ring.gen()

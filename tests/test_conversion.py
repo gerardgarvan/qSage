@@ -201,6 +201,7 @@ def test_jac2series_oracle():
 
     The full Laurent expansion of JAC(-4,5,inf) starts at q^{-4}:
       -q^{-4} + q^{-3} + 1 - q^3 - q^9 + q^{14} + O(...)
+    Oracle: jacprod / jac2prod doc pages: JAC(a,b,inf) = (q^a;q^b)_inf (q^(b-a);q^b)_inf (q^b;q^b)_inf; the expected series is built independently from that definition.
     """
     from sage.all import QQ, LaurentSeriesRing
     j = JacProduct(factors=[(-4, 5, 1)])

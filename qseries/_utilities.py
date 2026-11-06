@@ -207,7 +207,12 @@ def changes():
     Oracle: Garvan changes doc page (returns a list of changes as a string).
     """
     return (
-        "qseries-sage v1.3.0 (2026-09-16):\n"
+        "qseries-sage v1.3.0 (2026-11-05): milestone v1.0 - all 41 functions of qseries 1.3.\n"
+        "  Phase 7: zqfactor implemented (ZQProduct); setup.cfg packaging; README; every test cites its oracle.\n"
+        "  Phase 6: findhommodp, findhomcombomodp, findlincombomodp (GF(p)).\n"
+        "  Phase 5: findhom, findhomcombo, findnonhom, findnonhomcombo, findlincombo, findmaxind, findpoly, findcong.\n"
+        "  Phase 4: etamake, qetamake, jacprodmake, jac2prod, jac2series, mprodmake, qfactor, qs2jaccombo, findprod.\n"
+        "  Phase 3: prodmake (Andrews' algorithm).\n"
         "  Phase 2: All 11 building-block functions and 8 utility functions implemented.\n"
         "  Phase 1: QSeries wrapper, five symbolic output types, degree conventions.\n"
         "  Clean reimplementation from Garvan qseries v1.3 documentation only.\n"

@@ -22,42 +22,49 @@ def make_series(R=QQ):
 # --- Basic construction ---
 
 def test_T_stored():
+    """Oracle: Design decision (Phase 1, FOUND-01): QSeries stores its truncation order T."""
     s = make_series()
     qs = QSeries(s, T=20)
     assert qs.T == 20
 
 
 def test_series_attr():
+    """Oracle: Design decision (Phase 1, FOUND-01): the wrapped Sage series is kept as given."""
     s = make_series()
     qs = QSeries(s, T=20)
     assert qs.series is s
 
 
 def test_default_r_is_zero():
+    """Oracle: Design decision (Phase 1, FOUND-02): the default q-power shift is r = 0."""
     s = make_series()
     qs = QSeries(s, T=20)
     assert qs.r == 0
 
 
 def test_rational_shift_stored():
+    """Oracle: Design decision (Phase 1, FOUND-02): a rational shift is stored, needed for theta2's q^(1/4) (theta2 doc page)."""
     s = make_series()
     qs = QSeries(s, T=10, r=QQ(1)/4)
     assert qs.r == QQ(1)/4
 
 
 def test_R_inferred_QQ():
+    """Oracle: Design decision (Phase 1, FOUND-02): the coefficient ring R is inferred from the series parent (QQ)."""
     s = make_series(R=QQ)
     qs = QSeries(s, T=20)
     assert qs.R == QQ
 
 
 def test_R_inferred_GF7():
+    """Oracle: Design decision (Phase 1, FOUND-02): R inferred from the series parent (GF(p), used by the mod-p functions)."""
     s = make_series(R=GF(7))
     qs = QSeries(s, T=20)
     assert qs.R == GF(7)
 
 
 def test_R_bivariate():
+    """Oracle: Design decision (Phase 1, FOUND-02): R inferred as the Laurent polynomial ring in z (theta, tripleprod, zqfactor)."""
     z_ring = LaurentPolynomialRing(QQ, 'z')
     L = LaurentSeriesRing(z_ring, 'q')
     q = L.gen()
@@ -69,6 +76,7 @@ def test_R_bivariate():
 # --- Arithmetic truncation propagation ---
 
 def test_add_truncation_propagates():
+    """Oracle: Truncated-series arithmetic: a sum is known only to the smaller order min(T1, T2) (ROADMAP Phase 1 criterion 1)."""
     L = LaurentSeriesRing(QQ, 'q')
     q = L.gen()
     s1 = sum(q**k for k in range(5)).add_bigoh(20)
@@ -80,6 +88,7 @@ def test_add_truncation_propagates():
 
 
 def test_mul_r_propagation():
+    """Oracle: Exponent law q^r1 * q^r2 = q^(r1 + r2) (design decision D-12)."""
     L = LaurentSeriesRing(QQ, 'q')
     q = L.gen()
     s1 = (1 + q).add_bigoh(20)
@@ -91,6 +100,7 @@ def test_mul_r_propagation():
 
 
 def test_div_r_propagation():
+    """Oracle: Exponent law q^r1 / q^r2 = q^(r1 - r2) (design decision D-12)."""
     L = LaurentSeriesRing(QQ, 'q')
     q = L.gen()
     s1 = (1 + q).add_bigoh(20)
@@ -104,7 +114,10 @@ def test_div_r_propagation():
 # --- Shift alignment in addition ---
 
 def test_add_integer_shift_diff_works():
-    """r=1 and r=0 differ by integer 1 — should succeed."""
+    """r=1 and r=0 differ by integer 1 — should succeed.
+
+    Oracle: Design decision D-12: shifts differing by an integer are aligned to the smaller shift.
+    """
     L = LaurentSeriesRing(QQ, 'q')
     q = L.gen()
     s1 = (1 + q).add_bigoh(20)
@@ -116,7 +129,10 @@ def test_add_integer_shift_diff_works():
 
 
 def test_add_non_integer_shift_diff_raises():
-    """r=1/4 and r=3/4 differ by 1/2 — not integer, must raise ValueError."""
+    """r=1/4 and r=3/4 differ by 1/2 — not integer, must raise ValueError.
+
+    Oracle: Design decision D-12: shifts differing by a non-integer cannot form one q^r * series, so raise ValueError.
+    """
     L = LaurentSeriesRing(QQ, 'q')
     q = L.gen()
     s1 = (1 + q).add_bigoh(20)
@@ -128,7 +144,10 @@ def test_add_non_integer_shift_diff_raises():
 
 
 def test_T_equals_series_prec():
-    """T should equal Sage's actual precision after operation (D-13)."""
+    """T should equal Sage's actual precision after operation (D-13).
+
+    Oracle: Design decision D-13: T equals Sage's actual precision after arithmetic.
+    """
     L = LaurentSeriesRing(QQ, 'q')
     q = L.gen()
     s1 = (1 + q).add_bigoh(20)

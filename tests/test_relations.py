@@ -96,7 +96,10 @@ def test_findhom_quadratic_two_relations(capsys):
 
 
 def test_findhom_shortfall_raises():
-    """A series with fewer than N terms raises ValueError naming the shortfall (D-04)."""
+    """A series with fewer than N terms raises ValueError naming the shortfall (D-04).
+
+    Oracle: Design decision D-04 (05-CONTEXT): N = rows + C + topshift coefficients are required; a shortfall raises ValueError.
+    """
     R, q = make_q(30)
     L = [etaq(q, 1, 20), etaq(q, 2, 20)]  # degree 2 -> 3 rows -> N = 24 > 20
     with pytest.raises(ValueError, match="precision.*required"):
@@ -134,6 +137,7 @@ def test_findnonhom_relations_vanish():
     findnonhom finds relations of degree <= 3 among theta3(q), theta4(q), theta3(q^4),
     theta4(q^4) (e.g. theta3(q) + theta4(q) = 2 theta3(q^4)); every returned relation
     vanishes to O(q^100) when the series are substituted.
+    Oracle: Identity theta3(q) + theta4(q) = 2 theta3(q^4) (tutorial sec. 2); every returned relation is verified by substitution, not against package output.
     """
     T = 100
     R, q = make_q(T)
@@ -191,7 +195,10 @@ def test_findnonhomcombo_watson(capsys):
 
 
 def test_findnonhomcombo_reproduces_f():
-    """Each returned P satisfies P(L) = f to O(q^T) when f is a known combination of L."""
+    """Each returned P satisfies P(L) = f to O(q^T) when f is a known combination of L.
+
+    Oracle: Constructed: f = theta3(q) + theta4(q) is a combination of L by construction; each P is verified by substituting P(L) = f (findnonhomcombo doc page).
+    """
     T = 100
     R, q = make_q(T)
     L = [theta3(q, T), theta4(q, T), theta3(q**4, T)]
@@ -207,7 +214,10 @@ def test_findnonhomcombo_reproduces_f():
 # ---------------------------------------------------------------------------
 
 def test_findlincombo_known_combo():
-    """findlincombo(12*f1 + 13*f2, [f1, f2], [F1, F2], q, 0) gives 12*X1 + 13*X2."""
+    """findlincombo(12*f1 + 13*f2, [f1, f2], [F1, F2], q, 0) gives 12*X1 + 13*X2.
+
+    Oracle: Constructed: f = 12 f1 + 13 f2 by construction (findlincombo doc page).
+    """
     T = 50
     R, q = make_q(T)
     f1 = etaq(q, 1, T)
@@ -220,7 +230,10 @@ def test_findlincombo_known_combo():
 
 
 def test_findlincombo_not_a_combo(capsys):
-    """A series outside the span returns an empty set and prints %NOT A LINEAR COMBO.%."""
+    """A series outside the span returns an empty set and prints %NOT A LINEAR COMBO.%.
+
+    Oracle: findlincombo doc page prints %NOT A LINEAR COMBO.%; the q^0 and q^1 coefficients force 0*f1 + 1*f2, and etaq(q,2) != etaq(q,3).
+    """
     T = 50
     R, q = make_q(T)
     f1 = etaq(q, 1, T)
@@ -236,7 +249,10 @@ def test_findlincombo_not_a_combo(capsys):
 # ---------------------------------------------------------------------------
 
 def test_findmaxind_returns_pair():
-    """findmaxind([f1, f2, f1+f2], 0) == [[f1, f2], [1, 2]] (f1+f2 is dependent)."""
+    """findmaxind([f1, f2, f1+f2], 0) == [[f1, f2], [1, 2]] (f1+f2 is dependent).
+
+    Oracle: Constructed: f3 = f1 + f2 by construction; theta3, theta4 differ at q^1 so are independent (findmaxind doc page, 1-based positions).
+    """
     T = 60
     R, q = make_q(T)
     f1 = theta3(q, T)
@@ -248,7 +264,10 @@ def test_findmaxind_returns_pair():
 
 
 def test_findmaxind_skips_middle_dependent():
-    """A dependent element in the middle is skipped and later independent ones kept."""
+    """A dependent element in the middle is skipped and later independent ones kept.
+
+    Oracle: Constructed: dep = 2 f1 - f2 by construction; etaq(q,3) is outside the span of etaq(q,1), etaq(q,2) (findmaxind doc page).
+    """
     T = 60
     R, q = make_q(T)
     f1, f2 = etaq(q, 1, T), etaq(q, 2, T)
@@ -297,13 +316,19 @@ def partitions_1001():
 
 
 def test_findcong_partition_congruences(partitions_1001):
-    """findcong(1/etaq(q,1,1001), 1000) == {(4,5,5),(5,7,7),(6,11,11),(24,25,25)} (D-07)."""
+    """findcong(1/etaq(q,1,1001), 1000) == {(4,5,5),(5,7,7),(6,11,11),(24,25,25)} (D-07).
+
+    Oracle: Ramanujan's congruences p(5n+4), p(7n+5), p(11n+6), p(25n+24) (findcong doc page example, tutorial sec. 7); implied-congruence suppression D-07.
+    """
     result = findcong(partitions_1001, 1000)
     assert result == {(4, 5, 5), (5, 7, 7), (6, 11, 11), (24, 25, 25)}, result
 
 
 def test_findcong_xset_excludes(partitions_1001):
-    """XSET={5} drops the modulus-5 congruence and keeps the rest."""
+    """XSET={5} drops the modulus-5 congruence and keeps the rest.
+
+    Oracle: findcong doc page: XSET lists moduli to exclude; Ramanujan's congruences as in the previous test.
+    """
     result = findcong(partitions_1001, 1000, 31, {5})
     assert (4, 5, 5) not in result
     assert {(5, 7, 7), (6, 11, 11), (24, 25, 25)} <= result

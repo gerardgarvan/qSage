@@ -22,7 +22,10 @@ def make_qs(R, series_expr, T=20, r=0):
 # ---------------------------------------------------------------------------
 
 def test_qdegree_positive_exponents(R):
-    """qdegree on 1 - q + q^3 returns 3."""
+    """qdegree on 1 - q + q^3 returns 3.
+
+    Oracle: qdegree doc page: highest power of q; 1 - q + q^3 has degree 3 by inspection.
+    """
     from qseries._utilities import qdegree
     q = R.gen()
     s = (1 - q + q**3).add_bigoh(10)
@@ -40,7 +43,10 @@ def test_qdegree_negative_and_positive(R):
 
 
 def test_qdegree_with_rational_shift(R):
-    """qdegree includes rational shift r."""
+    """qdegree includes rational shift r.
+
+    Oracle: qdegree doc page plus the q^r shift: q^(1/4) * q^2 has degree 9/4.
+    """
     from qseries._utilities import qdegree
     q = R.gen()
     # series = q^2 + O(q^5), r = 1/4; highest exponent = 2; total = 2 + 1/4 = 9/4
@@ -50,7 +56,10 @@ def test_qdegree_with_rational_shift(R):
 
 
 def test_qdegree_zero_raises(R):
-    """qdegree on zero QSeries raises ValueError."""
+    """qdegree on zero QSeries raises ValueError.
+
+    Oracle: Design decision (Phase 1, FOUND-05): the zero series has no degree.
+    """
     from qseries._utilities import qdegree
     s = R(0).add_bigoh(10)
     qs = make_qs(R, s, T=10)
@@ -59,7 +68,10 @@ def test_qdegree_zero_raises(R):
 
 
 def test_qdegree_type_error():
-    """qdegree on non-QSeries raises TypeError."""
+    """qdegree on non-QSeries raises TypeError.
+
+    Oracle: Design decision (Phase 1, FOUND-05): input must be a QSeries.
+    """
     from qseries._utilities import qdegree
     with pytest.raises(TypeError):
         qdegree(42)
@@ -70,7 +82,10 @@ def test_qdegree_type_error():
 # ---------------------------------------------------------------------------
 
 def test_lqdegree_positive_start(R):
-    """lqdegree on 1 - q + q^3 returns 0 (lowest exponent is q^0)."""
+    """lqdegree on 1 - q + q^3 returns 0 (lowest exponent is q^0).
+
+    Oracle: lqdegree doc page: lowest power of q; 1 - q + q^3 has lowest degree 0 by inspection.
+    """
     from qseries._utilities import lqdegree
     q = R.gen()
     s = (1 - q + q**3).add_bigoh(10)
@@ -79,7 +94,10 @@ def test_lqdegree_positive_start(R):
 
 
 def test_lqdegree_negative_start(R):
-    """lqdegree on q^-5 - q^-4 + q^2 returns -5."""
+    """lqdegree on q^-5 - q^-4 + q^2 returns -5.
+
+    Oracle: lqdegree doc page: lowest power of q; q^-5 - q^-4 + q^2 gives -5 by inspection.
+    """
     from qseries._utilities import lqdegree
     q = R.gen()
     s = (q**(-5) - q**(-4) + q**2).add_bigoh(10)
@@ -88,7 +106,10 @@ def test_lqdegree_negative_start(R):
 
 
 def test_lqdegree_with_rational_shift(R):
-    """lqdegree with r=1/4 and series starting at q^0 returns 1/4."""
+    """lqdegree with r=1/4 and series starting at q^0 returns 1/4.
+
+    Oracle: lqdegree doc page plus the q^r shift: q^(1/4) * (2 + 2q^2) has lowest degree 1/4.
+    """
     from qseries._utilities import lqdegree
     q = R.gen()
     s = (2 + 2*q**2).add_bigoh(10)
@@ -97,7 +118,10 @@ def test_lqdegree_with_rational_shift(R):
 
 
 def test_lqdegree_zero_raises(R):
-    """lqdegree on zero QSeries raises ValueError."""
+    """lqdegree on zero QSeries raises ValueError.
+
+    Oracle: Design decision (Phase 1, FOUND-05): the zero series has no lowest degree.
+    """
     from qseries._utilities import lqdegree
     s = R(0).add_bigoh(10)
     qs = make_qs(R, s, T=10)
@@ -106,7 +130,10 @@ def test_lqdegree_zero_raises(R):
 
 
 def test_lqdegree_type_error():
-    """lqdegree on non-QSeries raises TypeError."""
+    """lqdegree on non-QSeries raises TypeError.
+
+    Oracle: Design decision (Phase 1, FOUND-05): input must be a QSeries.
+    """
     from qseries._utilities import lqdegree
     with pytest.raises(TypeError):
         lqdegree("not a series")
@@ -117,7 +144,10 @@ def test_lqdegree_type_error():
 # ---------------------------------------------------------------------------
 
 def test_lqdegree0_qseries_r_half(R):
-    """lqdegree0 on QSeries with r=1/2, series=1+O(q) returns 1/2 (like sqrt(q)*JAC)."""
+    """lqdegree0 on QSeries with r=1/2, series=1+O(q) returns 1/2 (like sqrt(q)*JAC).
+
+    Oracle: lqdegree0 doc page example: lqdegree0(sqrt(q)*JAC(...)) = 1/2.
+    """
     from qseries._utilities import lqdegree0
     s = R(1).add_bigoh(10)
     qs = make_qs(R, s, T=10, r=QQ(1)/2)
@@ -125,7 +155,10 @@ def test_lqdegree0_qseries_r_half(R):
 
 
 def test_lqdegree0_qseries_valuation_one(R):
-    """lqdegree0 on QSeries with r=0, series=q+O(q^2) returns 1 (like q*JAC)."""
+    """lqdegree0 on QSeries with r=0, series=q+O(q^2) returns 1 (like q*JAC).
+
+    Oracle: lqdegree0 doc page example: lqdegree0(q*JAC(...)) = 1.
+    """
     from qseries._utilities import lqdegree0
     q = R.gen()
     s = q.add_bigoh(10)
@@ -134,7 +167,10 @@ def test_lqdegree0_qseries_valuation_one(R):
 
 
 def test_lqdegree0_qseries_r_zero_val_zero(R):
-    """lqdegree0 on QSeries with r=0, series=1+O(q) returns 0 (like JAC alone)."""
+    """lqdegree0 on QSeries with r=0, series=1+O(q) returns 0 (like JAC alone).
+
+    Oracle: lqdegree0 doc page example: lqdegree0(JAC(...)) = 0.
+    """
     from qseries._utilities import lqdegree0
     s = R(1).add_bigoh(10)
     qs = make_qs(R, s, T=10, r=QQ(0))
@@ -142,7 +178,10 @@ def test_lqdegree0_qseries_r_zero_val_zero(R):
 
 
 def test_lqdegree0_qseries_r_negative(R):
-    """lqdegree0 on QSeries with r=-3, series=1+O(q) returns -3 (like JAC/q^3)."""
+    """lqdegree0 on QSeries with r=-3, series=1+O(q) returns -3 (like JAC/q^3).
+
+    Oracle: lqdegree0 doc page example: lqdegree0(JAC(...)/q^3) = -3.
+    """
     from qseries._utilities import lqdegree0
     s = R(1).add_bigoh(10)
     qs = make_qs(R, s, T=10, r=QQ(-3))
@@ -150,7 +189,10 @@ def test_lqdegree0_qseries_r_negative(R):
 
 
 def test_lqdegree0_etaproduct_r():
-    """lqdegree0 on EtaProduct with r=1/4 returns 1/4 (reads .r attribute)."""
+    """lqdegree0 on EtaProduct with r=1/4 returns 1/4 (reads .r attribute).
+
+    Oracle: lqdegree0 doc page: the q-degree of a q-monomial is its q^r prefactor (here an eta-product with r = 1/4).
+    """
     from qseries._utilities import lqdegree0
     from qseries._symbolic import EtaProduct
     ep = EtaProduct(1, QQ(1)/4, [])
@@ -158,7 +200,10 @@ def test_lqdegree0_etaproduct_r():
 
 
 def test_lqdegree0_jacproduct_r():
-    """lqdegree0 on JacProduct with r=-3 returns -3 (reads .r attribute)."""
+    """lqdegree0 on JacProduct with r=-3 returns -3 (reads .r attribute).
+
+    Oracle: lqdegree0 doc page example: lqdegree0(JAC(...)/q^3) = -3.
+    """
     from qseries._utilities import lqdegree0
     from qseries._symbolic import JacProduct
     jp = JacProduct(r=QQ(-3), factors=[(0, 1, 1)])
@@ -166,7 +211,10 @@ def test_lqdegree0_jacproduct_r():
 
 
 def test_lqdegree0_type_error():
-    """lqdegree0 on object without .r and not QSeries raises TypeError."""
+    """lqdegree0 on object without .r and not QSeries raises TypeError.
+
+    Oracle: Design decision (Phase 1, FOUND-05): input must be a QSeries or a symbolic product with .r.
+    """
     from qseries._utilities import lqdegree0
     with pytest.raises(TypeError):
         lqdegree0(42)

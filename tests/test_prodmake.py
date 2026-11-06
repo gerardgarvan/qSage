@@ -34,7 +34,10 @@ def _make_ring():
 # ---------------------------------------------------------------------------
 
 def test_prodmake_constant_one():
-    """prodmake(1 + O(q^20), q, 20) -> QProduct(exponents={}) (D-03)."""
+    """prodmake(1 + O(q^20), q, 20) -> QProduct(exponents={}) (D-03).
+
+    Oracle: prodmake doc page (Andrews' algorithm): the product for 1 has all exponents 0; empty exponent dict per design decision D-03 (Phase 3).
+    """
     R, q = _make_ring()
     series = R(1).add_bigoh(20)
     f = QSeries(series, T=20)
@@ -49,7 +52,10 @@ def test_prodmake_constant_one():
 # ---------------------------------------------------------------------------
 
 def test_prodmake_etaq_roundtrip():
-    """prodmake(etaq(q,1,20), q, 20).to_series(20) == etaq(q,1,20)."""
+    """prodmake(etaq(q,1,20), q, 20).to_series(20) == etaq(q,1,20).
+
+    Oracle: Euler: etaq(q,1,T) = prod (1-q^n) (etaq doc page); prodmake's exponents must re-expand to the input (prodmake doc page, tutorial sec. 3.1).
+    """
     R, q = _make_ring()
     f = etaq(q, 1, 20)
     p = prodmake(f, q, 20)
@@ -64,7 +70,10 @@ def test_prodmake_etaq_roundtrip():
 # ---------------------------------------------------------------------------
 
 def test_prodmake_raises_on_nonzero_r():
-    """prodmake raises ValueError if f.r != 0."""
+    """prodmake raises ValueError if f.r != 0.
+
+    Oracle: Design decision D-01 (Phase 3): prodmake requires r = 0; fractional q-power prefactors are handled by etamake.
+    """
     R, q = _make_ring()
     series = R(1).add_bigoh(20)
     f = QSeries(series, T=20, r=QQ('1/4'))
@@ -77,7 +86,10 @@ def test_prodmake_raises_on_nonzero_r():
 # ---------------------------------------------------------------------------
 
 def test_prodmake_raises_on_nonunit_constant():
-    """prodmake raises ValueError if constant term of f is not 1."""
+    """prodmake raises ValueError if constant term of f is not 1.
+
+    Oracle: Design decision D-01 (Phase 3): prodmake requires the form 1 + sum b_n q^n (tutorial sec. 3).
+    """
     R, q = _make_ring()
     # Build q + q^2 + ... (valuation 1, constant term = 0)
     series = (q + q**2).add_bigoh(20)
@@ -157,7 +169,10 @@ def test_prodmake_rogers_ramanujan():
 # ---------------------------------------------------------------------------
 
 def test_checkprod_nice():
-    """checkprod(etaq(q,1,20), 2, 20) returns [1, exps] with all |exps[i]| <= 2."""
+    """checkprod(etaq(q,1,20), 2, 20) returns [1, exps] with all |exps[i]| <= 2.
+
+    Oracle: checkprod doc page: a nice product has all |exponents| <= M; etaq(q,1,T) = prod (1-q^n) has every exponent 1 (Euler).
+    """
     from qseries._utilities import checkprod
     R, q = _make_ring()
     f = etaq(q, 1, 20)
@@ -171,7 +186,10 @@ def test_checkprod_nice():
 
 
 def test_checkprod_not_nice():
-    """checkprod returns False when a product exponent exceeds M."""
+    """checkprod returns False when a product exponent exceeds M.
+
+    Oracle: checkprod doc page: returns false when an exponent exceeds M; etaq(q,1,T) has exponents 1 > M = 0.
+    """
     from qseries._utilities import checkprod
     R, q = _make_ring()
     # etaq has all exponents = 1, so checkprod with M=0 should return False
@@ -181,6 +199,9 @@ def test_checkprod_not_nice():
 
 
 def test_prodmake_importable():
-    """from qseries import prodmake must succeed and be callable."""
+    """from qseries import prodmake must succeed and be callable.
+
+    Oracle: Design decision (PKG-01): prodmake is public API, as listed on the Garvan functions index page.
+    """
     from qseries import prodmake as pm
     assert callable(pm)

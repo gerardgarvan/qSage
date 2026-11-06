@@ -75,7 +75,10 @@ def test_findlincombomodp_doc_example(doc_example, capsys):
 
 
 def test_findlincombomodp_not_a_combo(e4_e6, capsys):
-    """E6 is not a multiple of E4 mod 13 (240 and 504 are units mod 13)."""
+    """E6 is not a multiple of E4 mod 13 (240 and 504 are units mod 13).
+
+    Oracle: E4 = 1 + 240 sum sigma_3(n) q^n, E6 = 1 - 504 sum sigma_5(n) q^n; c*E4 = E6 forces c = 1 at q^0, but 240 = 6 and -504 = 3 (mod 13) at q^1 (findlincombomodp doc page).
+    """
     q, E4, E6, one = e4_e6
     result = findlincombomodp(E6, [E4], ['E4'], 13, q, 0)
     assert result == set()
@@ -87,7 +90,10 @@ def test_findlincombomodp_not_a_combo(e4_e6, capsys):
 # ---------------------------------------------------------------------------
 
 def test_findhomcombomodp_degree1_matches_doc(doc_example, capsys):
-    """Degree 1 homogeneous combo = linear combo: same -6*X1 mod 13, same 19 terms (7 rows, C=20, topshift -8)."""
+    """Degree 1 homogeneous combo = linear combo: same -6*X1 mod 13, same 19 terms (7 rows, C=20, topshift -8).
+
+    Oracle: findlincombomodp doc page example (mod 13): F1 = -6 * ETA1^11 E6 E4 with 19 terms; a degree-1 homogeneous combination is a linear combination.
+    """
     q, F1, BB13 = doc_example
     result = findhomcombomodp(F1, BB13, 13, q, 1, -8)
     assert "# of terms , 19" in capsys.readouterr().out
@@ -96,7 +102,10 @@ def test_findhomcombomodp_degree1_matches_doc(doc_example, capsys):
 
 
 def test_findhomcombomodp_uses_congruence(e4_e6):
-    """E6 = E6 * 1 = E6 * E4 (mod 5) since E4 = 1 (mod 5): E6 is the degree-2 form X1*X2 in [E4, E6] mod 5."""
+    """E6 = E6 * 1 = E6 * E4 (mod 5) since E4 = 1 (mod 5): E6 is the degree-2 form X1*X2 in [E4, E6] mod 5.
+
+    Oracle: E4 = 1 (mod 5) because 240 = 2^4*3*5 (Eisenstein series definition), so E4*E6 = E6 (mod 5).
+    """
     q, E4, E6, one = e4_e6
     result = findhomcombomodp(E6, [E4, E6], 5, q, 2, 0)
     R = PolynomialRing(GF(5), ['X1', 'X2'])
@@ -109,7 +118,10 @@ def test_findhomcombomodp_uses_congruence(e4_e6):
 # ---------------------------------------------------------------------------
 
 def test_findhommodp_e4_congruent_one_mod5(e4_e6):
-    """E4 = 1 (mod 5): findhommodp([E4, E6, 1], 5, q, 1) = {X1 - X3}; no such relation over QQ."""
+    """E4 = 1 (mod 5): findhommodp([E4, E6, 1], 5, q, 1) = {X1 - X3}; no such relation over QQ.
+
+    Oracle: E4 = 1 (mod 5) because 240 = 2^4*3*5; over QQ, E4 - 1 has q^1 coefficient 240, so no linear relation.
+    """
     q, E4, E6, one = e4_e6
     L = [E4, E6, one]
     R = PolynomialRing(GF(5), ['X1', 'X2', 'X3'])
@@ -120,7 +132,10 @@ def test_findhommodp_e4_congruent_one_mod5(e4_e6):
 
 
 def test_findhommodp_e6_congruent_one_mod7(e4_e6):
-    """E6 = 1 (mod 7): the relation is X2 - X3."""
+    """E6 = 1 (mod 7): the relation is X2 - X3.
+
+    Oracle: E6 = 1 (mod 7) because 504 = 2^3*3^2*7 (Eisenstein series definition).
+    """
     q, E4, E6, one = e4_e6
     R = PolynomialRing(GF(7), ['X1', 'X2', 'X3'])
     X1, X2, X3 = R.gens()
@@ -129,12 +144,16 @@ def test_findhommodp_e6_congruent_one_mod7(e4_e6):
 
 
 def test_findhommodp_none_mod13(e4_e6):
-    """240 and 504 are units mod 13, so E4, E6, 1 stay independent mod 13."""
+    """240 and 504 are units mod 13, so E4, E6, 1 stay independent mod 13.
+
+    Oracle: Eisenstein series definitions: 240 and 504 are units mod 13, so E4, E6, 1 stay independent.
+    """
     q, E4, E6, one = e4_e6
     assert findhommodp([E4, E6, one], 13, q, 1, 0) == set()
 
 
 def test_findhommodp_returns_gf_p_polynomials(e4_e6):
+    """Oracle: Design decision (Phase 6): mod-p relations are polynomials over GF(p) (findhommodp doc page: relations mod p)."""
     q, E4, E6, one = e4_e6
     for poly in findhommodp([E4, one], 5, q, 1):
         assert poly.parent().base_ring() == GF(5)
@@ -146,6 +165,7 @@ def test_findhommodp_returns_gf_p_polynomials(e4_e6):
 
 @pytest.mark.parametrize("bad_p", [1, 12, 0, -7, 'x'])
 def test_nonprime_p_raises(e4_e6, capsys, bad_p):
+    """Oracle: Doc pages for findhommodp / findhomcombomodp / findlincombomodp: p is a prime; design decision (Phase 6) to check it before any computation."""
     q, E4, E6, one = e4_e6
     with pytest.raises(ValueError, match="prime"):
         findhommodp([E4, E6], bad_p, q, 1)
