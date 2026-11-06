@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_plan: 3
-status: Milestone complete
-stopped_at: Milestone v1.0 complete
-last_updated: "2026-11-06T02:56:13.000Z"
+status: Released
+stopped_at: v1.3.0 released on PyPI
+last_updated: "2026-11-06T20:45:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 7
@@ -21,9 +21,11 @@ progress:
 
 Phase 1 complete (2026-09-16). Phase 2 complete. Phase 3 plan 01 complete. Phase 4 complete. Phase 5 complete (2026-11-05). Phase 6 complete (2026-11-05). Phase 7 complete (2026-11-05, 144/144 tests). Progress 7/7 - milestone v1.0 complete.
 
-Current Plan: none (milestone v1.0 complete)
-Last session: 2026-11-06T02:56:13.000Z
-Stopped At: Milestone v1.0 complete
+Released 2026-11-06: qseries-sage 1.3.0 on PyPI (https://pypi.org/project/qseries-sage/), GitHub release v1.3.0, published by `.github/workflows/publish.yml` (trusted publishing). Checked against Maple 2026.2 + qseries 1.3 with the `parity/` battery: 124/130 exact, 1 value-match, 5 documented Maple problems, 0 differ. 153 tests.
+
+Current Plan: none (released)
+Last session: 2026-11-06T20:45:00.000Z
+Stopped At: v1.3.0 released on PyPI
 
 ## Environment
 
@@ -86,12 +88,14 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 
 - Phase 7: package metadata in setup.cfg (Ubuntu 22.04's setuptools 59 ignores [project] and builds UNKNOWN-0.0.0); `sage -pip install --user .` verified; distribution `qseries-sage`, import name `qseries` (package-name question resolved).
 - Phase 7: zqfactor implemented in `_zqfactor.py` (two-variable Andrews algorithm, q^0 coefficient factored over ZZ into binomials and cyclotomics, (1 - x)^-1 (1 - x^2) shown as (1 + x)); returns `ZQProduct`; reproduces the doc-page example; `_conversion.zqfactor` re-exports it. N caps the result at N - 1 factors (matches the doc example).
+- Parity (2026-11-06): real Maple output is the oracle where it exists. Fixed from it: quinprod exponent, winquist (a;q) factors, jac2series JAC(0,b), jac2prod factor merging, zqfactor (Maple's algorithm; N = q-order; constant kept), findcong (prime-power moduli), checkprod/findprod/qs2jaccombo output form, jacprodmake leading q^v. Supersedes the Phase 7 zqfactor note below.
 - Phase 7: every test docstring carries an `Oracle:` line (doc page, tutorial section, identity, construction, or design decision); 144 tests.
 
 ## Pending
 
 - Package name: resolved - distribution `qseries-sage`, import `qseries` (Phase 7).
 - Merge Phase 6 into Phase 5: resolved - kept separate (05-CONTEXT D-01).
+- Email Garvan: PyPI release, credit wording, zqfactor provenance, Maple findings (findhommodp skips q^0; qfactor(f,T) returns 1; zqfactor doc page shows 9 factors for N=10).
 
 
 
