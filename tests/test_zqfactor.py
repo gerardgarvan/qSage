@@ -4,8 +4,8 @@ tests/test_zqfactor.py — CONV-07: zqfactor (Phase 7).
 Oracles:
   - Maple 2026 + qseries 1.3 output (parity battery, maple_results.txt), for the doc-page
     example g = tripleprod(-z^2 q^3, q^4, 20) - tripleprod(-z^2 q, q^4, 20)/z and for
-    prod (1 + z q^n).  (The doc page shows only nine factors for N = 10; real Maple gives
-    factors through q^10, and the port follows Maple.)
+    prod (1 + z q^n).  The doc page shows the same 31 factors, through q^10; it describes N as the maximum
+    number of terms, but in Maple N is the q-order worked to.
   - Mathematical identities (stated per test): Jacobi triple product, Euler's product
     (q;q)_inf, the product (-zq;q)_inf, and Phi_3(z) = (1 - z^3)/(1 - z).
 """

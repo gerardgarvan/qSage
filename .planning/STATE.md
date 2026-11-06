@@ -95,7 +95,7 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 
 - Package name: resolved - distribution `qseries-sage`, import `qseries` (Phase 7).
 - Merge Phase 6 into Phase 5: resolved - kept separate (05-CONTEXT D-01).
-- Email Garvan: PyPI release, credit wording, zqfactor provenance, Maple findings (findhommodp skips q^0; qfactor(f,T) returns 1; zqfactor doc page shows 9 factors for N=10).
+- Email Garvan: PyPI release, credit wording, zqfactor provenance, Maple findings (findhommodp skips q^0; qfactor(f,T) returns 1; zqfactor doc page describes N as the number of terms, Maple uses it as the q-order).
 
 
 
