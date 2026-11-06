@@ -232,17 +232,15 @@ def jacprodmake(f, q, T, base=None):
     """
     from sage.all import QQ as _QQ, divisors as sage_divisors
 
-    r_input = _QQ(f.r)
-    if r_input != 0:
-        raise ValueError(
-            f"jacprodmake: input has fractional q-shift r={r_input}; strip it first"
-        )
-
-    # Strip leading constant
-    c = _QQ(f.series[0])
-    if c == 0:
-        raise ValueError("jacprodmake: leading coefficient is zero")
-    normalized_series = (f.series / c).add_bigoh(T)
+    # Strip the leading term c * q^v (Maple's jacprodmake prints it as c * q^v * JAC(...)).
+    if f.series.is_zero():
+        raise ValueError("jacprodmake: the series is zero")
+    v = int(f.series.valuation())
+    c = _QQ(f.series[v])
+    r_input = _QQ(f.r) + v
+    shifted = f.series.shift(-v)
+    T = min(int(T), int(shifted.prec())) if shifted.prec() != float('inf') else int(T)
+    normalized_series = (shifted / c).add_bigoh(T)
     f_norm = QSeries(normalized_series, T=T)
 
     # Call prodmake to get exponent dict {n: e_n}
@@ -592,24 +590,42 @@ from qseries._zqfactor import zqfactor, ZQProduct  # noqa: F401
 # CONV-10: qs2jaccombo (Plan 04-03)
 # ---------------------------------------------------------------------------
 
+class JacCombo(list):
+    """Return type of qs2jaccombo: a sum of JacProduct terms (a list that prints as a sum)."""
+
+    def __repr__(self):
+        if not self:
+            return "0"
+        out = repr(self[0])
+        for t in self[1:]:
+            r = repr(t)
+            out += (" - " + r[len("-1 * "):]) if r.startswith("-1 * ") else (" + " + r)
+        return out
+
+    def to_series(self, T):
+        """Sum of the terms' series to O(q^T) (the terms' q-shifts must agree mod 1)."""
+        parts = [t.to_series(T) for t in self]
+        total = parts[0]
+        for p in parts[1:]:
+            total = total + p
+        return total
+
+
 def qs2jaccombo(f, q, T, P=None):
-    """Convert each term in f to a JacProduct via jacprodmake (CONV-10).
+    """Convert each term of a sum of q-series to a JAC product with jacprodmake (CONV-10).
 
-    f: a list of QSeries (one per additive term), or a single QSeries.
-    Returns: list of JacProduct objects (one per term).
-    If any term cannot be converted, raises ValueError.
+    qs2jaccombo(f, q, T)       f: a list of QSeries, one per additive term (Maple splits a
+    qs2jaccombo(f, q, T, P)       symbolic sum into its terms; Python needs the terms given)
+
+    Returns a JacCombo: a list of JacProduct terms that prints as their sum, like Maple's output.
+    T and P are passed to jacprodmake.  Raises ValueError if a term cannot be converted.
     """
-    if isinstance(f, list):
-        terms = f
-    else:
-        terms = [f]
-
-    result = []
+    terms = f if isinstance(f, (list, tuple)) else [f]
+    result = JacCombo()
     for term in terms:
-        if P is not None:
-            jp = jacprodmake(term, q, T, base=P)
-        else:
-            jp = jacprodmake(term, q, T)
+        jp = jacprodmake(term, q, T, base=P) if P is not None else jacprodmake(term, q, T)
+        if jp is None:
+            raise ValueError("qs2jaccombo: a term is not a product of theta functions")
         result.append(jp)
     return result
 
@@ -619,52 +635,36 @@ def qs2jaccombo(f, q, T, P=None):
 # ---------------------------------------------------------------------------
 
 def findprod(FL, T, M, Q):
-    """Exhaustive search for linear combinations of FL that form nice q-products (CONV-11).
+    """Search for integer combinations of FL that are nice products (CONV-11).
 
-    FL: list of QSeries
-    T: max |coefficient| in combinations (search range -T..T per series)
-    M: max |exponent| in product — passed directly to checkprod(combo, M, Q)
-    Q: highest power of q to consider (truncation for comparison)
-    Returns: list of coefficient_lists for each found combination.
+    findprod(FL, T, M, Q)
+      FL: list of QSeries
+      T:  maximum |coefficient| in the combination (each runs over -T..T)
+      M:  checkprod bound on the product exponents
+      Q:  highest power of q used
 
-    Oracle: findprod([etaq(q,1,T)], 1, 3, 20) -> at least [[1]] or [[-1]]
+    For every non-zero coefficient vector v (lexicographic order, as Maple) the combination
+    sum v_i FL_i is passed to checkprod(., M, Q).  When it is nice, checkprod's result [c, 1]
+    is printed (as Maple does) and [c, v] is recorded, c being the lowest power of q.
+    Returns the list of [c, v].  Oracle: Maple 2026 + qseries 1.3 (parity case findprod_1).
     """
     from qseries._utilities import checkprod
     from itertools import product as itertools_product
     from sage.all import QQ as _QQ
 
     found = []
-    n = len(FL)
     R = FL[0].series.parent()
-    coeff_range = range(-T, T + 1)
-    for coeffs in itertools_product(coeff_range, repeat=n):
+    for coeffs in itertools_product(range(-T, T + 1), repeat=len(FL)):
         if all(c == 0 for c in coeffs):
             continue
-        # Build linear combination
-        combo_series = R(0).add_bigoh(Q)
-        for i, c in enumerate(coeffs):
-            if c == 0:
-                continue
-            term = FL[i]
-            scaled = (_QQ(c) * term.series).add_bigoh(Q)
-            combo_series = (combo_series + scaled).add_bigoh(Q)
-        if combo_series.is_zero():
+        combo = R(0).add_bigoh(Q + 1)
+        for c, term in zip(coeffs, FL):
+            if c:
+                combo = (combo + _QQ(c) * term.series).add_bigoh(Q + 1)
+        if combo.is_zero():
             continue
-        val = combo_series.valuation()
-        if val is None or val < 0:
-            continue
-        leading = _QQ(combo_series[val])
-        if leading == 0:
-            continue
-        # checkprod requires constant term = 1 and r = 0
-        # Normalize: divide by leading coefficient and shift by valuation
-        q_gen = R.gen()
-        normed = (combo_series / leading / q_gen**val).add_bigoh(Q - val)
-        combo = QSeries(normed, T=Q)
-        try:
-            check_result = checkprod(combo, M, Q)
-            if check_result is not False:
-                found.append(list(coeffs))
-        except Exception:
-            pass  # skip edge cases
+        res = checkprod(QSeries(combo, T=Q + 1), M, Q)
+        if res[1] == 1:
+            print(res)
+            found.append([res[0], list(coeffs)])
     return found

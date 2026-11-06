@@ -82,8 +82,8 @@ def build_cases():
     add(Case("jac2series_ratio", "coeffs",
              "CL(S(jac2series(JAC(1,10,infinity)*JAC(3,10,infinity)/JAC(5,10,infinity)^2,40),40),0,39)",
              "CL(jac2series(JacProduct(factors=[(1,10,1),(3,10,1),(5,10,-2)]),40),0,39)"))
-    add(Case("jac2prod_1", "review", "jac2prod(JAC(1,5,infinity))", "jac2prod(JacProduct(factors=[(1,5,1)]))"))
-    add(Case("jac2prod_2", "review", "jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2)",
+    add(Case("jac2prod_1", "poch", "jac2prod(JAC(1,5,infinity))", "jac2prod(JacProduct(factors=[(1,5,1)]))"))
+    add(Case("jac2prod_2", "poch", "jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2)",
              "jac2prod(JacProduct(factors=[(0,10,1),(2,10,2)]))"))
 
     # ---------------------------------------------------------------- utilities
@@ -187,11 +187,12 @@ def build_cases():
              "zqfactor(tripleprod(-z**2*q**3,q**4,20)-tripleprod(-z**2*q,q**4,20)/z,z,q,10)", opts={"vars": "z"}))
     add(Case("zqfactor_plus", "zq", "zqfactor(S(mul(1+z*q^n,n=1..12),13),z,q,12)",
              "zqfactor(QSeries(prod(1+z*q**n for n in range(1,13)).add_bigoh(13),13),z,q,12)", opts={"vars": "z"}))
-    add(Case("findprod_1", "review", "findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20)",
+    add(Case("findprod_1", "list", "findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20)",
              "findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20)"))
-    add(Case("qs2jaccombo_1", "review", "qs2jaccombo(theta3(q,40)+theta4(q,40),q,40)",
-             "qs2jaccombo([theta3(q,40),theta4(q,40)],q,40)"))
-    add(Case("checkprod_1", "review", "checkprod(S(etaq(q,1,30),30),2,30)", "checkprod(etaq(q,1,30),2,30)"))
+    add(Case("qs2jaccombo_1", "jaccombo", "qs2jaccombo(etaq(q,1,60)*etaq(q,4,60)-q*etaq(q,2,60)*etaq(q,8,60),q,50)",
+             "qs2jaccombo([etaq(q,1,60)*etaq(q,4,60),QSeries(-q*etaq(q,2,60).series*etaq(q,8,60).series,60)],q,50)",
+             opts={"note": "Maple splits the unexpanded sum into its two product terms"}))
+    add(Case("checkprod_1", "list", "checkprod(S(etaq(q,1,30),30),2,30)", "checkprod(etaq(q,1,30),2,30)"))
 
     # ---------------------------------------------------------------- relations over QQ
     TH = ("theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)",

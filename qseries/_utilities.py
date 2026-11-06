@@ -9,7 +9,7 @@ Reference: https://qseries.org/fgarvan/qmaple/qseries/
 No Maple source was consulted during implementation.
 """
 from math import gcd
-from sage.all import QQ
+from sage.all import QQ, ZZ
 from qseries._series import QSeries
 from qseries._prodmake import prodmake
 
@@ -160,27 +160,31 @@ def checkmult(QS, T, x=None):
 # ---------------------------------------------------------------------------
 
 def checkprod(f, M, Q):
-    """Check if a q-series has a 'nice' infinite product representation.
+    """Check whether a q-series is a 'nice' product (UTIL-06).
 
-    Calls prodmake(f, None, Q) and checks whether all exponents |e_n| <= M.
-    Returns [c, exps] where c is the constant prefactor (always 1 for prodmake input)
-    and exps is the list of exponents e_1, ..., e_{Q-1}.
-    Returns False if any |e_n| > M.
+    checkprod(f, M, Q)
+    Writes f = a q^c (1 + ...) and computes the product exponents of (1 + ...) with
+    prodmake(., q, Q).  Returns [c, 1] when they are all integers of absolute value less
+    than M, and otherwise [c, m] with m the largest absolute value among them.
 
-    f:  QSeries with constant term 1 and r=0
-    M:  maximum allowed absolute value of any exponent e_n
-    Q:  number of exponents to compute (= T argument to prodmake)
-
-    Oracle: Garvan checkprod doc page (UTIL-06); verified in 02-RESEARCH.md.
+    Oracle: checkprod doc page -- for F = sum_{n<=10} q^(n^2)/(q^n;q)_n,
+    checkprod(F, 10, 20) = [0, 1] and checkprod(F, 10, 50) = [0, 1150]; Maple 2026 + qseries
+    1.3 (parity case checkprod_1): checkprod(etaq(q,1,30), 2, 30) = [0, 1].
     """
-    p = prodmake(f, None, Q)
-    # Check all exponents satisfy |e_n| <= M
-    for n, e in p.exponents.items():
-        if abs(QQ(e)) > M:
-            return False
-    # Return [constant, exponent_list] — constant is always 1 for prodmake input
-    exp_list = [p.exponents.get(n, 0) for n in range(1, Q)]
-    return [QQ(1), exp_list]
+    s = f.series
+    if s.is_zero():
+        raise ValueError("checkprod: the series is zero")
+    v = int(s.valuation())
+    c = QQ(f.r) + v
+    lead = s[v]
+    g = (s.shift(-v) / lead)
+    prec = g.prec()
+    Qe = int(Q) if prec == float('inf') else min(int(Q), int(prec))
+    p = prodmake(QSeries(g.add_bigoh(Qe), T=Qe), None, Qe)
+    exps = [QQ(p.exponents.get(n, 0)) for n in range(1, Qe)]
+    if all(e in ZZ and abs(e) < M for e in exps):
+        return [c, 1]
+    return [c, max(abs(e) for e in exps)]
 
 
 # ---------------------------------------------------------------------------

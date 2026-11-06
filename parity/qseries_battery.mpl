@@ -117,11 +117,11 @@ try res := CL(jac2series(JAC(0,10,infinity),50),0,49): WR("jac2series_doc3", t0,
 t0 := time():
 try res := CL(S(jac2series(JAC(1,10,infinity)*JAC(3,10,infinity)/JAC(5,10,infinity)^2,40),40),0,39): WR("jac2series_ratio", t0, res) catch: WE("jac2series_ratio", t0) end try:
 
-# jac2prod_1 (review)
+# jac2prod_1 (poch)
 t0 := time():
 try res := jac2prod(JAC(1,5,infinity)): WR("jac2prod_1", t0, res) catch: WE("jac2prod_1", t0) end try:
 
-# jac2prod_2 (review)
+# jac2prod_2 (poch)
 t0 := time():
 try res := jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2): WR("jac2prod_2", t0, res) catch: WE("jac2prod_2", t0) end try:
 
@@ -421,15 +421,15 @@ try res := zqfactor(tripleprod(-z^2*q^3,q^4,20)-tripleprod(-z^2*q,q^4,20)/z,z,q,
 t0 := time():
 try res := zqfactor(S(mul(1+z*q^n,n=1..12),13),z,q,12): WR("zqfactor_plus", t0, res) catch: WE("zqfactor_plus", t0) end try:
 
-# findprod_1 (review)
+# findprod_1 (list)
 t0 := time():
 try res := findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20): WR("findprod_1", t0, res) catch: WE("findprod_1", t0) end try:
 
-# qs2jaccombo_1 (review)
+# qs2jaccombo_1 (jaccombo)
 t0 := time():
-try res := qs2jaccombo(theta3(q,40)+theta4(q,40),q,40): WR("qs2jaccombo_1", t0, res) catch: WE("qs2jaccombo_1", t0) end try:
+try res := qs2jaccombo(etaq(q,1,60)*etaq(q,4,60)-q*etaq(q,2,60)*etaq(q,8,60),q,50): WR("qs2jaccombo_1", t0, res) catch: WE("qs2jaccombo_1", t0) end try:
 
-# checkprod_1 (review)
+# checkprod_1 (list)
 t0 := time():
 try res := checkprod(S(etaq(q,1,30),30),2,30): WR("checkprod_1", t0, res) catch: WE("checkprod_1", t0) end try:
 

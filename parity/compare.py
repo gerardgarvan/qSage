@@ -418,6 +418,27 @@ def compare(case, mtext, pres):
     k = case.kind
     if k == "review":
         return "REVIEW", ""
+    if k == "list":
+        def plain(x):
+            if isinstance(x, (list, tuple)):
+                return [plain(y) for y in x]
+            return QQ(x)
+        a, b = plain(sage_eval(mtext)), plain(pres)
+        return ("MATCH", "") if a == b else ("DIFFER", "Maple %s vs Python %s" % (a, b))
+    if k == "poch":
+        a = Counter()
+        for m in re.finditer(r"\(q(?:\^(\d+))?,q\^(\d+)\)\[infinity\](?:\^(\d+))?", mtext):
+            a[(int(m.group(1) or 1), int(m.group(2)))] += int(m.group(3) or 1)
+        b = Counter()
+        for x, y, e in pres.factors:
+            b[(int(x), int(y))] += int(e)
+        return ("MATCH", "") if a == b else ("DIFFER", "Maple %s vs Python %s" % (dict(a), dict(b)))
+    if k == "jaccombo":
+        expr = parse_sr(mtext)
+        terms = expr.operands() if expr.operator() == add_vararg else [expr]
+        a = sorted(canon_jac_maple(str(t), case) for t in terms)
+        b = sorted(canon_jac_py(t, case) for t in pres)
+        return ("MATCH", "") if a == b else ("DIFFER", "Maple %s vs Python %s" % (a, b))
     if k == "coeffs":
         a, b = canon_coeffs_maple(mtext, case), canon_coeffs_py(pres, case)
         if a == b:

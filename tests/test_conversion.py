@@ -295,35 +295,36 @@ def test_qfactor_t8():
 # ---------------------------------------------------------------------------
 
 def test_qs2jaccombo():
-    """CONV-10: qs2jaccombo([theta3, theta4], q, T) -> list of 2 JacProducts.
+    """qs2jaccombo([E1*E4, -q*E2*E8], q, 50) gives two JAC products printed as a difference.
 
-    Oracle: qs2jaccombo on 2-term list returns list of 2 JacProduct objects.
+    Oracle: (q;q)(q^4;q^4) = JAC(0,4)^(1/2) JAC(1,4) JAC(2,4)^(1/2) from the definition
+    JAC(a,b) = (q^a;q^b)(q^(b-a);q^b)(q^b;q^b); the second term is the first with q -> q^2
+    times -q.  Maple 2026 + qseries 1.3 agrees (parity case qs2jaccombo_1).
     """
     R, q = _make_ring()
-    T = 30
-    term1 = theta3(q, T)
-    term2 = theta4(q, T)
-    result = qs2jaccombo([term1, term2], q, T)
-    assert isinstance(result, list)
-    assert len(result) == 2
-    assert all(isinstance(j, JacProduct) for j in result)
+    t1 = etaq(q, 1, 60) * etaq(q, 4, 60)
+    t2 = QSeries(-q * etaq(q, 2, 60).series * etaq(q, 8, 60).series, 60)
+    result = qs2jaccombo([t1, t2], q, 50)
+    assert len(result) == 2 and all(isinstance(j, JacProduct) for j in result)
+    assert sorted(result[0].factors) == [(0, 4, QQ(1) / 2), (1, 4, 1), (2, 4, QQ(1) / 2)]
+    assert result[1].constant == -1 and result[1].r == 1
+    assert sorted(result[1].factors) == [(0, 8, QQ(1) / 2), (2, 8, 1), (4, 8, QQ(1) / 2)]
+    assert " - q^(1) * JAC(" in repr(result)
 
 
 # ---------------------------------------------------------------------------
 # CONV-11: findprod (Plan 04-03)
 # ---------------------------------------------------------------------------
 
-def test_findprod_trivial():
-    """CONV-11: findprod([etaq(q,1,T)], 1, 3, 20) -> at least one entry.
+def test_findprod_maple():
+    """findprod([E1, E2], 1, 3, 20) returns [c, v] pairs in Maple's order.
 
-    Oracle: trivial case — etaq itself with coefficient 1 is a nice product.
+    Oracle: Maple 2026 + qseries 1.3 output (parity case findprod_1):
+    [[0,[-1,0]], [1,[-1,1]], [0,[0,-1]], [0,[0,1]], [1,[1,-1]], [0,[1,0]]].
     """
     R, q = _make_ring()
-    T = 25
-    FL = [etaq(q, 1, T)]
-    result = findprod(FL, 1, 3, 20)
-    assert isinstance(result, list)
-    assert len(result) >= 1
+    result = findprod([etaq(q, 1, 30), etaq(q, 2, 30)], 1, 3, 20)
+    assert result == [[0, [-1, 0]], [1, [-1, 1]], [0, [0, -1]], [0, [0, 1]], [1, [1, -1]], [0, [1, 0]]]
 
 
 

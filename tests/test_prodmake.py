@@ -169,33 +169,42 @@ def test_prodmake_rogers_ramanujan():
 # ---------------------------------------------------------------------------
 
 def test_checkprod_nice():
-    """checkprod(etaq(q,1,20), 2, 20) returns [1, exps] with all |exps[i]| <= 2.
+    """checkprod(etaq(q,1,30), 2, 30) = [0, 1].
 
-    Oracle: checkprod doc page: a nice product has all |exponents| <= M; etaq(q,1,T) = prod (1-q^n) has every exponent 1 (Euler).
+    Oracle: Maple 2026 + qseries 1.3 output (parity case checkprod_1); Euler: every exponent is 1.
     """
     from qseries._utilities import checkprod
     R, q = _make_ring()
-    f = etaq(q, 1, 20)
-    result = checkprod(f, 2, 20)
-    assert result is not False, "checkprod should return a result for etaq with M=2"
-    assert isinstance(result, list) and len(result) == 2
-    c, exps = result
-    assert QQ(c) == 1
-    for e in exps:
-        assert abs(QQ(e)) <= 2
+    assert checkprod(etaq(q, 1, 30), 2, 30) == [0, 1]
 
 
 def test_checkprod_not_nice():
-    """checkprod returns False when a product exponent exceeds M.
+    """When an exponent reaches M, checkprod returns [c, largest |exponent|].
 
-    Oracle: checkprod doc page: returns false when an exponent exceeds M; etaq(q,1,T) has exponents 1 > M = 0.
+    Oracle: checkprod doc page -- F = sum_{n<=10} q^(n^2)/(q^n;q)_n:
+    checkprod(F, 10, 20) = [0, 1] and checkprod(F, 10, 50) = [0, 1150].
     """
     from qseries._utilities import checkprod
+    R = LaurentSeriesRing(QQ, 'q', default_prec=101)
+    q = R.gen()
+    V = R(0)
+    for n in range(11):
+        d = R(1)
+        for k in range(n):
+            d *= (1 - q**(n + k))
+        V += q**(n * n) / d
+    F = QSeries(V.add_bigoh(101), 101)
+    assert checkprod(F, 10, 20) == [0, 1]
+    assert checkprod(F, 10, 50) == [0, 1150]
+
+
+def test_checkprod_leading_term():
+    """The lowest q-power c is reported and the leading coefficient divided out:
+    -q * (q;q)_inf -> [1, 1].  Oracle: checkprod doc page (c is the smallest power of q in f)."""
+    from qseries._utilities import checkprod
     R, q = _make_ring()
-    # etaq has all exponents = 1, so checkprod with M=0 should return False
-    f = etaq(q, 1, 20)
-    result = checkprod(f, 0, 20)
-    assert result is False
+    f = QSeries(-q * etaq(q, 1, 30).series, 30)
+    assert checkprod(f, 2, 25) == [1, 1]
 
 
 def test_prodmake_importable():

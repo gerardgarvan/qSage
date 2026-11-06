@@ -1,6 +1,6 @@
 """qseries-sage: SageMath port of Garvan's Maple qseries package v1.3.
 
-Clean reimplementation from documentation only.
+Reimplementation written from the documentation and checked against Maple output (see parity/).
 Reference: https://qseries.org/fgarvan/qmaple/qseries/
 """
 
