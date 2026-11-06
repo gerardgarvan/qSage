@@ -4,104 +4,16 @@ Battery seed 20261106, 130 cases. Maple: Maple 2026.2, X86 64 WINDOWS, Oct 31 20
 
 | status | count |
 |---|---|
-| DIFFER | 9 |
-| MAPLE-ERROR | 2 |
+| KNOWN-MAPLE | 11 |
 | MATCH | 113 |
 | REVIEW | 5 |
 | VALUE-MATCH | 1 |
 
-## DIFFER (9)
-
-### `qfactor_rand_0` (qfactor)
-
-Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
-
-Maple (0, ()) vs Python (4, ((3, -1), (6, 1), (7, 1), (12, -1)))
-
-- Maple input: `qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^6) * (1-q^7), denominator=(1-q^3) * (1-q^12), r=4)`
-
-### `qfactor_rand_1` (qfactor)
-
-Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
-
-Maple (0, ()) vs Python (0, ((1, 1), (2, -1), (5, -1), (8, -1), (10, 1)))
-
-- Maple input: `qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q) * (1-q^10), denominator=(1-q^2) * (1-q^5) * (1-q^8), r=0)`
-
-### `qfactor_rand_2` (qfactor)
-
-Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
-
-Maple (0, ()) vs Python (1, ((3, 1), (4, -1), (8, 1), (9, -1), (10, -1)))
-
-- Maple input: `qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^3) * (1-q^8), denominator=(1-q^4) * (1-q^9) * (1-q^10), r=1)`
-
-### `qfactor_rand_3` (qfactor)
-
-Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
-
-Maple (0, ()) vs Python (1, ((6, 1), (7, -1), (8, 1), (10, -1), (11, -1), (12, 1)))
-
-- Maple input: `qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^6) * (1-q^8) * (1-q^12), denominator=(1-q^7) * (1-q^10) * (1-q^11), r=1)`
-
-### `qfactor_rand_4` (qfactor)
-
-Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
-
-Maple (0, ()) vs Python (2, ((3, -1), (4, 1), (5, 1), (7, 1), (9, -1), (10, -1), (11, -1)))
-
-- Maple input: `qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^4) * (1-q^5) * (1-q^7), denominator=(1-q^3) * (1-q^9) * (1-q^10) * (1-q^11), r=2)`
-
-### `qfactor_rand_5` (qfactor)
-
-Note: no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these
-
-Maple (0, ()) vs Python (3, ((4, 1), (5, -1), (6, -1), (7, -1), (11, 1)))
-
-- Maple input: `qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^4) * (1-q^11), denominator=(1-q^5) * (1-q^6) * (1-q^7), r=3)`
-
-### `findhommodp_e4_5` (rels)
-
-relation spaces differ
-
-- Maple input: `findhommodp([E4S(100),E6S(100),1],5,q,1,0)`
-- Maple result: `{X[1], X[3]}`
-- Python result: `{X1 - X3}`
-
-### `findhommodp_e6_7` (rels)
-
-relation spaces differ
-
-- Maple input: `findhommodp([E4S(100),E6S(100),1],7,q,1,0)`
-- Maple result: `{X[2], X[3]}`
-- Python result: `{X2 - X3}`
-
-### `findhommodp_deg2_5` (rels)
-
-relation spaces differ
-
-- Maple input: `findhommodp([E4S(100),E6S(100)],5,q,2,0)`
-- Maple result: `{X[1]^2}`
-- Python result: `set()`
-
-
-## MAPLE-ERROR (2)
+## KNOWN-MAPLE (11)
 
 ### `theta2_q3` (coeffs)
 
-unable to compute coeff
+Maple cannot take coefficients of fractional powers of q (Maple: unable to compute coeff)
 
 - Maple input: `CL(expand(simplify(theta2(q^3,10)/q^(3/4))),0,40)`
 - Maple result: `ERROR unable to compute coeff`
@@ -109,11 +21,95 @@ unable to compute coeff
 
 ### `etamake_theta2` (eta)
 
-invalid argument for sign, lcoeff or tcoeff
+Maple etamake cannot handle the q^(1/4) factor of theta2 (Maple: invalid argument for sign, lcoeff or tcoeff)
 
 - Maple input: `etamake(theta2(q,100),q,100)`
 - Maple result: `ERROR invalid argument for sign, lcoeff or tcoeff`
 - Python result: `2 * eta(2*tau)^-1 * eta(4*tau)^2`
+
+### `qfactor_rand_0` (qfactor)
+
+Note: no T: with T, Maple 2026 qfactor returns 1 for these
+
+Maple 2026 qfactor returns 1 for an expanded quotient (README)
+
+- Maple input: `qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)))`
+- Maple result: `1`
+- Python result: `QFactorResult(numerator=(1-q^6) * (1-q^7), denominator=(1-q^3) * (1-q^12), r=4)`
+
+### `qfactor_rand_1` (qfactor)
+
+Note: no T: with T, Maple 2026 qfactor returns 1 for these
+
+Maple 2026 qfactor returns 1 for an expanded quotient (README)
+
+- Maple input: `qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)))`
+- Maple result: `1`
+- Python result: `QFactorResult(numerator=(1-q) * (1-q^10), denominator=(1-q^2) * (1-q^5) * (1-q^8), r=0)`
+
+### `qfactor_rand_2` (qfactor)
+
+Note: no T: with T, Maple 2026 qfactor returns 1 for these
+
+Maple 2026 qfactor returns 1 for an expanded quotient (README)
+
+- Maple input: `qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)))`
+- Maple result: `1`
+- Python result: `QFactorResult(numerator=(1-q^3) * (1-q^8), denominator=(1-q^4) * (1-q^9) * (1-q^10), r=1)`
+
+### `qfactor_rand_3` (qfactor)
+
+Note: no T: with T, Maple 2026 qfactor returns 1 for these
+
+Maple 2026 qfactor returns 1 for an expanded quotient (README)
+
+- Maple input: `qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)))`
+- Maple result: `1`
+- Python result: `QFactorResult(numerator=(1-q^6) * (1-q^8) * (1-q^12), denominator=(1-q^7) * (1-q^10) * (1-q^11), r=1)`
+
+### `qfactor_rand_4` (qfactor)
+
+Note: no T: with T, Maple 2026 qfactor returns 1 for these
+
+Maple 2026 qfactor returns 1 for an expanded quotient (README)
+
+- Maple input: `qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)))`
+- Maple result: `1`
+- Python result: `QFactorResult(numerator=(1-q^4) * (1-q^5) * (1-q^7), denominator=(1-q^3) * (1-q^9) * (1-q^10) * (1-q^11), r=2)`
+
+### `qfactor_rand_5` (qfactor)
+
+Note: no T: with T, Maple 2026 qfactor returns 1 for these
+
+Maple 2026 qfactor returns 1 for an expanded quotient (README)
+
+- Maple input: `qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)))`
+- Maple result: `1`
+- Python result: `QFactorResult(numerator=(1-q^4) * (1-q^11), denominator=(1-q^5) * (1-q^6) * (1-q^7), r=3)`
+
+### `findhommodp_e4_5` (rels)
+
+Maple findhommodp skips the q^0 coefficient (README)
+
+- Maple input: `findhommodp([E4S(100),E6S(100),1],5,q,1,0)`
+- Maple result: `{X[1], X[3]}`
+- Python result: `{X1 - X3}`
+
+### `findhommodp_e6_7` (rels)
+
+Maple findhommodp skips the q^0 coefficient (README)
+
+- Maple input: `findhommodp([E4S(100),E6S(100),1],7,q,1,0)`
+- Maple result: `{X[2], X[3]}`
+- Python result: `{X2 - X3}`
+
+### `findhommodp_deg2_5` (rels)
+
+Maple findhommodp skips the q^0 coefficient (README)
+
+- Maple input: `findhommodp([E4S(100),E6S(100)],5,q,2,0)`
+- Maple result: `{X[1]^2}`
+- Python result: `set()`
 
 
 ## REVIEW (5)
@@ -157,7 +153,7 @@ overlapping but not identical sets of combinations
 
 - Maple input: `findnonhomcombo(S(q^2*etaq(q,7,100)^8/etaq(q,1,100)^8,100),[S(q*etaq(q,7,100)^4/etaq(q,1,100)^4,100),S(q^2*etaq(q,49,100)/etaq(q,1,100),100)],q,7,-15)`
 - Maple result: `{X[1]^2}`
-- Python result: `{X1^2, 343*X2^7 + 343*X2^6 + 147*X2^5 + 49*X1*X2^3 + 49*X2^4 + 35*X1*X2^2 + 21*X2^3 + 7*X1*X2 + 7*X2^2 + X2}`
+- Python result: `{343*X2^7 + 343*X2^6 + 147*X2^5 + 49*X1*X2^3 + 49*X2^4 + 35*X1*X2^2 + 21*X2^3 + 7*X1*X2 + 7*X2^2 + X2, X1^2}`
 
 
 ## MATCH (113)

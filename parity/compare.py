@@ -10,6 +10,7 @@ Statuses:  MATCH        same canonical form
            VALUE-MATCH  different form, same q-series (e.g. another but equivalent JAC product)
            DIFFER       results differ -> investigate
            REVIEW       no automatic comparison for this kind (both outputs shown)
+           KNOWN-MAPLE  differs because of a documented Maple problem (see README; port is correct)
            MAPLE-ERROR / PY-ERROR / MISSING
 Exit status 1 if any case is DIFFER or PY-ERROR.
 """
@@ -515,20 +516,26 @@ def main(argv):
             results.append((case, "MISSING", "not in Maple results", "", pres))
             continue
         mtext = mrows[case.id][0]
+        known = case.opts.get("known_maple")
         if mtext.startswith("ERROR"):
-            results.append((case, "MAPLE-ERROR", mtext[6:], mtext, pres))
+            if known:
+                results.append((case, "KNOWN-MAPLE", known + " (Maple: " + mtext[6:] + ")", mtext, pres))
+            else:
+                results.append((case, "MAPLE-ERROR", mtext[6:], mtext, pres))
             continue
         try:
             st, det = compare(case, mtext, pres)
         except Exception:
             st, det = "REVIEW", "could not compare automatically: " + traceback.format_exc().strip().splitlines()[-1]
+        if st == "DIFFER" and known:
+            st, det = "KNOWN-MAPLE", known
         results.append((case, st, det, mtext, pres))
 
     counts = Counter(r[1] for r in results)
     lines = ["# qseries-sage vs Maple qseries: parity report", "",
              "Battery seed %d, %d cases. Maple: %s. qseries: %s." % (SEED, len(CASES), meta.get("maple", "n/a"), meta.get("qseries", "n/a")),
              "", "| status | count |", "|---|---|"] + ["| %s | %d |" % kv for kv in sorted(counts.items())] + [""]
-    order = ["DIFFER", "PY-ERROR", "MAPLE-ERROR", "MISSING", "REVIEW", "VALUE-MATCH", "MATCH", "PY-OK"]
+    order = ["DIFFER", "PY-ERROR", "MAPLE-ERROR", "MISSING", "KNOWN-MAPLE", "REVIEW", "VALUE-MATCH", "MATCH", "PY-OK"]
     for st in order:
         group = [r for r in results if r[1] == st]
         if not group:

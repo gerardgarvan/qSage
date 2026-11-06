@@ -40,6 +40,7 @@ Without a results file, `compare.py` just runs the Python side of every case.
 - **VALUE-MATCH**: different form, same q-series (e.g. an equivalent JAC product).
 - **DIFFER**: investigate; either a bug in the port or a convention difference to document.
 - **REVIEW**: no automatic comparison (jac2prod, findprod, qs2jaccombo, checkprod); both outputs shown.
+- **KNOWN-MAPLE**: differs because of a documented Maple problem (listed in the main README); the port gives the correct answer.
 - **MAPLE-ERROR / PY-ERROR / MISSING**: the case did not run on one side.
 
 After changing `cases.py`, rerun `python3 parity/make_maple.py` and send the new `.mpl` file.

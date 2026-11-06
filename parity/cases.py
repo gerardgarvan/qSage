@@ -59,7 +59,7 @@ def build_cases():
     add(Case("theta4_1", "coeffs", "CL(theta4(q,50),0,49)", "CL(theta4(q,50),0,49)"))
     add(Case("theta2_1", "coeffs", "CL(expand(theta2(q,10)/q^(1/4)),0,29)", "CL(theta2(q,10),0,29)",
              opts={"note": "Maple theta2(q,T) sums finitely many terms; compare only q^0..q^29"}))
-    add(Case("theta2_q3", "coeffs", "CL(expand(simplify(theta2(q^3,10)/q^(3/4))),0,40)", "CL(theta2(q**3,10),0,40)"))
+    add(Case("theta2_q3", "coeffs", "CL(expand(simplify(theta2(q^3,10)/q^(3/4))),0,40)", "CL(theta2(q**3,10),0,40)", opts={"known_maple": "Maple cannot take coefficients of fractional powers of q"}))
     add(Case("theta_z", "coeffs", "CL(theta(z,q,4),0,16)", "CL(theta(z,q,4),0,16)", opts={"vars": "z"}))
     add(Case("tripleprod_z", "coeffs", "CL(tripleprod(z,q,6),0,10)", "CL(tripleprod(z,q,6),0,10)", opts={"vars": "z"}))
     add(Case("tripleprod_q", "coeffs", "CL(tripleprod(q,q^3,10),0,49)", "CL(tripleprod(q,q**3,10),0,49)"))
@@ -121,7 +121,8 @@ def build_cases():
                  "prodmake(QSeries(R(%s).add_bigoh(40),40),q,40)" % pp))
 
     for name in ("theta3", "theta4", "theta2"):
-        add(Case("etamake_%s" % name, "eta", "etamake(%s(q,100),q,100)" % name, "etamake(%s(q,100),q,100)" % name))
+        add(Case("etamake_%s" % name, "eta", "etamake(%s(q,100),q,100)" % name, "etamake(%s(q,100),q,100)" % name,
+                 opts={"known_maple": "Maple etamake cannot handle the q^(1/4) factor of theta2"} if name == "theta2" else {}))
     add(Case("etamake_triangular", "eta", "etamake(add(q^(n*(n+1)/2),n=0..20),q,20)",
              "etamake(QSeries(R(sum(q**(n*(n+1)//2) for n in range(21))).add_bigoh(200),200),q,20)"))
     levels = [1, 2, 3, 4, 5, 6, 8, 9, 12]
@@ -171,7 +172,7 @@ def build_cases():
         pden = "*".join("(1-t**%d)" % k for k in dk)
         add(Case("qfactor_rand_%d" % i, "qfactor", "qfactor(expand(%s)/expand(%s))" % (mnum, mden),
                  "qfactor((P(%s), P(%s)))" % (pnum, pden),
-                 opts={"note": "no T: Maple 2026 qfactor(f, 20) and qfactor(f, 40) return 1 for these"}))
+                 opts={"note": "no T: with T, Maple 2026 qfactor returns 1 for these", "known_maple": "Maple 2026 qfactor returns 1 for an expanded quotient (README)"}))
 
     add(Case("mprodmake_doc", "mprod", "mprodmake(S(etaq(q,2,100)^2/etaq(q,4,100)/etaq(q,1,100),100),q,17)",
              "mprodmake(etaq(q,2,100)**2*etaq(q,4,100)**(-1)*etaq(q,1,100)**(-1),q,17)"))
@@ -260,11 +261,11 @@ def build_cases():
              "[etaq(q,1,300)**11*E6(300)*E4(300)**(3*j+1) for j in range(6)],['B%d'%i for i in range(1,7)],13,q,-8)",
              opts={"k": 6, "p": 13, "sl": ["B1", "B2", "B3", "B4", "B5", "B6"]}))
     add(Case("findhommodp_e4_5", "rels", "findhommodp([E4S(100),E6S(100),1],5,q,1,0)",
-             "findhommodp([E4(100),E6(100),ONE(100)],5,q,1,0)", opts={"k": 3, "p": 5}))
+             "findhommodp([E4(100),E6(100),ONE(100)],5,q,1,0)", opts={"known_maple": "Maple findhommodp skips the q^0 coefficient (README)", "k": 3, "p": 5}))
     add(Case("findhommodp_e6_7", "rels", "findhommodp([E4S(100),E6S(100),1],7,q,1,0)",
-             "findhommodp([E4(100),E6(100),ONE(100)],7,q,1,0)", opts={"k": 3, "p": 7}))
+             "findhommodp([E4(100),E6(100),ONE(100)],7,q,1,0)", opts={"known_maple": "Maple findhommodp skips the q^0 coefficient (README)", "k": 3, "p": 7}))
     add(Case("findhommodp_deg2_5", "rels", "findhommodp([E4S(100),E6S(100)],5,q,2,0)",
-             "findhommodp([E4(100),E6(100)],5,q,2,0)", opts={"k": 2, "p": 5}))
+             "findhommodp([E4(100),E6(100)],5,q,2,0)", opts={"known_maple": "Maple findhommodp skips the q^0 coefficient (README)", "k": 2, "p": 5}))
     add(Case("findhomcombomodp_1", "combo", "findhomcombomodp(E6S(100),[E4S(100),E6S(100)],5,q,2,0,no)",
              "findhomcombomodp(E6(100),[E4(100),E6(100)],5,q,2,0,'no')", opts={"k": 2, "p": 5}))
     return C
