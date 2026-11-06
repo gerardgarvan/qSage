@@ -1,5 +1,7 @@
 # qseries-sage
 
+[![tests](https://github.com/gerardgarvan/qSage/actions/workflows/tests.yml/badge.svg)](https://github.com/gerardgarvan/qSage/actions/workflows/tests.yml)
+
 A Python/SageMath port of Frank Garvan's Maple **qseries** package (version 1.3): q-products,
 theta functions, product conversion (Andrews' algorithm, eta-products, Jacobi products) and
 the search for polynomial relations and congruences between q-series — without Maple.
