@@ -434,6 +434,8 @@ def compare(case, mtext, pres):
     if k == "cong":
         a, b = canon_cong(mtext, True), canon_cong(pres, False)
         return ("MATCH", "") if a == b else ("DIFFER", "Maple %s vs Python %s" % (a, b))
+    if k in ("rels", "combo", "lincombo") and mtext.strip() in ("NULL", "{{}}"):
+        mtext = "{}"          # Maple prints an empty relation set as {{}} and "no combination" as NULL
     if k == "zq":
         if pres is None:
             return "DIFFER", "Python returned None"

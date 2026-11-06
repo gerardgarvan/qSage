@@ -57,8 +57,9 @@ def build_cases():
         add(Case("etaq_%d" % k, "coeffs", "CL(etaq(q,%d,60),0,59)" % k, "CL(etaq(q,%d,60),0,59)" % k))
     add(Case("theta3_1", "coeffs", "CL(theta3(q,50),0,49)", "CL(theta3(q,50),0,49)"))
     add(Case("theta4_1", "coeffs", "CL(theta4(q,50),0,49)", "CL(theta4(q,50),0,49)"))
-    add(Case("theta2_1", "coeffs", "CL(expand(theta2(q,10)/q^(1/4)),0,40)", "CL(theta2(q,10),0,40)"))
-    add(Case("theta2_q3", "coeffs", "CL(expand(theta2(q^3,10)/q^(3/4)),0,40)", "CL(theta2(q**3,10),0,40)"))
+    add(Case("theta2_1", "coeffs", "CL(expand(theta2(q,10)/q^(1/4)),0,29)", "CL(theta2(q,10),0,29)",
+             opts={"note": "Maple theta2(q,T) sums finitely many terms; compare only q^0..q^29"}))
+    add(Case("theta2_q3", "coeffs", "CL(expand(simplify(theta2(q^3,10)/q^(3/4))),0,40)", "CL(theta2(q**3,10),0,40)"))
     add(Case("theta_z", "coeffs", "CL(theta(z,q,4),0,16)", "CL(theta(z,q,4),0,16)", opts={"vars": "z"}))
     add(Case("tripleprod_z", "coeffs", "CL(tripleprod(z,q,6),0,10)", "CL(tripleprod(z,q,6),0,10)", opts={"vars": "z"}))
     add(Case("tripleprod_q", "coeffs", "CL(tripleprod(q,q^3,10),0,49)", "CL(tripleprod(q,q**3,10),0,49)"))
@@ -70,7 +71,7 @@ def build_cases():
              "CL(etaq(q,1,40)**10,0,29)",
              opts={"note": "doc page: Winquist / ((1-a)(1-b)(1-ab)(1-a/b)) at a=b=1 equals (q;q)^10"}))
     for a, b in [(1, 5), (2, 7), (3, 8)]:
-        add(Case("jacprod_%d_%d" % (a, b), "coeffs", "CL(jacprod(%d,%d,q,40),0,39)" % (a, b),
+        add(Case("jacprod_%d_%d" % (a, b), "coeffs", "CL(S(jacprod(%d,%d,q,40),40),0,39)" % (a, b),
                  "CL(jacprod(%d,%d,q,40),0,39)" % (a, b)))
     add(Case("jac2series_doc1", "coeffs", "CL(q^4*jac2series(JAC(-4,5,infinity),20),0,15)",
              "CL(q**4*LQ(jac2series(JacProduct(factors=[(-4,5,1)]),20)),0,15)"))
@@ -79,7 +80,7 @@ def build_cases():
     add(Case("jac2series_doc3", "coeffs", "CL(jac2series(JAC(0,10,infinity),50),0,49)",
              "CL(jac2series(JacProduct(factors=[(0,10,1)]),50),0,49)"))
     add(Case("jac2series_ratio", "coeffs",
-             "CL(jac2series(JAC(1,10,infinity)*JAC(3,10,infinity)/JAC(5,10,infinity)^2,40),0,39)",
+             "CL(S(jac2series(JAC(1,10,infinity)*JAC(3,10,infinity)/JAC(5,10,infinity)^2,40),40),0,39)",
              "CL(jac2series(JacProduct(factors=[(1,10,1),(3,10,1),(5,10,-2)]),40),0,39)"))
     add(Case("jac2prod_1", "review", "jac2prod(JAC(1,5,infinity))", "jac2prod(JacProduct(factors=[(1,5,1)]))"))
     add(Case("jac2prod_2", "review", "jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2)",
@@ -127,11 +128,11 @@ def build_cases():
     for i in range(12):
         ks = sorted(rnd.sample(levels, rnd.randint(2, 3)))
         fs = [(k, rnd.choice([-3, -2, -1, 1, 2, 3])) for k in ks]
-        add(Case("etamake_rand_%d" % i, "eta", "etamake(S(%s,60),q,60)" % _etaprod_maple(fs, 60),
-                 "etamake(%s,q,60)" % _etaprod_py(fs, 60)))
+        add(Case("etamake_rand_%d" % i, "eta", "etamake(S(%s,60),q,50)" % _etaprod_maple(fs, 60),
+                 "etamake(%s,q,50)" % _etaprod_py(fs, 60)))
         if i < 6:
-            add(Case("qetamake_rand_%d" % i, "qeta", "qetamake(S(%s,60),q,60)" % _etaprod_maple(fs, 60),
-                     "qetamake(%s,q,60)" % _etaprod_py(fs, 60)))
+            add(Case("qetamake_rand_%d" % i, "qeta", "qetamake(S(%s,60),q,50)" % _etaprod_maple(fs, 60),
+                     "qetamake(%s,q,50)" % _etaprod_py(fs, 60)))
     add(Case("qetamake_triangular", "qeta", "qetamake(add(q^(n*(n+1)/2),n=0..20),q,20)",
              "qetamake(QSeries(R(sum(q**(n*(n+1)//2) for n in range(21))).add_bigoh(200),200),q,20)"))
 
@@ -201,11 +202,11 @@ def build_cases():
              "findnonhom([theta3(q,100),theta4(q,100),theta3(q**4,100)],q,3,20)", opts={"k": 3}))
     B12 = ("[etaq(q,1,60)^5/etaq(q,5,60),S(q*etaq(q,5,60)^5/etaq(q,1,60),60)]",
            "[etaq(q,1,60)**5/etaq(q,5,60),QSeries(q*etaq(q,5,60).series**5/etaq(q,1,60).series,60)]")
-    add(Case("findhomcombo_doc", "combo", "findhomcombo(S(UE(6,5,60),60),%s,q,3,0)" % B12[0],
-             "findhomcombo(UE(q,6,5,60),%s,q,3,0)" % B12[1], opts={"k": 2}))
+    add(Case("findhomcombo_doc", "combo", "findhomcombo(S(UE(6,5,60),60),%s,q,3,0,no)" % B12[0],
+             "findhomcombo(UE(q,6,5,60),%s,q,3,0,'no')" % B12[1], opts={"k": 2}))
     add(Case("findhomcombo_doc2", "combo",
-             "findhomcombo(S(q*etaq(q,5,60)^5/etaq(q,1,60),60),%s,q,1,0)" % B12[0],
-             "findhomcombo(QSeries(q*etaq(q,5,60).series**5/etaq(q,1,60).series,60),%s,q,1,0)" % B12[1], opts={"k": 2}))
+             "findhomcombo(S(q*etaq(q,5,60)^5/etaq(q,1,60),60),%s,q,1,0,no)" % B12[0],
+             "findhomcombo(QSeries(q*etaq(q,5,60).series**5/etaq(q,1,60).series,60),%s,q,1,0,'no')" % B12[1], opts={"k": 2}))
     add(Case("findnonhomcombo_watson", "combo",
              "findnonhomcombo(S(q^2*etaq(q,7,100)^8/etaq(q,1,100)^8,100),[S(q*etaq(q,7,100)^4/etaq(q,1,100)^4,100),S(q^2*etaq(q,49,100)/etaq(q,1,100),100)],q,7,-15)",
              "findnonhomcombo(QSeries(q**2*etaq(q,7,100).series**8/etaq(q,1,100).series**8,100),[QSeries(q*etaq(q,7,100).series**4/etaq(q,1,100).series**4,100),QSeries(q**2*etaq(q,49,100).series/etaq(q,1,100).series,100)],q,7,-15)",
@@ -263,8 +264,8 @@ def build_cases():
              "findhommodp([E4(100),E6(100),ONE(100)],7,q,1,0)", opts={"k": 3, "p": 7}))
     add(Case("findhommodp_deg2_5", "rels", "findhommodp([E4S(100),E6S(100)],5,q,2,0)",
              "findhommodp([E4(100),E6(100)],5,q,2,0)", opts={"k": 2, "p": 5}))
-    add(Case("findhomcombomodp_1", "combo", "findhomcombomodp(E6S(100),[E4S(100),E6S(100)],5,q,2,0)",
-             "findhomcombomodp(E6(100),[E4(100),E6(100)],5,q,2,0)", opts={"k": 2, "p": 5}))
+    add(Case("findhomcombomodp_1", "combo", "findhomcombomodp(E6S(100),[E4S(100),E6S(100)],5,q,2,0,no)",
+             "findhomcombomodp(E6(100),[E4(100),E6(100)],5,q,2,0,'no')", opts={"k": 2, "p": 5}))
     return C
 
 

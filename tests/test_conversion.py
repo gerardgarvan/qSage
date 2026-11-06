@@ -398,3 +398,27 @@ def test_jacprodmake_not_theta_product_returns_none():
         result = jacprodmake(f, q, 30)
     assert result is None
     assert any("not a product of theta functions" in str(w.message) for w in caught)
+
+
+def test_jac2prod_combines_equal_factors():
+    """jac2prod(JAC(0,10,inf)*JAC(2,10,inf)^2) collects (q^10;q^10) into one factor with exponent 3.
+
+    Oracle: Maple 2026 + qseries 1.3 output (parity case jac2prod_2):
+    (q^10,q^10)^3 * (q^2,q^10)^2 * (q^8,q^10)^2.
+    """
+    from qseries._symbolic import JacProduct
+    from qseries._conversion import jac2prod
+    r = jac2prod(JacProduct(factors=[(0, 10, 1), (2, 10, 2)]))
+    assert sorted(r.factors) == [(2, 10, 2), (8, 10, 2), (10, 10, 3)]
+
+
+def test_jac2series_jac0():
+    """JAC(0,10,inf) = (q^10;q^10)_inf, so jac2series gives 1 - q^10 - q^20 + O(q^50).
+
+    Oracle: Maple 2026 + qseries 1.3 output (parity case jac2series_doc3) and Euler's
+    pentagonal number theorem.
+    """
+    from qseries._symbolic import JacProduct
+    from qseries._conversion import jac2series
+    s = jac2series(JacProduct(factors=[(0, 10, 1)]), 50).series
+    assert [s[n] for n in range(50)] == [1 if n == 0 else (-1 if n in (10, 20) else 0) for n in range(50)]

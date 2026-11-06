@@ -458,8 +458,10 @@ def findcong(f, T, LM=None, XSET=None):
     findcong(f, T, LM)        A runs over 2..LM
     findcong(f, T, LM, XSET)  moduli in XSET are excluded
 
-    M is the gcd of a(An+B) over An+B <= T (not restricted to primes); congruences
-    implied by an earlier one (A2 | A, B = B2 mod A2, M | M2) are suppressed.
+    M runs over the prime powers dividing the gcd of a(An+B) over An+B <= T, as Maple
+    reports them (a gcd of 6 gives (B, A, 2) and (B, A, 3)); a congruence implied by an
+    earlier one (A2 | A, B = B2 mod A2, M | M2) is suppressed.  Checked against Maple 2026 +
+    qseries 1.3 in the parity battery.
     REL-11.  Oracle: findcong(1/etaq(q,1,1001), 1000) == {(4,5,5),(5,7,7),(6,11,11),(24,25,25)}.
     """
     if f.r != 0:
@@ -480,8 +482,11 @@ def findcong(f, T, LM=None, XSET=None):
         for B in range(A):
             vals = [coeffs[A * n + B] for n in range((T - B) // A + 1)]
             M = _gcd_list(vals)
-            if M > 1 and M not in XSET:
-                raw.append((B, A, M))
+            if M > 1:
+                # Maple reports the gcd split into prime powers (parity case findcong_composite_gcd)
+                for p, k in ZZ(M).factor():
+                    if p**k not in XSET:
+                        raw.append((B, A, int(p**k)))
 
     raw.sort(key=lambda t: (t[1], t[0]))
     return set(_suppress_implied(raw))

@@ -14,528 +14,528 @@ fd := fopen("maple_results.txt", WRITE, TEXT):
 fprintf(fd, "# maple\t%s\n", StringTools:-SubstituteAll(convert(kernelopts(version), string), "\n", " ")):
 try fprintf(fd, "# qseries\t%s\n", StringTools:-SubstituteAll(sprintf("%a", [packageversion()]), "\n", " ")) catch: fprintf(fd, "# qseries\t?\n") end try:
 fprintf(fd, "# seed\t20261106\n"):
-WR := proc(id, res, t) fprintf(fd, "%s\t%s\t%.2f\n", id, StringTools:-SubstituteAll(StringTools:-SubstituteAll(sprintf("%a", res), "\n", ""), "\t", " "), time() - t) end proc:
+WR := proc(id, t) local r; r := [args[3 .. -1]]; r := `if`(nops(r) = 0, NULL_RESULT, `if`(nops(r) = 1, r[1], r)); fprintf(fd, "%s\t%s\t%.2f\n", id, StringTools:-SubstituteAll(StringTools:-SubstituteAll(StringTools:-SubstituteAll(sprintf("%a", r), "\n", ""), "\t", " "), "NULL_RESULT", "NULL"), time() - t) end proc:
 WE := proc(id, t) fprintf(fd, "%s\tERROR %s\t%.2f\n", id, StringTools:-SubstituteAll(StringTools:-FormatMessage(lastexception[2 .. -1]), "\n", " "), time() - t) end proc:
 
 # aqprod_1 (coeffs)
 t0 := time():
-try res := CL(aqprod(q,q,5),0,15): WR("aqprod_1", res, t0) catch: WE("aqprod_1", t0) end try:
+try res := CL(aqprod(q,q,5),0,15): WR("aqprod_1", t0, res) catch: WE("aqprod_1", t0) end try:
 
 # aqprod_2 (coeffs)
 t0 := time():
-try res := CL(aqprod(q^2,q^3,4),0,25): WR("aqprod_2", res, t0) catch: WE("aqprod_2", t0) end try:
+try res := CL(aqprod(q^2,q^3,4),0,25): WR("aqprod_2", t0, res) catch: WE("aqprod_2", t0) end try:
 
 # qbin_1 (coeffs)
 t0 := time():
-try res := CL(qbin(q,3,6),0,9): WR("qbin_1", res, t0) catch: WE("qbin_1", t0) end try:
+try res := CL(qbin(q,3,6),0,9): WR("qbin_1", t0, res) catch: WE("qbin_1", t0) end try:
 
 # qbin_2 (coeffs)
 t0 := time():
-try res := CL(qbin(q,2,7),0,10): WR("qbin_2", res, t0) catch: WE("qbin_2", t0) end try:
+try res := CL(qbin(q,2,7),0,10): WR("qbin_2", t0, res) catch: WE("qbin_2", t0) end try:
 
 # qbin_3 (coeffs)
 t0 := time():
-try res := CL(qbin(q,0,5),0,3): WR("qbin_3", res, t0) catch: WE("qbin_3", t0) end try:
+try res := CL(qbin(q,0,5),0,3): WR("qbin_3", t0, res) catch: WE("qbin_3", t0) end try:
 
 # etaq_1 (coeffs)
 t0 := time():
-try res := CL(etaq(q,1,60),0,59): WR("etaq_1", res, t0) catch: WE("etaq_1", t0) end try:
+try res := CL(etaq(q,1,60),0,59): WR("etaq_1", t0, res) catch: WE("etaq_1", t0) end try:
 
 # etaq_3 (coeffs)
 t0 := time():
-try res := CL(etaq(q,3,60),0,59): WR("etaq_3", res, t0) catch: WE("etaq_3", t0) end try:
+try res := CL(etaq(q,3,60),0,59): WR("etaq_3", t0, res) catch: WE("etaq_3", t0) end try:
 
 # etaq_7 (coeffs)
 t0 := time():
-try res := CL(etaq(q,7,60),0,59): WR("etaq_7", res, t0) catch: WE("etaq_7", t0) end try:
+try res := CL(etaq(q,7,60),0,59): WR("etaq_7", t0, res) catch: WE("etaq_7", t0) end try:
 
 # theta3_1 (coeffs)
 t0 := time():
-try res := CL(theta3(q,50),0,49): WR("theta3_1", res, t0) catch: WE("theta3_1", t0) end try:
+try res := CL(theta3(q,50),0,49): WR("theta3_1", t0, res) catch: WE("theta3_1", t0) end try:
 
 # theta4_1 (coeffs)
 t0 := time():
-try res := CL(theta4(q,50),0,49): WR("theta4_1", res, t0) catch: WE("theta4_1", t0) end try:
+try res := CL(theta4(q,50),0,49): WR("theta4_1", t0, res) catch: WE("theta4_1", t0) end try:
 
 # theta2_1 (coeffs)
 t0 := time():
-try res := CL(expand(theta2(q,10)/q^(1/4)),0,40): WR("theta2_1", res, t0) catch: WE("theta2_1", t0) end try:
+try res := CL(expand(theta2(q,10)/q^(1/4)),0,29): WR("theta2_1", t0, res) catch: WE("theta2_1", t0) end try:
 
 # theta2_q3 (coeffs)
 t0 := time():
-try res := CL(expand(theta2(q^3,10)/q^(3/4)),0,40): WR("theta2_q3", res, t0) catch: WE("theta2_q3", t0) end try:
+try res := CL(expand(simplify(theta2(q^3,10)/q^(3/4))),0,40): WR("theta2_q3", t0, res) catch: WE("theta2_q3", t0) end try:
 
 # theta_z (coeffs)
 t0 := time():
-try res := CL(theta(z,q,4),0,16): WR("theta_z", res, t0) catch: WE("theta_z", t0) end try:
+try res := CL(theta(z,q,4),0,16): WR("theta_z", t0, res) catch: WE("theta_z", t0) end try:
 
 # tripleprod_z (coeffs)
 t0 := time():
-try res := CL(tripleprod(z,q,6),0,10): WR("tripleprod_z", res, t0) catch: WE("tripleprod_z", t0) end try:
+try res := CL(tripleprod(z,q,6),0,10): WR("tripleprod_z", t0, res) catch: WE("tripleprod_z", t0) end try:
 
 # tripleprod_q (coeffs)
 t0 := time():
-try res := CL(tripleprod(q,q^3,10),0,49): WR("tripleprod_q", res, t0) catch: WE("tripleprod_q", t0) end try:
+try res := CL(tripleprod(q,q^3,10),0,49): WR("tripleprod_q", t0, res) catch: WE("tripleprod_q", t0) end try:
 
 # quinprod_z (coeffs)
 t0 := time():
-try res := CL(quinprod(z,q,3),0,26): WR("quinprod_z", res, t0) catch: WE("quinprod_z", t0) end try:
+try res := CL(quinprod(z,q,3),0,26): WR("quinprod_z", t0, res) catch: WE("quinprod_z", t0) end try:
 
 # winquist_ab (coeffs)
 t0 := time():
-try res := CL(convert(series(winquist(a,b,q,12),q,12),polynom),0,11): WR("winquist_ab", res, t0) catch: WE("winquist_ab", t0) end try:
+try res := CL(convert(series(winquist(a,b,q,12),q,12),polynom),0,11): WR("winquist_ab", t0, res) catch: WE("winquist_ab", t0) end try:
 
 # winquist_doc (coeffs)
 t0 := time():
-try res := CL(subs(a=1,b=1,normal(convert(series(winquist(a,b,q,30)/(1-a)/(1-b)/(1-a*b)/(1-a/b),q,30),polynom))),0,29): WR("winquist_doc", res, t0) catch: WE("winquist_doc", t0) end try:
+try res := CL(subs(a=1,b=1,normal(convert(series(winquist(a,b,q,30)/(1-a)/(1-b)/(1-a*b)/(1-a/b),q,30),polynom))),0,29): WR("winquist_doc", t0, res) catch: WE("winquist_doc", t0) end try:
 
 # jacprod_1_5 (coeffs)
 t0 := time():
-try res := CL(jacprod(1,5,q,40),0,39): WR("jacprod_1_5", res, t0) catch: WE("jacprod_1_5", t0) end try:
+try res := CL(S(jacprod(1,5,q,40),40),0,39): WR("jacprod_1_5", t0, res) catch: WE("jacprod_1_5", t0) end try:
 
 # jacprod_2_7 (coeffs)
 t0 := time():
-try res := CL(jacprod(2,7,q,40),0,39): WR("jacprod_2_7", res, t0) catch: WE("jacprod_2_7", t0) end try:
+try res := CL(S(jacprod(2,7,q,40),40),0,39): WR("jacprod_2_7", t0, res) catch: WE("jacprod_2_7", t0) end try:
 
 # jacprod_3_8 (coeffs)
 t0 := time():
-try res := CL(jacprod(3,8,q,40),0,39): WR("jacprod_3_8", res, t0) catch: WE("jacprod_3_8", t0) end try:
+try res := CL(S(jacprod(3,8,q,40),40),0,39): WR("jacprod_3_8", t0, res) catch: WE("jacprod_3_8", t0) end try:
 
 # jac2series_doc1 (coeffs)
 t0 := time():
-try res := CL(q^4*jac2series(JAC(-4,5,infinity),20),0,15): WR("jac2series_doc1", res, t0) catch: WE("jac2series_doc1", t0) end try:
+try res := CL(q^4*jac2series(JAC(-4,5,infinity),20),0,15): WR("jac2series_doc1", t0, res) catch: WE("jac2series_doc1", t0) end try:
 
 # jac2series_doc2 (coeffs)
 t0 := time():
-try res := CL(q*jac2series(JAC(6,5,infinity),20),0,18): WR("jac2series_doc2", res, t0) catch: WE("jac2series_doc2", t0) end try:
+try res := CL(q*jac2series(JAC(6,5,infinity),20),0,18): WR("jac2series_doc2", t0, res) catch: WE("jac2series_doc2", t0) end try:
 
 # jac2series_doc3 (coeffs)
 t0 := time():
-try res := CL(jac2series(JAC(0,10,infinity),50),0,49): WR("jac2series_doc3", res, t0) catch: WE("jac2series_doc3", t0) end try:
+try res := CL(jac2series(JAC(0,10,infinity),50),0,49): WR("jac2series_doc3", t0, res) catch: WE("jac2series_doc3", t0) end try:
 
 # jac2series_ratio (coeffs)
 t0 := time():
-try res := CL(jac2series(JAC(1,10,infinity)*JAC(3,10,infinity)/JAC(5,10,infinity)^2,40),0,39): WR("jac2series_ratio", res, t0) catch: WE("jac2series_ratio", t0) end try:
+try res := CL(S(jac2series(JAC(1,10,infinity)*JAC(3,10,infinity)/JAC(5,10,infinity)^2,40),40),0,39): WR("jac2series_ratio", t0, res) catch: WE("jac2series_ratio", t0) end try:
 
 # jac2prod_1 (review)
 t0 := time():
-try res := jac2prod(JAC(1,5,infinity)): WR("jac2prod_1", res, t0) catch: WE("jac2prod_1", t0) end try:
+try res := jac2prod(JAC(1,5,infinity)): WR("jac2prod_1", t0, res) catch: WE("jac2prod_1", t0) end try:
 
 # jac2prod_2 (review)
 t0 := time():
-try res := jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2): WR("jac2prod_2", res, t0) catch: WE("jac2prod_2", t0) end try:
+try res := jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2): WR("jac2prod_2", t0, res) catch: WE("jac2prod_2", t0) end try:
 
 # qdegree_1 (number)
 t0 := time():
-try res := qdegree(S(etaq(q,1,30),30)): WR("qdegree_1", res, t0) catch: WE("qdegree_1", t0) end try:
+try res := qdegree(S(etaq(q,1,30),30)): WR("qdegree_1", t0, res) catch: WE("qdegree_1", t0) end try:
 
 # lqdegree_1 (number)
 t0 := time():
-try res := lqdegree(expand(q^3*S(etaq(q,1,30),30))): WR("lqdegree_1", res, t0) catch: WE("lqdegree_1", t0) end try:
+try res := lqdegree(expand(q^3*S(etaq(q,1,30),30))): WR("lqdegree_1", t0, res) catch: WE("lqdegree_1", t0) end try:
 
 # sift_P_5_0 (coeffs)
 t0 := time():
-try res := CL(sift(S(1/etaq(q,1,400),400),q,5,0,399),0,19): WR("sift_P_5_0", res, t0) catch: WE("sift_P_5_0", t0) end try:
+try res := CL(sift(S(1/etaq(q,1,400),400),q,5,0,399),0,19): WR("sift_P_5_0", t0, res) catch: WE("sift_P_5_0", t0) end try:
 
 # sift_P_5_4 (coeffs)
 t0 := time():
-try res := CL(sift(S(1/etaq(q,1,400),400),q,5,4,399),0,19): WR("sift_P_5_4", res, t0) catch: WE("sift_P_5_4", t0) end try:
+try res := CL(sift(S(1/etaq(q,1,400),400),q,5,4,399),0,19): WR("sift_P_5_4", t0, res) catch: WE("sift_P_5_4", t0) end try:
 
 # sift_P_7_5 (coeffs)
 t0 := time():
-try res := CL(sift(S(1/etaq(q,1,400),400),q,7,5,399),0,19): WR("sift_P_7_5", res, t0) catch: WE("sift_P_7_5", t0) end try:
+try res := CL(sift(S(1/etaq(q,1,400),400),q,7,5,399),0,19): WR("sift_P_7_5", t0, res) catch: WE("sift_P_7_5", t0) end try:
 
 # sift_P_11_6 (coeffs)
 t0 := time():
-try res := CL(sift(S(1/etaq(q,1,400),400),q,11,6,399),0,19): WR("sift_P_11_6", res, t0) catch: WE("sift_P_11_6", t0) end try:
+try res := CL(sift(S(1/etaq(q,1,400),400),q,11,6,399),0,19): WR("sift_P_11_6", t0, res) catch: WE("sift_P_11_6", t0) end try:
 
 # sift_P_3_1 (coeffs)
 t0 := time():
-try res := CL(sift(S(1/etaq(q,1,400),400),q,3,1,399),0,19): WR("sift_P_3_1", res, t0) catch: WE("sift_P_3_1", t0) end try:
+try res := CL(sift(S(1/etaq(q,1,400),400),q,3,1,399),0,19): WR("sift_P_3_1", t0, res) catch: WE("sift_P_3_1", t0) end try:
 
 # sift_P_2_1 (coeffs)
 t0 := time():
-try res := CL(sift(S(1/etaq(q,1,400),400),q,2,1,399),0,19): WR("sift_P_2_1", res, t0) catch: WE("sift_P_2_1", t0) end try:
+try res := CL(sift(S(1/etaq(q,1,400),400),q,2,1,399),0,19): WR("sift_P_2_1", t0, res) catch: WE("sift_P_2_1", t0) end try:
 
 # sift_E_5_0 (coeffs)
 t0 := time():
-try res := CL(sift(etaq(q,1,500),q,5,0,499),0,30): WR("sift_E_5_0", res, t0) catch: WE("sift_E_5_0", t0) end try:
+try res := CL(sift(etaq(q,1,500),q,5,0,499),0,30): WR("sift_E_5_0", t0, res) catch: WE("sift_E_5_0", t0) end try:
 
 # checkmult_doc_S1 (bool)
 t0 := time():
-try res := checkmult(S(etaq(q,3,201)^3*etaq(q,5,201)^3*q+etaq(q,1,201)^3*etaq(q,15,201)^3*q^2,200),199): WR("checkmult_doc_S1", res, t0) catch: WE("checkmult_doc_S1", t0) end try:
+try res := checkmult(S(etaq(q,3,201)^3*etaq(q,5,201)^3*q+etaq(q,1,201)^3*etaq(q,15,201)^3*q^2,200),199): WR("checkmult_doc_S1", t0, res) catch: WE("checkmult_doc_S1", t0) end try:
 
 # checkmult_doc_S3 (bool)
 t0 := time():
-try res := checkmult(S(q*etaq(q,3,201)^3*etaq(q,5,201)^3,200),199): WR("checkmult_doc_S3", res, t0) catch: WE("checkmult_doc_S3", t0) end try:
+try res := checkmult(S(q*etaq(q,3,201)^3*etaq(q,5,201)^3,200),199): WR("checkmult_doc_S3", t0, res) catch: WE("checkmult_doc_S3", t0) end try:
 
 # checkmult_delta (bool)
 t0 := time():
-try res := checkmult(S(q*etaq(q,1,100)^24,100),99): WR("checkmult_delta", res, t0) catch: WE("checkmult_delta", t0) end try:
+try res := checkmult(S(q*etaq(q,1,100)^24,100),99): WR("checkmult_delta", t0, res) catch: WE("checkmult_delta", t0) end try:
 
 # prodmake_tripleprod (prod)
 t0 := time():
-try res := prodmake(tripleprod(q,q^5,30),q,50): WR("prodmake_tripleprod", res, t0) catch: WE("prodmake_tripleprod", t0) end try:
+try res := prodmake(tripleprod(q,q^5,30),q,50): WR("prodmake_tripleprod", t0, res) catch: WE("prodmake_tripleprod", t0) end try:
 
 # prodmake_RR (prod)
 t0 := time():
-try res := prodmake(S(add(q^(n^2)/aqprod(q,q,n),n=0..8),50),q,40): WR("prodmake_RR", res, t0) catch: WE("prodmake_RR", t0) end try:
+try res := prodmake(S(add(q^(n^2)/aqprod(q,q,n),n=0..8),50),q,40): WR("prodmake_RR", t0, res) catch: WE("prodmake_RR", t0) end try:
 
 # prodmake_rand_0 (prod)
 t0 := time():
-try res := prodmake(S((1-q^3)^(-1)*(1-q^5)^(-2),40),q,40): WR("prodmake_rand_0", res, t0) catch: WE("prodmake_rand_0", t0) end try:
+try res := prodmake(S((1-q^3)^(-1)*(1-q^5)^(-2),40),q,40): WR("prodmake_rand_0", t0, res) catch: WE("prodmake_rand_0", t0) end try:
 
 # prodmake_rand_1 (prod)
 t0 := time():
-try res := prodmake(S((1-q^1)^(-2)*(1-q^9)^(-1)*(1-q^13)^(1)*(1-q^18)^(-1),40),q,40): WR("prodmake_rand_1", res, t0) catch: WE("prodmake_rand_1", t0) end try:
+try res := prodmake(S((1-q^1)^(-2)*(1-q^9)^(-1)*(1-q^13)^(1)*(1-q^18)^(-1),40),q,40): WR("prodmake_rand_1", t0, res) catch: WE("prodmake_rand_1", t0) end try:
 
 # prodmake_rand_2 (prod)
 t0 := time():
-try res := prodmake(S((1-q^5)^(1)*(1-q^10)^(-2)*(1-q^19)^(-1),40),q,40): WR("prodmake_rand_2", res, t0) catch: WE("prodmake_rand_2", t0) end try:
+try res := prodmake(S((1-q^5)^(1)*(1-q^10)^(-2)*(1-q^19)^(-1),40),q,40): WR("prodmake_rand_2", t0, res) catch: WE("prodmake_rand_2", t0) end try:
 
 # prodmake_rand_3 (prod)
 t0 := time():
-try res := prodmake(S((1-q^3)^(2)*(1-q^19)^(-1),40),q,40): WR("prodmake_rand_3", res, t0) catch: WE("prodmake_rand_3", t0) end try:
+try res := prodmake(S((1-q^3)^(2)*(1-q^19)^(-1),40),q,40): WR("prodmake_rand_3", t0, res) catch: WE("prodmake_rand_3", t0) end try:
 
 # prodmake_rand_4 (prod)
 t0 := time():
-try res := prodmake(S((1-q^3)^(2)*(1-q^12)^(-2)*(1-q^14)^(-1),40),q,40): WR("prodmake_rand_4", res, t0) catch: WE("prodmake_rand_4", t0) end try:
+try res := prodmake(S((1-q^3)^(2)*(1-q^12)^(-2)*(1-q^14)^(-1),40),q,40): WR("prodmake_rand_4", t0, res) catch: WE("prodmake_rand_4", t0) end try:
 
 # prodmake_rand_5 (prod)
 t0 := time():
-try res := prodmake(S((1-q^3)^(2)*(1-q^6)^(-1)*(1-q^10)^(2)*(1-q^13)^(-1)*(1-q^19)^(1),40),q,40): WR("prodmake_rand_5", res, t0) catch: WE("prodmake_rand_5", t0) end try:
+try res := prodmake(S((1-q^3)^(2)*(1-q^6)^(-1)*(1-q^10)^(2)*(1-q^13)^(-1)*(1-q^19)^(1),40),q,40): WR("prodmake_rand_5", t0, res) catch: WE("prodmake_rand_5", t0) end try:
 
 # prodmake_rand_6 (prod)
 t0 := time():
-try res := prodmake(S((1-q^2)^(2)*(1-q^7)^(-2),40),q,40): WR("prodmake_rand_6", res, t0) catch: WE("prodmake_rand_6", t0) end try:
+try res := prodmake(S((1-q^2)^(2)*(1-q^7)^(-2),40),q,40): WR("prodmake_rand_6", t0, res) catch: WE("prodmake_rand_6", t0) end try:
 
 # prodmake_rand_7 (prod)
 t0 := time():
-try res := prodmake(S((1-q^7)^(-2)*(1-q^12)^(2)*(1-q^14)^(1),40),q,40): WR("prodmake_rand_7", res, t0) catch: WE("prodmake_rand_7", t0) end try:
+try res := prodmake(S((1-q^7)^(-2)*(1-q^12)^(2)*(1-q^14)^(1),40),q,40): WR("prodmake_rand_7", t0, res) catch: WE("prodmake_rand_7", t0) end try:
 
 # prodmake_rand_8 (prod)
 t0 := time():
-try res := prodmake(S((1-q^1)^(-2)*(1-q^13)^(-2)*(1-q^18)^(1),40),q,40): WR("prodmake_rand_8", res, t0) catch: WE("prodmake_rand_8", t0) end try:
+try res := prodmake(S((1-q^1)^(-2)*(1-q^13)^(-2)*(1-q^18)^(1),40),q,40): WR("prodmake_rand_8", t0, res) catch: WE("prodmake_rand_8", t0) end try:
 
 # prodmake_rand_9 (prod)
 t0 := time():
-try res := prodmake(S((1-q^1)^(-1)*(1-q^3)^(1)*(1-q^7)^(-2)*(1-q^16)^(2)*(1-q^20)^(1),40),q,40): WR("prodmake_rand_9", res, t0) catch: WE("prodmake_rand_9", t0) end try:
+try res := prodmake(S((1-q^1)^(-1)*(1-q^3)^(1)*(1-q^7)^(-2)*(1-q^16)^(2)*(1-q^20)^(1),40),q,40): WR("prodmake_rand_9", t0, res) catch: WE("prodmake_rand_9", t0) end try:
 
 # etamake_theta3 (eta)
 t0 := time():
-try res := etamake(theta3(q,100),q,100): WR("etamake_theta3", res, t0) catch: WE("etamake_theta3", t0) end try:
+try res := etamake(theta3(q,100),q,100): WR("etamake_theta3", t0, res) catch: WE("etamake_theta3", t0) end try:
 
 # etamake_theta4 (eta)
 t0 := time():
-try res := etamake(theta4(q,100),q,100): WR("etamake_theta4", res, t0) catch: WE("etamake_theta4", t0) end try:
+try res := etamake(theta4(q,100),q,100): WR("etamake_theta4", t0, res) catch: WE("etamake_theta4", t0) end try:
 
 # etamake_theta2 (eta)
 t0 := time():
-try res := etamake(theta2(q,100),q,100): WR("etamake_theta2", res, t0) catch: WE("etamake_theta2", t0) end try:
+try res := etamake(theta2(q,100),q,100): WR("etamake_theta2", t0, res) catch: WE("etamake_theta2", t0) end try:
 
 # etamake_triangular (eta)
 t0 := time():
-try res := etamake(add(q^(n*(n+1)/2),n=0..20),q,20): WR("etamake_triangular", res, t0) catch: WE("etamake_triangular", t0) end try:
+try res := etamake(add(q^(n*(n+1)/2),n=0..20),q,20): WR("etamake_triangular", t0, res) catch: WE("etamake_triangular", t0) end try:
 
 # etamake_rand_0 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-3)*etaq(q,12,60)^(1),60),q,60): WR("etamake_rand_0", res, t0) catch: WE("etamake_rand_0", t0) end try:
+try res := etamake(S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-3)*etaq(q,12,60)^(1),60),q,50): WR("etamake_rand_0", t0, res) catch: WE("etamake_rand_0", t0) end try:
 
 # qetamake_rand_0 (qeta)
 t0 := time():
-try res := qetamake(S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-3)*etaq(q,12,60)^(1),60),q,60): WR("qetamake_rand_0", res, t0) catch: WE("qetamake_rand_0", t0) end try:
+try res := qetamake(S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-3)*etaq(q,12,60)^(1),60),q,50): WR("qetamake_rand_0", t0, res) catch: WE("qetamake_rand_0", t0) end try:
 
 # etamake_rand_1 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,2,60)^(2)*etaq(q,4,60)^(-1)*etaq(q,5,60)^(-1),60),q,60): WR("etamake_rand_1", res, t0) catch: WE("etamake_rand_1", t0) end try:
+try res := etamake(S(etaq(q,2,60)^(2)*etaq(q,4,60)^(-1)*etaq(q,5,60)^(-1),60),q,50): WR("etamake_rand_1", t0, res) catch: WE("etamake_rand_1", t0) end try:
 
 # qetamake_rand_1 (qeta)
 t0 := time():
-try res := qetamake(S(etaq(q,2,60)^(2)*etaq(q,4,60)^(-1)*etaq(q,5,60)^(-1),60),q,60): WR("qetamake_rand_1", res, t0) catch: WE("qetamake_rand_1", t0) end try:
+try res := qetamake(S(etaq(q,2,60)^(2)*etaq(q,4,60)^(-1)*etaq(q,5,60)^(-1),60),q,50): WR("qetamake_rand_1", t0, res) catch: WE("qetamake_rand_1", t0) end try:
 
 # etamake_rand_2 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,6,60)^(-1)*etaq(q,8,60)^(-3)*etaq(q,9,60)^(2),60),q,60): WR("etamake_rand_2", res, t0) catch: WE("etamake_rand_2", t0) end try:
+try res := etamake(S(etaq(q,6,60)^(-1)*etaq(q,8,60)^(-3)*etaq(q,9,60)^(2),60),q,50): WR("etamake_rand_2", t0, res) catch: WE("etamake_rand_2", t0) end try:
 
 # qetamake_rand_2 (qeta)
 t0 := time():
-try res := qetamake(S(etaq(q,6,60)^(-1)*etaq(q,8,60)^(-3)*etaq(q,9,60)^(2),60),q,60): WR("qetamake_rand_2", res, t0) catch: WE("qetamake_rand_2", t0) end try:
+try res := qetamake(S(etaq(q,6,60)^(-1)*etaq(q,8,60)^(-3)*etaq(q,9,60)^(2),60),q,50): WR("qetamake_rand_2", t0, res) catch: WE("qetamake_rand_2", t0) end try:
 
 # etamake_rand_3 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,1,60)^(3)*etaq(q,6,60)^(3)*etaq(q,8,60)^(-1),60),q,60): WR("etamake_rand_3", res, t0) catch: WE("etamake_rand_3", t0) end try:
+try res := etamake(S(etaq(q,1,60)^(3)*etaq(q,6,60)^(3)*etaq(q,8,60)^(-1),60),q,50): WR("etamake_rand_3", t0, res) catch: WE("etamake_rand_3", t0) end try:
 
 # qetamake_rand_3 (qeta)
 t0 := time():
-try res := qetamake(S(etaq(q,1,60)^(3)*etaq(q,6,60)^(3)*etaq(q,8,60)^(-1),60),q,60): WR("qetamake_rand_3", res, t0) catch: WE("qetamake_rand_3", t0) end try:
+try res := qetamake(S(etaq(q,1,60)^(3)*etaq(q,6,60)^(3)*etaq(q,8,60)^(-1),60),q,50): WR("qetamake_rand_3", t0, res) catch: WE("qetamake_rand_3", t0) end try:
 
 # etamake_rand_4 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,2,60)^(-3)*etaq(q,6,60)^(3),60),q,60): WR("etamake_rand_4", res, t0) catch: WE("etamake_rand_4", t0) end try:
+try res := etamake(S(etaq(q,2,60)^(-3)*etaq(q,6,60)^(3),60),q,50): WR("etamake_rand_4", t0, res) catch: WE("etamake_rand_4", t0) end try:
 
 # qetamake_rand_4 (qeta)
 t0 := time():
-try res := qetamake(S(etaq(q,2,60)^(-3)*etaq(q,6,60)^(3),60),q,60): WR("qetamake_rand_4", res, t0) catch: WE("qetamake_rand_4", t0) end try:
+try res := qetamake(S(etaq(q,2,60)^(-3)*etaq(q,6,60)^(3),60),q,50): WR("qetamake_rand_4", t0, res) catch: WE("qetamake_rand_4", t0) end try:
 
 # etamake_rand_5 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,4,60)^(1)*etaq(q,5,60)^(3)*etaq(q,9,60)^(2),60),q,60): WR("etamake_rand_5", res, t0) catch: WE("etamake_rand_5", t0) end try:
+try res := etamake(S(etaq(q,4,60)^(1)*etaq(q,5,60)^(3)*etaq(q,9,60)^(2),60),q,50): WR("etamake_rand_5", t0, res) catch: WE("etamake_rand_5", t0) end try:
 
 # qetamake_rand_5 (qeta)
 t0 := time():
-try res := qetamake(S(etaq(q,4,60)^(1)*etaq(q,5,60)^(3)*etaq(q,9,60)^(2),60),q,60): WR("qetamake_rand_5", res, t0) catch: WE("qetamake_rand_5", t0) end try:
+try res := qetamake(S(etaq(q,4,60)^(1)*etaq(q,5,60)^(3)*etaq(q,9,60)^(2),60),q,50): WR("qetamake_rand_5", t0, res) catch: WE("qetamake_rand_5", t0) end try:
 
 # etamake_rand_6 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,4,60)^(3)*etaq(q,8,60)^(-2)*etaq(q,9,60)^(-2),60),q,60): WR("etamake_rand_6", res, t0) catch: WE("etamake_rand_6", t0) end try:
+try res := etamake(S(etaq(q,4,60)^(3)*etaq(q,8,60)^(-2)*etaq(q,9,60)^(-2),60),q,50): WR("etamake_rand_6", t0, res) catch: WE("etamake_rand_6", t0) end try:
 
 # etamake_rand_7 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,6,60)^(1)*etaq(q,8,60)^(-2),60),q,60): WR("etamake_rand_7", res, t0) catch: WE("etamake_rand_7", t0) end try:
+try res := etamake(S(etaq(q,6,60)^(1)*etaq(q,8,60)^(-2),60),q,50): WR("etamake_rand_7", t0, res) catch: WE("etamake_rand_7", t0) end try:
 
 # etamake_rand_8 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,3,60)^(-1)*etaq(q,8,60)^(-3)*etaq(q,12,60)^(2),60),q,60): WR("etamake_rand_8", res, t0) catch: WE("etamake_rand_8", t0) end try:
+try res := etamake(S(etaq(q,3,60)^(-1)*etaq(q,8,60)^(-3)*etaq(q,12,60)^(2),60),q,50): WR("etamake_rand_8", t0, res) catch: WE("etamake_rand_8", t0) end try:
 
 # etamake_rand_9 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,4,60)^(3)*etaq(q,6,60)^(3)*etaq(q,12,60)^(-3),60),q,60): WR("etamake_rand_9", res, t0) catch: WE("etamake_rand_9", t0) end try:
+try res := etamake(S(etaq(q,4,60)^(3)*etaq(q,6,60)^(3)*etaq(q,12,60)^(-3),60),q,50): WR("etamake_rand_9", t0, res) catch: WE("etamake_rand_9", t0) end try:
 
 # etamake_rand_10 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,1,60)^(3)*etaq(q,2,60)^(-3)*etaq(q,3,60)^(-3),60),q,60): WR("etamake_rand_10", res, t0) catch: WE("etamake_rand_10", t0) end try:
+try res := etamake(S(etaq(q,1,60)^(3)*etaq(q,2,60)^(-3)*etaq(q,3,60)^(-3),60),q,50): WR("etamake_rand_10", t0, res) catch: WE("etamake_rand_10", t0) end try:
 
 # etamake_rand_11 (eta)
 t0 := time():
-try res := etamake(S(etaq(q,6,60)^(3)*etaq(q,8,60)^(-1)*etaq(q,9,60)^(-1),60),q,60): WR("etamake_rand_11", res, t0) catch: WE("etamake_rand_11", t0) end try:
+try res := etamake(S(etaq(q,6,60)^(3)*etaq(q,8,60)^(-1)*etaq(q,9,60)^(-1),60),q,50): WR("etamake_rand_11", t0, res) catch: WE("etamake_rand_11", t0) end try:
 
 # qetamake_triangular (qeta)
 t0 := time():
-try res := qetamake(add(q^(n*(n+1)/2),n=0..20),q,20): WR("qetamake_triangular", res, t0) catch: WE("qetamake_triangular", t0) end try:
+try res := qetamake(add(q^(n*(n+1)/2),n=0..20),q,20): WR("qetamake_triangular", t0, res) catch: WE("qetamake_triangular", t0) end try:
 
 # jacprodmake_tripleprod (jac)
 t0 := time():
-try res := jacprodmake(tripleprod(q,q^5,10),q,50): WR("jacprodmake_tripleprod", res, t0) catch: WE("jacprodmake_tripleprod", t0) end try:
+try res := jacprodmake(tripleprod(q,q^5,10),q,50): WR("jacprodmake_tripleprod", t0, res) catch: WE("jacprodmake_tripleprod", t0) end try:
 
 # jacprodmake_RR (jac)
 t0 := time():
-try res := jacprodmake(S(add(q^(n^2)/aqprod(q,q,n),n=0..8),50),q,40): WR("jacprodmake_RR", res, t0) catch: WE("jacprodmake_RR", t0) end try:
+try res := jacprodmake(S(add(q^(n^2)/aqprod(q,q,n),n=0..8),50),q,40): WR("jacprodmake_RR", t0, res) catch: WE("jacprodmake_RR", t0) end try:
 
 # jacprodmake_E0 (jac)
 t0 := time():
-try res := jacprodmake(sift(etaq(q,1,500),q,5,0,499),q,50): WR("jacprodmake_E0", res, t0) catch: WE("jacprodmake_E0", t0) end try:
+try res := jacprodmake(sift(etaq(q,1,500),q,5,0,499),q,50): WR("jacprodmake_E0", t0, res) catch: WE("jacprodmake_E0", t0) end try:
 
 # jacprodmake_theta3 (jac)
 t0 := time():
-try res := jacprodmake(theta3(q,100),q,60): WR("jacprodmake_theta3", res, t0) catch: WE("jacprodmake_theta3", t0) end try:
+try res := jacprodmake(theta3(q,100),q,60): WR("jacprodmake_theta3", t0, res) catch: WE("jacprodmake_theta3", t0) end try:
 
 # jacprodmake_doc_XX (jac)
 t0 := time():
-try res := jacprodmake(S((1-theta4(q,60)^2/theta4(q^5,12)^2)/4/q,60),q,50): WR("jacprodmake_doc_XX", res, t0) catch: WE("jacprodmake_doc_XX", t0) end try:
+try res := jacprodmake(S((1-theta4(q,60)^2/theta4(q^5,12)^2)/4/q,60),q,50): WR("jacprodmake_doc_XX", t0, res) catch: WE("jacprodmake_doc_XX", t0) end try:
 
 # jacprodmake_rand_0 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(2,7,60)^(1)*JS(3,7,60)^(1)*JS(0,7,60)^(1),60),q,50): WR("jacprodmake_rand_0", res, t0) catch: WE("jacprodmake_rand_0", t0) end try:
+try res := jacprodmake(S(JS(2,7,60)^(1)*JS(3,7,60)^(1)*JS(0,7,60)^(1),60),q,50): WR("jacprodmake_rand_0", t0, res) catch: WE("jacprodmake_rand_0", t0) end try:
 
 # jacprodmake_rand_1 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(4,12,60)^(1)*JS(0,12,60)^(1),60),q,50): WR("jacprodmake_rand_1", res, t0) catch: WE("jacprodmake_rand_1", t0) end try:
+try res := jacprodmake(S(JS(4,12,60)^(1)*JS(0,12,60)^(1),60),q,50): WR("jacprodmake_rand_1", t0, res) catch: WE("jacprodmake_rand_1", t0) end try:
 
 # jacprodmake_rand_2 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(2,10,60)^(1)*JS(0,10,60)^(1),60),q,50): WR("jacprodmake_rand_2", res, t0) catch: WE("jacprodmake_rand_2", t0) end try:
+try res := jacprodmake(S(JS(2,10,60)^(1)*JS(0,10,60)^(1),60),q,50): WR("jacprodmake_rand_2", t0, res) catch: WE("jacprodmake_rand_2", t0) end try:
 
 # jacprodmake_rand_3 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(3,12,60)^(-1)*JS(4,12,60)^(1)*JS(0,12,60)^(-1),60),q,50): WR("jacprodmake_rand_3", res, t0) catch: WE("jacprodmake_rand_3", t0) end try:
+try res := jacprodmake(S(JS(3,12,60)^(-1)*JS(4,12,60)^(1)*JS(0,12,60)^(-1),60),q,50): WR("jacprodmake_rand_3", t0, res) catch: WE("jacprodmake_rand_3", t0) end try:
 
 # jacprodmake_rand_4 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(2,8,60)^(1)*JS(3,8,60)^(-1),60),q,50): WR("jacprodmake_rand_4", res, t0) catch: WE("jacprodmake_rand_4", t0) end try:
+try res := jacprodmake(S(JS(2,8,60)^(1)*JS(3,8,60)^(-1),60),q,50): WR("jacprodmake_rand_4", t0, res) catch: WE("jacprodmake_rand_4", t0) end try:
 
 # jacprodmake_rand_5 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(2,12,60)^(-1)*JS(5,12,60)^(-1)*JS(0,12,60)^(1),60),q,50): WR("jacprodmake_rand_5", res, t0) catch: WE("jacprodmake_rand_5", t0) end try:
+try res := jacprodmake(S(JS(2,12,60)^(-1)*JS(5,12,60)^(-1)*JS(0,12,60)^(1),60),q,50): WR("jacprodmake_rand_5", t0, res) catch: WE("jacprodmake_rand_5", t0) end try:
 
 # jacprodmake_rand_6 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(2,8,60)^(-1),60),q,50): WR("jacprodmake_rand_6", res, t0) catch: WE("jacprodmake_rand_6", t0) end try:
+try res := jacprodmake(S(JS(2,8,60)^(-1),60),q,50): WR("jacprodmake_rand_6", t0, res) catch: WE("jacprodmake_rand_6", t0) end try:
 
 # jacprodmake_rand_7 (jac)
 t0 := time():
-try res := jacprodmake(S(JS(1,8,60)^(1)*JS(0,8,60)^(1),60),q,50): WR("jacprodmake_rand_7", res, t0) catch: WE("jacprodmake_rand_7", t0) end try:
+try res := jacprodmake(S(JS(1,8,60)^(1)*JS(0,8,60)^(1),60),q,50): WR("jacprodmake_rand_7", t0, res) catch: WE("jacprodmake_rand_7", t0) end try:
 
 # qfactor_t8 (qfactor)
 t0 := time():
-try res := qfactor(q^6*(1-q^9)*(1-q^10)*(1-q^11)*(1-q^16)/((1-q)*(1-q^2)*(1-q^3)*(1-q^4)),20): WR("qfactor_t8", res, t0) catch: WE("qfactor_t8", t0) end try:
+try res := qfactor(q^6*(1-q^9)*(1-q^10)*(1-q^11)*(1-q^16)/((1-q)*(1-q^2)*(1-q^3)*(1-q^4)),20): WR("qfactor_t8", t0, res) catch: WE("qfactor_t8", t0) end try:
 
 # qfactor_rand_0 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)),40): WR("qfactor_rand_0", res, t0) catch: WE("qfactor_rand_0", t0) end try:
+try res := qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)),40): WR("qfactor_rand_0", t0, res) catch: WE("qfactor_rand_0", t0) end try:
 
 # qfactor_rand_1 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)),40): WR("qfactor_rand_1", res, t0) catch: WE("qfactor_rand_1", t0) end try:
+try res := qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)),40): WR("qfactor_rand_1", t0, res) catch: WE("qfactor_rand_1", t0) end try:
 
 # qfactor_rand_2 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)),40): WR("qfactor_rand_2", res, t0) catch: WE("qfactor_rand_2", t0) end try:
+try res := qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)),40): WR("qfactor_rand_2", t0, res) catch: WE("qfactor_rand_2", t0) end try:
 
 # qfactor_rand_3 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)),40): WR("qfactor_rand_3", res, t0) catch: WE("qfactor_rand_3", t0) end try:
+try res := qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)),40): WR("qfactor_rand_3", t0, res) catch: WE("qfactor_rand_3", t0) end try:
 
 # qfactor_rand_4 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)),40): WR("qfactor_rand_4", res, t0) catch: WE("qfactor_rand_4", t0) end try:
+try res := qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)),40): WR("qfactor_rand_4", t0, res) catch: WE("qfactor_rand_4", t0) end try:
 
 # qfactor_rand_5 (qfactor)
 t0 := time():
-try res := qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)),40): WR("qfactor_rand_5", res, t0) catch: WE("qfactor_rand_5", t0) end try:
+try res := qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)),40): WR("qfactor_rand_5", t0, res) catch: WE("qfactor_rand_5", t0) end try:
 
 # mprodmake_doc (mprod)
 t0 := time():
-try res := mprodmake(S(etaq(q,2,100)^2/etaq(q,4,100)/etaq(q,1,100),100),q,17): WR("mprodmake_doc", res, t0) catch: WE("mprodmake_doc", t0) end try:
+try res := mprodmake(S(etaq(q,2,100)^2/etaq(q,4,100)/etaq(q,1,100),100),q,17): WR("mprodmake_doc", t0, res) catch: WE("mprodmake_doc", t0) end try:
 
 # mprodmake_rand_0 (mprod)
 t0 := time():
-try res := mprodmake(S((1+q^2)*(1+q^6)*(1+q^8)*(1+q^11)*(1+q^15),30),q,20): WR("mprodmake_rand_0", res, t0) catch: WE("mprodmake_rand_0", t0) end try:
+try res := mprodmake(S((1+q^2)*(1+q^6)*(1+q^8)*(1+q^11)*(1+q^15),30),q,20): WR("mprodmake_rand_0", t0, res) catch: WE("mprodmake_rand_0", t0) end try:
 
 # mprodmake_rand_1 (mprod)
 t0 := time():
-try res := mprodmake(S((1+q^1)*(1+q^3)*(1+q^8)*(1+q^12)*(1+q^15),30),q,20): WR("mprodmake_rand_1", res, t0) catch: WE("mprodmake_rand_1", t0) end try:
+try res := mprodmake(S((1+q^1)*(1+q^3)*(1+q^8)*(1+q^12)*(1+q^15),30),q,20): WR("mprodmake_rand_1", t0, res) catch: WE("mprodmake_rand_1", t0) end try:
 
 # mprodmake_rand_2 (mprod)
 t0 := time():
-try res := mprodmake(S((1+q^1)*(1+q^5)*(1+q^9)*(1+q^10)*(1+q^12)*(1+q^13),30),q,20): WR("mprodmake_rand_2", res, t0) catch: WE("mprodmake_rand_2", t0) end try:
+try res := mprodmake(S((1+q^1)*(1+q^5)*(1+q^9)*(1+q^10)*(1+q^12)*(1+q^13),30),q,20): WR("mprodmake_rand_2", t0, res) catch: WE("mprodmake_rand_2", t0) end try:
 
 # mprodmake_rand_3 (mprod)
 t0 := time():
-try res := mprodmake(S((1+q^7)*(1+q^11)*(1+q^13)*(1+q^15),30),q,20): WR("mprodmake_rand_3", res, t0) catch: WE("mprodmake_rand_3", t0) end try:
+try res := mprodmake(S((1+q^7)*(1+q^11)*(1+q^13)*(1+q^15),30),q,20): WR("mprodmake_rand_3", t0, res) catch: WE("mprodmake_rand_3", t0) end try:
 
 # zqfactor_doc (zq)
 t0 := time():
-try res := zqfactor(tripleprod(-z^2*q^3,q^4,20)-tripleprod(-z^2*q,q^4,20)/z,z,q,10): WR("zqfactor_doc", res, t0) catch: WE("zqfactor_doc", t0) end try:
+try res := zqfactor(tripleprod(-z^2*q^3,q^4,20)-tripleprod(-z^2*q,q^4,20)/z,z,q,10): WR("zqfactor_doc", t0, res) catch: WE("zqfactor_doc", t0) end try:
 
 # zqfactor_plus (zq)
 t0 := time():
-try res := zqfactor(S(mul(1+z*q^n,n=1..12),13),z,q,12): WR("zqfactor_plus", res, t0) catch: WE("zqfactor_plus", t0) end try:
+try res := zqfactor(S(mul(1+z*q^n,n=1..12),13),z,q,12): WR("zqfactor_plus", t0, res) catch: WE("zqfactor_plus", t0) end try:
 
 # findprod_1 (review)
 t0 := time():
-try res := findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20): WR("findprod_1", res, t0) catch: WE("findprod_1", t0) end try:
+try res := findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20): WR("findprod_1", t0, res) catch: WE("findprod_1", t0) end try:
 
 # qs2jaccombo_1 (review)
 t0 := time():
-try res := qs2jaccombo(theta3(q,40)+theta4(q,40),q,40): WR("qs2jaccombo_1", res, t0) catch: WE("qs2jaccombo_1", t0) end try:
+try res := qs2jaccombo(theta3(q,40)+theta4(q,40),q,40): WR("qs2jaccombo_1", t0, res) catch: WE("qs2jaccombo_1", t0) end try:
 
 # checkprod_1 (review)
 t0 := time():
-try res := checkprod(S(etaq(q,1,30),30),2,30): WR("checkprod_1", res, t0) catch: WE("checkprod_1", t0) end try:
+try res := checkprod(S(etaq(q,1,30),30),2,30): WR("checkprod_1", t0, res) catch: WE("checkprod_1", t0) end try:
 
 # findhom_theta_1 (rels)
 t0 := time():
-try res := findhom([theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)],q,1,0): WR("findhom_theta_1", res, t0) catch: WE("findhom_theta_1", t0) end try:
+try res := findhom([theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)],q,1,0): WR("findhom_theta_1", t0, res) catch: WE("findhom_theta_1", t0) end try:
 
 # findhom_theta_2 (rels)
 t0 := time():
-try res := findhom([theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)],q,2,0): WR("findhom_theta_2", res, t0) catch: WE("findhom_theta_2", t0) end try:
+try res := findhom([theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)],q,2,0): WR("findhom_theta_2", t0, res) catch: WE("findhom_theta_2", t0) end try:
 
 # findhom_theta_3 (rels)
 t0 := time():
-try res := findhom([theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)],q,3,0): WR("findhom_theta_3", res, t0) catch: WE("findhom_theta_3", t0) end try:
+try res := findhom([theta3(q,100),theta4(q,100),theta3(q^2,100),theta4(q^2,100)],q,3,0): WR("findhom_theta_3", t0, res) catch: WE("findhom_theta_3", t0) end try:
 
 # findnonhom_theta (rels)
 t0 := time():
-try res := findnonhom([theta3(q,100),theta4(q,100),theta3(q^4,100)],q,3,20): WR("findnonhom_theta", res, t0) catch: WE("findnonhom_theta", t0) end try:
+try res := findnonhom([theta3(q,100),theta4(q,100),theta3(q^4,100)],q,3,20): WR("findnonhom_theta", t0, res) catch: WE("findnonhom_theta", t0) end try:
 
 # findhomcombo_doc (combo)
 t0 := time():
-try res := findhomcombo(S(UE(6,5,60),60),[etaq(q,1,60)^5/etaq(q,5,60),S(q*etaq(q,5,60)^5/etaq(q,1,60),60)],q,3,0): WR("findhomcombo_doc", res, t0) catch: WE("findhomcombo_doc", t0) end try:
+try res := findhomcombo(S(UE(6,5,60),60),[etaq(q,1,60)^5/etaq(q,5,60),S(q*etaq(q,5,60)^5/etaq(q,1,60),60)],q,3,0,no): WR("findhomcombo_doc", t0, res) catch: WE("findhomcombo_doc", t0) end try:
 
 # findhomcombo_doc2 (combo)
 t0 := time():
-try res := findhomcombo(S(q*etaq(q,5,60)^5/etaq(q,1,60),60),[etaq(q,1,60)^5/etaq(q,5,60),S(q*etaq(q,5,60)^5/etaq(q,1,60),60)],q,1,0): WR("findhomcombo_doc2", res, t0) catch: WE("findhomcombo_doc2", t0) end try:
+try res := findhomcombo(S(q*etaq(q,5,60)^5/etaq(q,1,60),60),[etaq(q,1,60)^5/etaq(q,5,60),S(q*etaq(q,5,60)^5/etaq(q,1,60),60)],q,1,0,no): WR("findhomcombo_doc2", t0, res) catch: WE("findhomcombo_doc2", t0) end try:
 
 # findnonhomcombo_watson (combo)
 t0 := time():
-try res := findnonhomcombo(S(q^2*etaq(q,7,100)^8/etaq(q,1,100)^8,100),[S(q*etaq(q,7,100)^4/etaq(q,1,100)^4,100),S(q^2*etaq(q,49,100)/etaq(q,1,100),100)],q,7,-15): WR("findnonhomcombo_watson", res, t0) catch: WE("findnonhomcombo_watson", t0) end try:
+try res := findnonhomcombo(S(q^2*etaq(q,7,100)^8/etaq(q,1,100)^8,100),[S(q*etaq(q,7,100)^4/etaq(q,1,100)^4,100),S(q^2*etaq(q,49,100)/etaq(q,1,100),100)],q,7,-15): WR("findnonhomcombo_watson", t0, res) catch: WE("findnonhomcombo_watson", t0) end try:
 
 # findlincombo_doc (lincombo)
 t0 := time():
-try res := findlincombo(12*(1+q+q^3)+13*(1+q-q^3-q^5-q^7),[1+q+q^3,1+q-q^3-q^5-q^7],[F1,F2],q,0): WR("findlincombo_doc", res, t0) catch: WE("findlincombo_doc", t0) end try:
+try res := findlincombo(12*(1+q+q^3)+13*(1+q-q^3-q^5-q^7),[1+q+q^3,1+q-q^3-q^5-q^7],[F1,F2],q,0): WR("findlincombo_doc", t0, res) catch: WE("findlincombo_doc", t0) end try:
 
 # findlincombo_doc_none (lincombo)
 t0 := time():
-try res := findlincombo(12*(1+q+q^3)+13*(1+q-q^3-q^5-q^7),[1+q+q^3,1+q-q^3-q^5-q^7+q],[F1,F2],q,0): WR("findlincombo_doc_none", res, t0) catch: WE("findlincombo_doc_none", t0) end try:
+try res := findlincombo(12*(1+q+q^3)+13*(1+q-q^3-q^5-q^7),[1+q+q^3,1+q-q^3-q^5-q^7+q],[F1,F2],q,0): WR("findlincombo_doc_none", t0, res) catch: WE("findlincombo_doc_none", t0) end try:
 
 # findlincombo_rand_0 (lincombo)
 t0 := time():
-try res := findlincombo(expand((-3)*S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(1),60)+(2)*S(etaq(q,1,60)^(-2)*etaq(q,3,60)^(1),60)+(-3)*S(etaq(q,1,60)^(1)*etaq(q,2,60)^(1),60)),[S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(1),60),S(etaq(q,1,60)^(-2)*etaq(q,3,60)^(1),60),S(etaq(q,1,60)^(1)*etaq(q,2,60)^(1),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_0", res, t0) catch: WE("findlincombo_rand_0", t0) end try:
+try res := findlincombo(expand((-3)*S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(1),60)+(2)*S(etaq(q,1,60)^(-2)*etaq(q,3,60)^(1),60)+(-3)*S(etaq(q,1,60)^(1)*etaq(q,2,60)^(1),60)),[S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(1),60),S(etaq(q,1,60)^(-2)*etaq(q,3,60)^(1),60),S(etaq(q,1,60)^(1)*etaq(q,2,60)^(1),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_0", t0, res) catch: WE("findlincombo_rand_0", t0) end try:
 
 # findlincombo_rand_1 (lincombo)
 t0 := time():
-try res := findlincombo(expand((-2)*S(etaq(q,3,60)^(-1)*etaq(q,6,60)^(2),60)+(4)*S(etaq(q,1,60)^(2)*etaq(q,2,60)^(-2),60)+(1)*S(etaq(q,3,60)^(-2)*etaq(q,4,60)^(2),60)),[S(etaq(q,3,60)^(-1)*etaq(q,6,60)^(2),60),S(etaq(q,1,60)^(2)*etaq(q,2,60)^(-2),60),S(etaq(q,3,60)^(-2)*etaq(q,4,60)^(2),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_1", res, t0) catch: WE("findlincombo_rand_1", t0) end try:
+try res := findlincombo(expand((-2)*S(etaq(q,3,60)^(-1)*etaq(q,6,60)^(2),60)+(4)*S(etaq(q,1,60)^(2)*etaq(q,2,60)^(-2),60)+(1)*S(etaq(q,3,60)^(-2)*etaq(q,4,60)^(2),60)),[S(etaq(q,3,60)^(-1)*etaq(q,6,60)^(2),60),S(etaq(q,1,60)^(2)*etaq(q,2,60)^(-2),60),S(etaq(q,3,60)^(-2)*etaq(q,4,60)^(2),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_1", t0, res) catch: WE("findlincombo_rand_1", t0) end try:
 
 # findlincombo_rand_2 (lincombo)
 t0 := time():
-try res := findlincombo(expand((5)*S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-1),60)+(1)*S(etaq(q,1,60)^(-1)*etaq(q,4,60)^(-1),60)+(4)*S(etaq(q,1,60)^(-2)*etaq(q,4,60)^(-2),60)),[S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-1),60),S(etaq(q,1,60)^(-1)*etaq(q,4,60)^(-1),60),S(etaq(q,1,60)^(-2)*etaq(q,4,60)^(-2),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_2", res, t0) catch: WE("findlincombo_rand_2", t0) end try:
+try res := findlincombo(expand((5)*S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-1),60)+(1)*S(etaq(q,1,60)^(-1)*etaq(q,4,60)^(-1),60)+(4)*S(etaq(q,1,60)^(-2)*etaq(q,4,60)^(-2),60)),[S(etaq(q,3,60)^(2)*etaq(q,6,60)^(-1),60),S(etaq(q,1,60)^(-1)*etaq(q,4,60)^(-1),60),S(etaq(q,1,60)^(-2)*etaq(q,4,60)^(-2),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_2", t0, res) catch: WE("findlincombo_rand_2", t0) end try:
 
 # findlincombo_rand_3 (lincombo)
 t0 := time():
-try res := findlincombo(expand((2)*S(etaq(q,3,60)^(1)*etaq(q,4,60)^(1),60)+(2)*S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(2),60)+(-2)*S(etaq(q,1,60)^(2)*etaq(q,4,60)^(-2),60)),[S(etaq(q,3,60)^(1)*etaq(q,4,60)^(1),60),S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(2),60),S(etaq(q,1,60)^(2)*etaq(q,4,60)^(-2),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_3", res, t0) catch: WE("findlincombo_rand_3", t0) end try:
+try res := findlincombo(expand((2)*S(etaq(q,3,60)^(1)*etaq(q,4,60)^(1),60)+(2)*S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(2),60)+(-2)*S(etaq(q,1,60)^(2)*etaq(q,4,60)^(-2),60)),[S(etaq(q,3,60)^(1)*etaq(q,4,60)^(1),60),S(etaq(q,4,60)^(-2)*etaq(q,6,60)^(2),60),S(etaq(q,1,60)^(2)*etaq(q,4,60)^(-2),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_3", t0, res) catch: WE("findlincombo_rand_3", t0) end try:
 
 # findlincombo_rand_4 (lincombo)
 t0 := time():
-try res := findlincombo(expand((1)*S(etaq(q,1,60)^(1)*etaq(q,3,60)^(-1),60)+(-1)*S(etaq(q,2,60)^(1)*etaq(q,3,60)^(1),60)+(5)*S(etaq(q,1,60)^(-1)*etaq(q,3,60)^(-1),60)),[S(etaq(q,1,60)^(1)*etaq(q,3,60)^(-1),60),S(etaq(q,2,60)^(1)*etaq(q,3,60)^(1),60),S(etaq(q,1,60)^(-1)*etaq(q,3,60)^(-1),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_4", res, t0) catch: WE("findlincombo_rand_4", t0) end try:
+try res := findlincombo(expand((1)*S(etaq(q,1,60)^(1)*etaq(q,3,60)^(-1),60)+(-1)*S(etaq(q,2,60)^(1)*etaq(q,3,60)^(1),60)+(5)*S(etaq(q,1,60)^(-1)*etaq(q,3,60)^(-1),60)),[S(etaq(q,1,60)^(1)*etaq(q,3,60)^(-1),60),S(etaq(q,2,60)^(1)*etaq(q,3,60)^(1),60),S(etaq(q,1,60)^(-1)*etaq(q,3,60)^(-1),60)],[F1,F2,F3],q,0): WR("findlincombo_rand_4", t0, res) catch: WE("findlincombo_rand_4", t0) end try:
 
 # findmaxind_1 (maxind)
 t0 := time():
-try res := findmaxind([theta3(q,60),theta4(q,60),expand(theta3(q,60)+theta4(q,60)),theta3(q^2,60)],0)[2]: WR("findmaxind_1", res, t0) catch: WE("findmaxind_1", t0) end try:
+try res := findmaxind([theta3(q,60),theta4(q,60),expand(theta3(q,60)+theta4(q,60)),theta3(q^2,60)],0)[2]: WR("findmaxind_1", t0, res) catch: WE("findmaxind_1", t0) end try:
 
 # findpoly_cubic (poly)
 t0 := time():
-try res := findpoly(S(radsimp(theta2(q,100)^2/theta2(q^3,40)^2)+theta3(q,100)^2/theta3(q^3,40)^2,100),S(radsimp(27*q*etaq(q,3,100)^9/etaq(q,1,100)^3/(theta3(q,100)*theta3(q^3,40)+radsimp(theta2(q,100)*theta2(q^3,40)))^3),100),q,3,1,60): WR("findpoly_cubic", res, t0) catch: WE("findpoly_cubic", t0) end try:
+try res := findpoly(S(radsimp(theta2(q,100)^2/theta2(q^3,40)^2)+theta3(q,100)^2/theta3(q^3,40)^2,100),S(radsimp(27*q*etaq(q,3,100)^9/etaq(q,1,100)^3/(theta3(q,100)*theta3(q^3,40)+radsimp(theta2(q,100)*theta2(q^3,40)))^3),100),q,3,1,60): WR("findpoly_cubic", t0, res) catch: WE("findpoly_cubic", t0) end try:
 
 # findcong_partitions (cong)
 t0 := time():
-try res := [findcong(S(1/etaq(q,1,601),601),600)]: WR("findcong_partitions", res, t0) catch: WE("findcong_partitions", t0) end try:
+try res := [findcong(S(1/etaq(q,1,601),601),600)]: WR("findcong_partitions", t0, res) catch: WE("findcong_partitions", t0) end try:
 
 # findcong_distinct (cong)
 t0 := time():
-try res := [findcong(S(etaq(q,2,601)/etaq(q,1,601),601),600)]: WR("findcong_distinct", res, t0) catch: WE("findcong_distinct", t0) end try:
+try res := [findcong(S(etaq(q,2,601)/etaq(q,1,601),601),600)]: WR("findcong_distinct", t0, res) catch: WE("findcong_distinct", t0) end try:
 
 # findcong_overpartitions (cong)
 t0 := time():
-try res := [findcong(S(etaq(q,2,601)/etaq(q,1,601)^2,601),600)]: WR("findcong_overpartitions", res, t0) catch: WE("findcong_overpartitions", t0) end try:
+try res := [findcong(S(etaq(q,2,601)/etaq(q,1,601)^2,601),600)]: WR("findcong_overpartitions", t0, res) catch: WE("findcong_overpartitions", t0) end try:
 
 # findcong_bipartitions (cong)
 t0 := time():
-try res := [findcong(S(1/etaq(q,1,601)^2,601),600)]: WR("findcong_bipartitions", res, t0) catch: WE("findcong_bipartitions", t0) end try:
+try res := [findcong(S(1/etaq(q,1,601)^2,601),600)]: WR("findcong_bipartitions", t0, res) catch: WE("findcong_bipartitions", t0) end try:
 
 # findcong_composite_gcd (cong)
 t0 := time():
-try res := [findcong(add(q^n,n=0..600)+add(5*q^(3*n+2),n=0..199),600)]: WR("findcong_composite_gcd", res, t0) catch: WE("findcong_composite_gcd", t0) end try:
+try res := [findcong(add(q^n,n=0..600)+add(5*q^(3*n+2),n=0..199),600)]: WR("findcong_composite_gcd", t0, res) catch: WE("findcong_composite_gcd", t0) end try:
 
 # findlincombomodp_doc (lincombo)
 t0 := time():
-try res := findlincombomodp(sift(S(E4S(300)^16*E6S(300)/etaq(q,1,300),300),q,13,6,299),[seq(S(etaq(q,1,300)^11*E6S(300)*E4S(300)^(3*j+1),300),j=0..5)],[B1,B2,B3,B4,B5,B6],13,q,-8): WR("findlincombomodp_doc", res, t0) catch: WE("findlincombomodp_doc", t0) end try:
+try res := findlincombomodp(sift(S(E4S(300)^16*E6S(300)/etaq(q,1,300),300),q,13,6,299),[seq(S(etaq(q,1,300)^11*E6S(300)*E4S(300)^(3*j+1),300),j=0..5)],[B1,B2,B3,B4,B5,B6],13,q,-8): WR("findlincombomodp_doc", t0, res) catch: WE("findlincombomodp_doc", t0) end try:
 
 # findhommodp_e4_5 (rels)
 t0 := time():
-try res := findhommodp([E4S(100),E6S(100),1],5,q,1,0): WR("findhommodp_e4_5", res, t0) catch: WE("findhommodp_e4_5", t0) end try:
+try res := findhommodp([E4S(100),E6S(100),1],5,q,1,0): WR("findhommodp_e4_5", t0, res) catch: WE("findhommodp_e4_5", t0) end try:
 
 # findhommodp_e6_7 (rels)
 t0 := time():
-try res := findhommodp([E4S(100),E6S(100),1],7,q,1,0): WR("findhommodp_e6_7", res, t0) catch: WE("findhommodp_e6_7", t0) end try:
+try res := findhommodp([E4S(100),E6S(100),1],7,q,1,0): WR("findhommodp_e6_7", t0, res) catch: WE("findhommodp_e6_7", t0) end try:
 
 # findhommodp_deg2_5 (rels)
 t0 := time():
-try res := findhommodp([E4S(100),E6S(100)],5,q,2,0): WR("findhommodp_deg2_5", res, t0) catch: WE("findhommodp_deg2_5", t0) end try:
+try res := findhommodp([E4S(100),E6S(100)],5,q,2,0): WR("findhommodp_deg2_5", t0, res) catch: WE("findhommodp_deg2_5", t0) end try:
 
 # findhomcombomodp_1 (combo)
 t0 := time():
-try res := findhomcombomodp(E6S(100),[E4S(100),E6S(100)],5,q,2,0): WR("findhomcombomodp_1", res, t0) catch: WE("findhomcombomodp_1", t0) end try:
+try res := findhomcombomodp(E6S(100),[E4S(100),E6S(100)],5,q,2,0,no): WR("findhomcombomodp_1", t0, res) catch: WE("findhomcombomodp_1", t0) end try:
 
 fclose(fd):
 printf("qseries battery finished: results in %s\n", cat(currentdir(), kernelopts(dirsep), "maple_results.txt")):

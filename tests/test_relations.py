@@ -332,3 +332,18 @@ def test_findcong_xset_excludes(partitions_1001):
     result = findcong(partitions_1001, 1000, 31, {5})
     assert (4, 5, 5) not in result
     assert {(5, 7, 7), (6, 11, 11), (24, 25, 25)} <= result
+
+
+def test_findcong_prime_power_split():
+    """A gcd of 6 is reported as two prime-power congruences, and a prime power implied by an
+    earlier congruence is dropped.
+
+    Oracle: Maple 2026 + qseries 1.3 output (parity cases findcong_composite_gcd and
+    findcong_bipartitions): [{[2,3,2],[2,3,3]}] and [{[1,2,2],[2,5,5],[3,5,5],[4,5,5]}].
+    """
+    from sage.all import LaurentSeriesRing, QQ
+    q = LaurentSeriesRing(QQ, 'q').gen()
+    f = sum(q**n for n in range(601)) + sum(5 * q**(3 * n + 2) for n in range(200))
+    assert findcong(QSeries(f.add_bigoh(601), 601), 600) == {(2, 3, 2), (2, 3, 3)}
+    bip = etaq(q, 1, 601) ** (-2)
+    assert findcong(bip, 600) == {(1, 2, 2), (2, 5, 5), (3, 5, 5), (4, 5, 5)}

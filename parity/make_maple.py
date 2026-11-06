@@ -26,12 +26,12 @@ fd := fopen("maple_results.txt", WRITE, TEXT):
 fprintf(fd, "# maple\t%%s\n", StringTools:-SubstituteAll(convert(kernelopts(version), string), "\n", " ")):
 try fprintf(fd, "# qseries\t%%s\n", StringTools:-SubstituteAll(sprintf("%%a", [packageversion()]), "\n", " ")) catch: fprintf(fd, "# qseries\t?\n") end try:
 fprintf(fd, "# seed\t%d\n"):
-WR := proc(id, res, t) fprintf(fd, "%%s\t%%s\t%%.2f\n", id, StringTools:-SubstituteAll(StringTools:-SubstituteAll(sprintf("%%a", res), "\n", ""), "\t", " "), time() - t) end proc:
+WR := proc(id, t) local r; r := [args[3 .. -1]]; r := `if`(nops(r) = 0, NULL_RESULT, `if`(nops(r) = 1, r[1], r)); fprintf(fd, "%%s\t%%s\t%%.2f\n", id, StringTools:-SubstituteAll(StringTools:-SubstituteAll(StringTools:-SubstituteAll(sprintf("%%a", r), "\n", ""), "\t", " "), "NULL_RESULT", "NULL"), time() - t) end proc:
 WE := proc(id, t) fprintf(fd, "%%s\tERROR %%s\t%%.2f\n", id, StringTools:-SubstituteAll(StringTools:-FormatMessage(lastexception[2 .. -1]), "\n", " "), time() - t) end proc:
 '''
 
 CASE_TMPL = r'''t0 := time():
-try {setup}res := {expr}: WR("{id}", res, t0) catch: WE("{id}", t0) end try:
+try {setup}res := {expr}: WR("{id}", t0, res) catch: WE("{id}", t0) end try:
 '''
 
 FOOTER = r'''fclose(fd):

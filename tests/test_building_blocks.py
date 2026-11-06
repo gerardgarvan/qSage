@@ -358,24 +358,23 @@ def test_quinprod_prodid_string(q_ring):
 # ---------------------------------------------------------------------------
 
 def test_winquist_oracle(q_ring):
-    """winquist(1, 1, q, 30) = 1 - 10q + 35q^2 - 30q^3 - 105q^4 + 238q^5 - ...
-    This oracle is (q;q)_inf^10, a real external identity not dependent on our code.
-    a=1, b=1 are valid arguments — do NOT reject scalars with TypeError.
-    Oracle: Garvan winquist doc page; the tutorial calls winquist(q^5, q^3, q^11, 10).
-    Implementation: compute on caller's a, b, q. Sage coercion handles scalars and ring elements.
+    """winquist uses Maple's (a;q)_inf factors, not shifted (aq;q)_inf ones.
+    Oracle: Maple 2026 + qseries 1.3 output (parity case winquist_ab): the q^0 and q^1
+    coefficients of winquist(a,b,q,12); and the doc-page identity
+    winquist/((1-a)(1-b)(1-ab)(1-a/b)) at a=b=1 = (q;q)_inf^10 = 1 - 10q + 35q^2 - 30q^3 - 105q^4 + 238q^5 ...
     """
+    from sage.all import LaurentPolynomialRing, LaurentSeriesRing, QQ
     from qseries._building_blocks import winquist
-    q = q_ring.gen()
-    result = winquist(1, 1, q, 30)
-    from qseries._series import QSeries
-    assert isinstance(result, QSeries), "winquist must return QSeries"
-    # Oracle coefficients: winquist(1,1,q,30) = 1 - 10q + 35q^2 - 30q^3 - 105q^4 + 238q^5 ...
-    assert result.series[0] == 1,    f"coeff[0] expected 1, got {result.series[0]}"
-    assert result.series[1] == -10,  f"coeff[1] expected -10, got {result.series[1]}"
-    assert result.series[2] == 35,   f"coeff[2] expected 35, got {result.series[2]}"
-    assert result.series[3] == -30,  f"coeff[3] expected -30, got {result.series[3]}"
-    assert result.series[4] == -105, f"coeff[4] expected -105, got {result.series[4]}"
-    assert result.series[5] == 238,  f"coeff[5] expected 238, got {result.series[5]}"
+    L = LaurentPolynomialRing(QQ, 'a,b')
+    a, b = L.gens()
+    q = LaurentSeriesRing(L, 'q').gen()
+    s = winquist(a, b, q, 12).series
+    assert s[0] == (1 - a) * (1 - b) * (1 - a * b) * (1 - a / b)
+    assert s[1] == (b**3*a**3 - b**3 - a**3/b**2 + 1/b**2 - a**4*b**2 + a**4/b + b**2/a - 1/(a*b))
+    F = L.fraction_field()
+    d = F((1 - a) * (1 - b) * (1 - a * b) * (1 - a / b))
+    vals = [(F(s[n]) / d).subs(a=1, b=1) for n in range(6)]
+    assert vals == [1, -10, 35, -30, -105, 238]
 
 def test_winquist_tutorial_call(q_ring):
     """winquist(q^5, q^3, q^11, 10) matches tutorial call. Must not raise TypeError.
@@ -413,3 +412,17 @@ def test_etaq_large_T_matches_pentagonal(q_ring):
     for n in range(1001):
         assert e.series[n] == expected.get(n, 0), f"coefficient of q^{n}"
     assert elapsed < 30, f"etaq(q,1,1001) took {elapsed:.1f}s"
+
+
+def test_quinprod_matches_product():
+    """quinprod(z,q,3) series: q^0, q^1, q^2 coefficients 1+z, -z^3-1/z^2, -1/z^3-z^4.
+
+    Oracle: Maple 2026 + qseries 1.3 output (parity case quinprod_z), which agrees with the
+    product (-z;q)(-q/z;q)(z^2 q;q^2)(q/z^2;q^2)(q;q) on the doc page.
+    """
+    from sage.all import LaurentPolynomialRing, LaurentSeriesRing, QQ
+    from qseries._building_blocks import quinprod
+    z = LaurentPolynomialRing(QQ, 'z').gen()
+    q = LaurentSeriesRing(z.parent(), 'q').gen()
+    s = quinprod(z, q, 3).series
+    assert [s[0], s[1], s[2], s[5]] == [1 + z, -z**3 - z**-2, -z**-3 - z**4, z**6 + z**-5]

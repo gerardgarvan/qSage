@@ -328,7 +328,11 @@ def jac2prod(jacexpr):
             factors.append((a, b, e_int))
             factors.append((b - a, b, e_int))
             factors.append((b, b, e_int))
-    return PochProduct(factors=factors)
+    # Combine equal factors, as Maple prints (q^10;q^10)^3 rather than repeating it.
+    merged = {}
+    for a, b, e in factors:
+        merged[(a, b)] = merged.get((a, b), 0) + e
+    return PochProduct(factors=[(a, b, e) for (a, b), e in merged.items() if e != 0])
 
 
 # ---------------------------------------------------------------------------
@@ -355,6 +359,16 @@ def jac2series(jacexpr, T):
         a_q = _QQ(a)
         b_q = _QQ(b)
         e_q = _QQ(e)
+
+        if a_q == 0:
+            # Maple convention: JAC(0,b,infinity) = (q^b;q^b)_inf (the theta series would vanish).
+            eta_b = etaq(q_sym, int(b_q), T)
+            eta_s = eta_b.series if isinstance(eta_b, QSeries) else R(eta_b)
+            e_int0 = int(e_q) if e_q.denominator() == 1 else None
+            if e_int0 is None:
+                raise ValueError(f"jac2series: non-integer exponent {e_q} not supported")
+            result_series = (result_series * eta_s.add_bigoh(T) ** e_int0).add_bigoh(T)
+            continue
 
         shift = (b_q - 2 * a_q) / 2   # exponent of q for z = -q^{(b-2a)/2}
         step = b_q / 2                 # exponent step for q^{b/2}

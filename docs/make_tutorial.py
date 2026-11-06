@@ -89,7 +89,7 @@ SECTIONS = [
          "Rz = LaurentSeriesRing(Lz, 'q'); qz = Rz.gen()\n"
          "g = tripleprod(-z**2 * qz**3, qz**4, 20) - tripleprod(-z**2 * qz, qz**4, 20) / z\n"
          "zqfactor(g, z, qz, 10)",
-         "(1-1/z)(1-zq)(1-q)(1-q/z)(1-zq^2)(1-q^2)(1-q^2/z)(1-zq^3)(1-q^3)"),
+         "(1-1/z)(1-zq)(1-q)(1-q/z)(1-zq^2)(1-q^2)(1-q^2/z) ... (1-zq^10)(1-q^10)(1-q^10/z)"),
     ]),
 
     ("5. Relations between q-series", "Tutorial section 4", [

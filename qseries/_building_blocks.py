@@ -191,11 +191,11 @@ def quinprod(z, q, T):
 
     T='prodid': return string showing the product form of the identity.
     T='seriesid': return string showing the series form of the identity.
-    T=integer: return series sum_m [(-z)^{-3m} - (-z)^{3m-1}] q^{m(3m+1)/2}, exact.
+    T=integer: return series sum_m [(-z)^{-3m} - (-z)^{3m+1}] q^{m(3m+1)/2}, exact.
 
     Correct identity (tutorial (6.9)):
       product: (-z;q)_inf * (-q/z;q)_inf * (z^2*q;q^2)_inf * (q/z^2;q^2)_inf * (q;q)_inf
-      series:  sum_m [(-z)^{-3m} - (-z)^{3m-1}] q^{m(3m+1)/2}
+      series:  sum_m [(-z)^{-3m} - (-z)^{3m+1}] q^{m(3m+1)/2}
 
     Oracle: Garvan quinprod doc page.
     """
@@ -205,12 +205,12 @@ def quinprod(z, q, T):
             return (
                 "quinprod identity (product form): "
                 "(-z;q)_inf * (-q/z;q)_inf * (z^2*q;q^2)_inf * (q/z^2;q^2)_inf * (q;q)_inf"
-                " = sum_m [(-z)^{-3m} - (-z)^{3m-1}] * q^{m*(3m+1)/2}"
+                " = sum_m [(-z)^{-3m} - (-z)^{3m+1}] * q^{m*(3m+1)/2}"
             )
         elif T == 'seriesid':
             return (
                 "quinprod identity (series form): "
-                "sum_{m=-inf}^{inf} [(-z)^{-3m} - (-z)^{3m-1}] * q^{m*(3m+1)/2}"
+                "sum_{m=-inf}^{inf} [(-z)^{-3m} - (-z)^{3m+1}] * q^{m*(3m+1)/2}"
                 " = (-z;q)_inf * (-q/z;q)_inf * (z^2*q;q^2)_inf * (q/z^2;q^2)_inf * (q;q)_inf"
             )
         else:
@@ -230,7 +230,7 @@ def quinprod(z, q, T):
         if exp < 0:
             continue
         q_pow = q**exp
-        term = (-z)**(-3 * m) * q_pow - (-z)**(3 * m - 1) * q_pow
+        term = (-z)**(-3 * m) * q_pow - (-z)**(3 * m + 1) * q_pow
         terms.append(term)
     result = sum(terms) if terms else q * 0
     return QSeries(result, T=Infinity)
@@ -254,21 +254,22 @@ def winquist(a, b, q, T):
     winquist(a, b, q, T) -- Garvan doc page:
       https://qseries.org/fgarvan/qmaple/qseries/functions/winquist.html
 
-    The 8-factor product (with q-shifted Pochhammer factors so scalars a=b=1 are valid):
-      (aq;q)_inf * (q/a;q)_inf * (bq;q)_inf * (q/b;q)_inf
-      * (abq;q)_inf * (q/(ab);q)_inf * (aq/b;q)_inf * (bq/a;q)_inf
+    The 8-factor product, matching Maple qseries 1.3 (checked against Maple 2026 output):
+      (a;q)_inf * (q/a;q)_inf * (b;q)_inf * (q/b;q)_inf
+      * (ab;q)_inf * (q/(ab);q)_inf * (a/b;q)_inf * (bq/a;q)_inf
       * (q;q)_inf^2
-    When a=b=1 this reduces to (q;q)_inf^10 = 1 - 10q + 35q^2 - 30q^3 - 105q^4 + 238q^5 + ...
+    Its q^0 coefficient is (1-a)(1-b)(1-ab)(1-a/b), so it vanishes at a=b=1; the doc-page
+    identity divides by that factor first, after which a=b=1 gives (q;q)_inf^10.
 
     Oracle: Garvan winquist doc page.
     """
     from sage.all import Infinity
 
     def poch(x):
-        """Truncated (x*q;q)_T = prod_{i=0}^{T-1}(1 - x*q^{i+1})."""
+        """Truncated (x;q)_T = prod_{i=0}^{T-1}(1 - x*q^i)."""
         result = 1
         for i in range(T):
-            result = result * (1 - x * q**(i + 1))
+            result = result * (1 - x * q**i)
         return result
 
     def poch_inv(x):
@@ -278,14 +279,14 @@ def winquist(a, b, q, T):
             result = result * (1 - q**(i + 1) / x)
         return result
 
-    # 8 q-shifted Pochhammer factors + (q;q)^2
-    f1 = poch(a)           # (aq; q)_inf ~ prod(1 - a*q^{i+1})
+    # 8 Pochhammer factors + (q;q)^2
+    f1 = poch(a)           # (a; q)_inf
     f2 = poch_inv(a)       # (q/a; q)_inf ~ prod(1 - q^{i+1}/a)
-    f3 = poch(b)           # (bq; q)_inf
+    f3 = poch(b)           # (b; q)_inf
     f4 = poch_inv(b)       # (q/b; q)_inf
-    f5 = poch(a * b)       # (abq; q)_inf
+    f5 = poch(a * b)       # (ab; q)_inf
     f6 = poch_inv(a * b)   # (q/(ab); q)_inf
-    f7 = poch(a / b)       # (aq/b; q)_inf
+    f7 = poch(a / b)       # (a/b; q)_inf
     f8 = poch_inv(a / b)   # (bq/a; q)_inf = poch_inv(a/b) since q/(a/b) = bq/a
 
     # (q;q)^2 = prod_{i=1}^{T}(1 - q^i)^2

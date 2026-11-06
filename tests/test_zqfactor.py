@@ -2,9 +2,10 @@
 tests/test_zqfactor.py — CONV-07: zqfactor (Phase 7).
 
 Oracles:
-  - zqfactor doc page (qseries.org/fgarvan/qmaple/qseries/functions/zqfactor.html):
-    g = tripleprod(-z^2 q^3, q^4, 20) - tripleprod(-z^2 q, q^4, 20)/z;  zqfactor(g, z, q, 10) =
-    (1-1/z)(1-zq)(1-q)(1-q/z)(1-zq^2)(1-q^2)(1-q^2/z)(1-zq^3)(1-q^3).
+  - Maple 2026 + qseries 1.3 output (parity battery, maple_results.txt), for the doc-page
+    example g = tripleprod(-z^2 q^3, q^4, 20) - tripleprod(-z^2 q, q^4, 20)/z and for
+    prod (1 + z q^n).  (The doc page shows only nine factors for N = 10; real Maple gives
+    factors through q^10, and the port follows Maple.)
   - Mathematical identities (stated per test): Jacobi triple product, Euler's product
     (q;q)_inf, the product (-zq;q)_inf, and Phi_3(z) = (1 - z^3)/(1 - z).
 """
@@ -30,19 +31,13 @@ def _doc_g(z, q):
 
 
 def test_zqfactor_doc_example(zq):
-    """Oracle: zqfactor doc page example, zqfactor(g, z, q, 10) -> nine factors in Maple's order."""
+    """Oracle: Maple 2026 + qseries 1.3 (parity case zqfactor_doc): zqfactor(g, z, q, 10) gives
+    the constant (1 - 1/z) and the factors (1 - z q^j)(1 - q^j)(1 - q^j/z) for j = 1..10."""
     z, q = zq
     result = zqfactor(_doc_g(z, q), z, q, 10)
     assert isinstance(result, ZQProduct)
-    assert result.factors == [
-        (1, -1, 0, 1),
-        (1, 1, 1, 1), (1, 0, 1, 1), (1, -1, 1, 1),
-        (1, 1, 2, 1), (1, 0, 2, 1), (1, -1, 2, 1),
-        (1, 1, 3, 1), (1, 0, 3, 1),
-    ]
-    assert result.constant == 1 and result.zpow == 0 and result.qpow == 0
-    assert repr(result) == ("(1 - 1/z) * (1 - z*q) * (1 - q) * (1 - q/z) * (1 - z*q^2) * "
-                            "(1 - q^2) * (1 - q^2/z) * (1 - z*q^3) * (1 - q^3)")
+    assert result.constant == 1 - 1 / z
+    assert result.factors == [f for j in range(1, 11) for f in ((1, 1, j, 1), (1, 0, j, 1), (1, -1, j, 1))]
 
 
 def test_zqfactor_doc_example_round_trip(zq):
@@ -50,7 +45,7 @@ def test_zqfactor_doc_example_round_trip(zq):
     returned product reproduces g to O(q^40)."""
     z, q = zq
     g = _doc_g(z, q)
-    result = zqfactor(g, z, q, 200)
+    result = zqfactor(g, z, q, 39)
     assert all(e == 1 and a == 1 for a, i, j, e in result.factors)
     expanded = result.to_series(40, z)
     assert expanded.series == g.series.add_bigoh(40)
@@ -65,40 +60,41 @@ def test_zqfactor_euler_product(zq):
 
 
 def test_zqfactor_plus_factors(zq):
-    """Oracle: (-zq;q)_inf = prod (1 + z q^n) -- returned as (1 + z q^n), not as (1 - z q^n)^-1 (1 - z^2 q^2n)."""
+    """Oracle: Maple 2026 + qseries 1.3 (parity case zqfactor_plus): prod_{n=1}^{12} (1 + z q^n)
+    to O(q^13), N = 12, comes back as the twelve factors (1 + z q^n)."""
     z, q = zq
-    T = 20
-    s = q.parent()(1).add_bigoh(T)
-    for n in range(1, T):
-        s = (s * (1 + z * q**n)).add_bigoh(T)
-    result = zqfactor(QSeries(s, T), z, q, 9)
-    assert result.factors[:8] == [(-1, 1, n, 1) for n in range(1, 9)]
+    s = q.parent()(1).add_bigoh(13)
+    for n in range(1, 13):
+        s = (s * (1 + z * q**n)).add_bigoh(13)
+    result = zqfactor(QSeries(s, 13), z, q, 12)
+    assert result.factors == [(-1, 1, n, 1) for n in range(1, 13)]
     assert "(1 + z*q)" in repr(result)
 
 
-def test_zqfactor_cyclotomic_q0(zq):
-    """Oracle: Phi_3(z) = 1 + z + z^2 = (1 - z^3)/(1 - z); times (1 - q)."""
+def test_zqfactor_constant_kept(zq):
+    """Oracle: Maple zqfactor keeps the q^0 coefficient unfactored (parity case zqfactor_doc
+    prints (1-1/z)); (1 + z + z^2)(1 - q) -> constant 1 + z + z^2 and the factor (1 - q)."""
     z, q = zq
     f = QSeries(((1 + z + z**2) * (1 - q)).add_bigoh(20), 20)
     result = zqfactor(f, z, q)
-    assert (1, 3, 0, 1) in result.factors and (1, 1, 0, -1) in result.factors
-    assert (1, 0, 1, 1) in result.factors
+    assert result.constant == 1 + z + z**2
+    assert result.factors == [(1, 0, 1, 1)]
 
 
 def test_zqfactor_monomial_prefactor(zq):
-    """Oracle: q^2 * z * (1 - q) -> prefactor z * q^2 and the single factor (1 - q)."""
+    """Oracle: q^2 * z * (1 - q) -> prefactor q^2, constant z and the single factor (1 - q)."""
     z, q = zq
     f = QSeries((z * q**2 * (1 - q)).add_bigoh(20), 20)
     result = zqfactor(f, z, q)
-    assert (result.zpow, result.qpow, result.constant) == (1, 2, 1)
+    assert (result.qpow, result.constant) == (2, z)
     assert result.factors == [(1, 0, 1, 1)]
 
 
 def test_zqfactor_fails_gracefully(zq):
-    """Oracle: doc page -- 'at times it will fail'. 1 + z + 2z^2 is irreducible and not cyclotomic,
-    so no (1 - a z^i) factorisation exists: warn and return None (design decision)."""
+    """Design decision: a coefficient that is not a Laurent polynomial in z after dividing by
+    the q^0 term (here 1/(1+z) at q^1) -> warn and return None."""
     z, q = zq
-    f = QSeries(((1 + z + 2 * z**2) * (1 - q)).add_bigoh(20), 20)
+    f = QSeries(((1 + z) + q).add_bigoh(20), 20)
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
         assert zqfactor(f, z, q) is None
