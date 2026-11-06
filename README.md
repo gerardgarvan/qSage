@@ -26,8 +26,16 @@ sage -pip install qseries-sage
 library, roughly 1 GB:
 
 ```bash
-pip install "qseries-sage[passagemath]"
+python -m pip install --upgrade pip
+python -m pip install --only-binary=:all: "qseries-sage[passagemath]"
 ```
+
+Upgrading pip first matters: the older pip that comes with some systems (e.g. Ubuntu 22.04)
+does not recognise passagemath's prebuilt wheels and tries to compile parts of Sage from
+source, which usually fails. `--only-binary=:all:` makes sure nothing is compiled.
+
+**Windows:** passagemath supports Linux and macOS only, so install inside WSL (Windows
+Subsystem for Linux) with the commands above.
 
 Check it works:
 
