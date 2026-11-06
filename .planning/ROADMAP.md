@@ -85,7 +85,7 @@ Plans:
 Plans:
 - [x] 04-01-PLAN.md — etamake + qetamake (_conversion.py scaffold): CONV-02, CONV-03
 - [x] 04-02-PLAN.md — jac-family: jacprodmake, jac2prod, jac2series: CONV-04, CONV-08, CONV-09
-- [ ] 04-03-PLAN.md — misc/search: mprodmake, qfactor, zqfactor, qs2jaccombo, findprod: CONV-05, CONV-06, CONV-07, CONV-10, CONV-11
+- [x] 04-03-PLAN.md — misc/search: mprodmake, qfactor, zqfactor, qs2jaccombo, findprod: CONV-05, CONV-06, CONV-07, CONV-10, CONV-11
 
 ### Phase 5: Relation Finding (Exact)
 
@@ -98,7 +98,11 @@ Plans:
   3. `findmaxind(f_list, q, T)` returns a maximal independent subset whose size matches the Maple documentation example.
   4. `findpoly(x, y, q, 3, 1, 60)` recovers `(X+6)^3*Y - 27*(X+2)^2` (tutorial §4 example).
   5. `findcong(P, 1000)` returns the set `{[4,5,5], [5,7,7], [6,11,11], [24,25,25]}` (tutorial §7 example).
-**Plans:** TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 05-01-PLAN.md — Test scaffold + _relations.py skeleton (Wave 0): REL-01..REL-11
+- [ ] 05-02-PLAN.md — Core matrix-kernel family: findhom, findhomcombo, findnonhom, findnonhomcombo, findlincombo: REL-01, REL-02, REL-05, REL-06, REL-07
+- [ ] 05-03-PLAN.md — findmaxind, findpoly, findcong + __init__.py exports: REL-09, REL-10, REL-11
 
 ### Phase 6: Relation Finding (Mod-p)
 
