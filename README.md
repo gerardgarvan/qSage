@@ -6,24 +6,37 @@ A Python/SageMath port of Frank Garvan's Maple **qseries** package (version 1.3)
 theta functions, product conversion (Andrews' algorithm, eta-products, Jacobi products) and
 the search for polynomial relations and congruences between q-series — without Maple.
 
-This is a clean reimplementation written from Garvan's public documentation and tutorial only;
-no Maple source code was consulted. The qseries package and its documentation are by
-Frank Garvan: <https://qseries.org/fgarvan/qmaple/qseries/>.
-
-## Requirements
-
-- SageMath (tested with Ubuntu's SageMath 9.5 on Python 3.10, and Sage 10.x / passagemath)
-- Run Python through Sage: `sage -python`, `sage -pip`
+It is a reimplementation written from Garvan's public documentation and tutorial, and checked
+function by function against the real Maple package (see [Agreement with Maple](#agreement-with-maple)).
+The qseries package and its documentation are by Frank Garvan:
+<https://qseries.org/fgarvan/qmaple/qseries/>.
 
 ## Install
 
+qseries-sage needs SageMath. Pick one:
+
+**With an existing SageMath** (Sage 9.5 or later):
+
 ```bash
-cd qSage
-sage -pip install --user .
-sage -python -c "from qseries import *; print(packageversion())"   # 1.3.0
+sage -pip install qseries-sage
 ```
 
-The distribution is called `qseries-sage`; the import name is `qseries`.
+**Without SageMath, from pip alone** (Linux and macOS, Python 3.10-3.13), using the
+[passagemath](https://github.com/passagemath/passagemath) wheels. This downloads a full Sage
+library, roughly 1 GB:
+
+```bash
+pip install "qseries-sage[passagemath]"
+```
+
+Check it works:
+
+```bash
+python -c "from qseries import *; print(packageversion())"   # 1.3.0
+```
+
+The distribution is called `qseries-sage`; the import name is `qseries`. To install from a
+clone of the repository instead, run `pip install .` in it.
 
 ## Example
 
@@ -74,8 +87,14 @@ Output types: `QSeries`, `QProduct`, `EtaProduct`, `EProduct`, `JacProduct`, `Po
   `q^4(1-q^6)(1-q^7)/((1-q^3)(1-q^12))` when `T` is given (20 or 40), but factors them
   correctly, expanded or not, when `T` is left out. qseries-sage factors them either way.
 
-Every function is checked against real Maple output by the parity battery in `parity/`
-(`parity/parity_report.md` has the latest run).
+
+## Agreement with Maple
+
+A battery of 130 cases covering every function was run in Maple 2026.2 with qseries 1.3 and
+compared with this package ([`parity/`](https://github.com/gerardgarvan/qSage/tree/main/parity),
+[latest report](https://github.com/gerardgarvan/qSage/blob/main/parity/parity_report.md)): 124 agree exactly, 1 agrees in
+value (we return an extra valid answer), and the other 5 are the Maple problems listed under
+[Differences from the Maple package](#differences-from-the-maple-package).
 
 ## Tests
 
@@ -90,15 +109,16 @@ mathematical identities — never from this package's own output.
 
 qseries-sage is free software: you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation, either version 2 of the
-License, or (at your option) any later version. See [LICENSE](LICENSE).
+License, or (at your option) any later version. See [LICENSE](https://github.com/gerardgarvan/qSage/blob/main/LICENSE).
 
 The qseries package for Maple, its function set and its documentation are the work of
 Frank Garvan (University of Florida): <https://qseries.org/fgarvan/qmaple/qseries/>.
-This port is an independent, clean reimplementation in Python/SageMath written from that
-public documentation and the tutorial
+This port is an independent reimplementation in Python/SageMath written from that public
+documentation and the tutorial
 
 > F. G. Garvan, *A q-product tutorial for a q-series MAPLE package*,
 > Séminaire Lotharingien de Combinatoire 42 (1999), Article B42d. arXiv:math/9812092.
 
-No Maple source code was used. If you use this package in research, please cite Garvan's
-qseries package and tutorial.
+One function, `zqfactor`, follows the algorithm of the Maple procedure as printed by Maple when
+the package is loaded. If you use this package in research, please cite Garvan's qseries
+package and tutorial.

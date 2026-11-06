@@ -7,3 +7,4 @@ build/
 *.egg-info/
 Miniconda3-*.sh
 *.sh.bak
+dist/
