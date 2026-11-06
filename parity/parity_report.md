@@ -4,12 +4,25 @@ Battery seed 20261106, 130 cases. Maple: Maple 2026.2, X86 64 WINDOWS, Oct 31 20
 
 | status | count |
 |---|---|
-| KNOWN-MAPLE | 11 |
-| MATCH | 113 |
-| REVIEW | 5 |
+| DIFFER | 1 |
+| KNOWN-MAPLE | 5 |
+| MATCH | 123 |
 | VALUE-MATCH | 1 |
 
-## KNOWN-MAPLE (11)
+## DIFFER (1)
+
+### `qs2jaccombo_1` (jaccombo)
+
+Note: Maple splits the unexpanded sum into its two product terms
+
+Maple [(2, 0, ()), (4, 4, ()), (4, 16, ()), (4, 36, ())] vs Python [(-1, 1, (((0, 8), 1/2), ((2, 8), 1), ((4, 8), 1/2))), (1, 0, (((0, 4), 1/2), ((1, 4), 1), ((2, 4), 1/2)))]
+
+- Maple input: `qs2jaccombo(etaq(q,1,60)*etaq(q,4,60)-q*etaq(q,2,60)*etaq(q,8,60),q,50)`
+- Maple result: `4*q^36+4*q^16+4*q^4+2`
+- Python result: `JAC(0,4,infinity)^(1/2) * JAC(1,4,infinity) * JAC(2,4,infinity)^(1/2) - q^(1) * JAC(0,8,infinity)^(1/2) * JAC(2,8,infinity) * JAC(4,8,infinity)^(1/2)`
+
+
+## KNOWN-MAPLE (5)
 
 ### `theta2_q3` (coeffs)
 
@@ -26,66 +39,6 @@ Maple etamake cannot handle the q^(1/4) factor of theta2 (Maple: invalid argumen
 - Maple input: `etamake(theta2(q,100),q,100)`
 - Maple result: `ERROR invalid argument for sign, lcoeff or tcoeff`
 - Python result: `2 * eta(2*tau)^-1 * eta(4*tau)^2`
-
-### `qfactor_rand_0` (qfactor)
-
-Note: no T: with T, Maple 2026 qfactor returns 1 for these
-
-Maple 2026 qfactor returns 1 for an expanded quotient (README)
-
-- Maple input: `qfactor(expand(q^4*(1-q^6)*(1-q^7))/expand((1-q^3)*(1-q^12)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^6) * (1-q^7), denominator=(1-q^3) * (1-q^12), r=4)`
-
-### `qfactor_rand_1` (qfactor)
-
-Note: no T: with T, Maple 2026 qfactor returns 1 for these
-
-Maple 2026 qfactor returns 1 for an expanded quotient (README)
-
-- Maple input: `qfactor(expand(q^0*(1-q^1)*(1-q^10))/expand((1-q^2)*(1-q^5)*(1-q^8)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q) * (1-q^10), denominator=(1-q^2) * (1-q^5) * (1-q^8), r=0)`
-
-### `qfactor_rand_2` (qfactor)
-
-Note: no T: with T, Maple 2026 qfactor returns 1 for these
-
-Maple 2026 qfactor returns 1 for an expanded quotient (README)
-
-- Maple input: `qfactor(expand(q^1*(1-q^3)*(1-q^8))/expand((1-q^4)*(1-q^9)*(1-q^10)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^3) * (1-q^8), denominator=(1-q^4) * (1-q^9) * (1-q^10), r=1)`
-
-### `qfactor_rand_3` (qfactor)
-
-Note: no T: with T, Maple 2026 qfactor returns 1 for these
-
-Maple 2026 qfactor returns 1 for an expanded quotient (README)
-
-- Maple input: `qfactor(expand(q^1*(1-q^6)*(1-q^8)*(1-q^12))/expand((1-q^7)*(1-q^10)*(1-q^11)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^6) * (1-q^8) * (1-q^12), denominator=(1-q^7) * (1-q^10) * (1-q^11), r=1)`
-
-### `qfactor_rand_4` (qfactor)
-
-Note: no T: with T, Maple 2026 qfactor returns 1 for these
-
-Maple 2026 qfactor returns 1 for an expanded quotient (README)
-
-- Maple input: `qfactor(expand(q^2*(1-q^4)*(1-q^5)*(1-q^7))/expand((1-q^3)*(1-q^9)*(1-q^10)*(1-q^11)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^4) * (1-q^5) * (1-q^7), denominator=(1-q^3) * (1-q^9) * (1-q^10) * (1-q^11), r=2)`
-
-### `qfactor_rand_5` (qfactor)
-
-Note: no T: with T, Maple 2026 qfactor returns 1 for these
-
-Maple 2026 qfactor returns 1 for an expanded quotient (README)
-
-- Maple input: `qfactor(expand(q^3*(1-q^4)*(1-q^11))/expand((1-q^5)*(1-q^6)*(1-q^7)))`
-- Maple result: `1`
-- Python result: `QFactorResult(numerator=(1-q^4) * (1-q^11), denominator=(1-q^5) * (1-q^6) * (1-q^7), r=3)`
 
 ### `findhommodp_e4_5` (rels)
 
@@ -112,39 +65,6 @@ Maple findhommodp skips the q^0 coefficient (README)
 - Python result: `set()`
 
 
-## REVIEW (5)
-
-### `jac2prod_1` (review)
-
-- Maple input: `jac2prod(JAC(1,5,infinity))`
-- Maple result: `` `(q,q^5)[infinity]*` `(q^4,q^5)[infinity]*` `(q^5,q^5)[infinity]`
-- Python result: `(q;q^5)_infinity * (q^4;q^5)_infinity * (q^5;q^5)_infinity`
-
-### `jac2prod_2` (review)
-
-- Maple input: `jac2prod(JAC(0,10,infinity)*JAC(2,10,infinity)^2)`
-- Maple result: `` `(q^10,q^10)[infinity]^3*` `(q^2,q^10)[infinity]^2*` `(q^8,q^10)[infinity]^2`
-- Python result: `(q^10;q^10)_infinity^3 * (q^2;q^10)_infinity^2 * (q^8;q^10)_infinity^2`
-
-### `findprod_1` (review)
-
-- Maple input: `findprod([etaq(q,1,30),etaq(q,2,30)],1,3,20)`
-- Maple result: `[[0, [-1, 0]], [1, [-1, 1]], [0, [0, -1]], [0, [0, 1]], [1, [1, -1]], [0, [1, 0]]]`
-- Python result: `[[-1, -1], [-1, 0], [0, -1], [0, 1], [1, 0], [1, 1]]`
-
-### `qs2jaccombo_1` (review)
-
-- Maple input: `qs2jaccombo(theta3(q,40)+theta4(q,40),q,40)`
-- Maple result: `4*q^36+4*q^16+4*q^4+2`
-- Python result: `[JAC(0,4,infinity)^(3/2) * JAC(1,4,infinity)^-2 * JAC(2,4,infinity)^(3/2), JAC(1,2,infinity)]`
-
-### `checkprod_1` (review)
-
-- Maple input: `checkprod(S(etaq(q,1,30),30),2,30)`
-- Maple result: `[0, 1]`
-- Python result: `[1, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]`
-
-
 ## VALUE-MATCH (1)
 
 ### `findnonhomcombo_watson` (combo)
@@ -156,7 +76,7 @@ overlapping but not identical sets of combinations
 - Python result: `{343*X2^7 + 343*X2^6 + 147*X2^5 + 49*X1*X2^3 + 49*X2^4 + 35*X1*X2^2 + 21*X2^3 + 7*X1*X2 + 7*X2^2 + X2, X1^2}`
 
 
-## MATCH (113)
+## MATCH (123)
 
 - `aqprod_1` (coeffs)
 - `aqprod_2` (coeffs)
@@ -182,6 +102,8 @@ overlapping but not identical sets of combinations
 - `jac2series_doc2` (coeffs)
 - `jac2series_doc3` (coeffs)
 - `jac2series_ratio` (coeffs)
+- `jac2prod_1` (poch)
+- `jac2prod_2` (poch)
 - `qdegree_1` (number)
 - `lqdegree_1` (number)
 - `sift_P_5_0` (coeffs)
@@ -242,6 +164,12 @@ overlapping but not identical sets of combinations
 - `jacprodmake_rand_6` (jac)
 - `jacprodmake_rand_7` (jac)
 - `qfactor_t8` (qfactor)
+- `qfactor_rand_0` (qfactor)
+- `qfactor_rand_1` (qfactor)
+- `qfactor_rand_2` (qfactor)
+- `qfactor_rand_3` (qfactor)
+- `qfactor_rand_4` (qfactor)
+- `qfactor_rand_5` (qfactor)
 - `mprodmake_doc` (mprod)
 - `mprodmake_rand_0` (mprod)
 - `mprodmake_rand_1` (mprod)
@@ -249,6 +177,8 @@ overlapping but not identical sets of combinations
 - `mprodmake_rand_3` (mprod)
 - `zqfactor_doc` (zq)
 - `zqfactor_plus` (zq)
+- `findprod_1` (list)
+- `checkprod_1` (list)
 - `findhom_theta_1` (rels)
 - `findhom_theta_2` (rels)
 - `findhom_theta_3` (rels)

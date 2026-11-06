@@ -172,7 +172,7 @@ def build_cases():
         pden = "*".join("(1-t**%d)" % k for k in dk)
         add(Case("qfactor_rand_%d" % i, "qfactor", "qfactor(expand(%s)/expand(%s))" % (mnum, mden),
                  "qfactor((P(%s), P(%s)))" % (pnum, pden),
-                 opts={"note": "no T: with T, Maple 2026 qfactor returns 1 for these", "known_maple": "Maple 2026 qfactor returns 1 for an expanded quotient (README)"}))
+                 opts={"note": "no T: with T, Maple 2026 qfactor returns 1 for these (README)"}))
 
     add(Case("mprodmake_doc", "mprod", "mprodmake(S(etaq(q,2,100)^2/etaq(q,4,100)/etaq(q,1,100),100),q,17)",
              "mprodmake(etaq(q,2,100)**2*etaq(q,4,100)**(-1)*etaq(q,1,100)**(-1),q,17)"))

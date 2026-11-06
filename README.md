@@ -70,10 +70,9 @@ Output types: `QSeries`, `QProduct`, `EtaProduct`, `EProduct`, `JacProduct`, `Po
 - `findhommodp` uses every coefficient, including q^0. Maple 2026 + qseries 1.3 skips the q^0
   coefficient, so it reports `{X[1], X[2]}` for `findhommodp([1+5*q, 1], 5, q, 1, 0)` (claiming
   1 = 0 mod 5); qseries-sage gives the correct `X1 - X2`.
-- `qfactor`: Maple 2026 + qseries 1.3 returns `1` for quotients such as
-  `q^4(1-q^6)(1-q^7)/((1-q^3)(1-q^12))` when the input is expanded or a `T` is given; it only
-  factors this one when it is entered already factored and without `T`. qseries-sage factors
-  it in every form.
+- `qfactor(f, T)`: Maple 2026 + qseries 1.3 returns `1` for quotients such as
+  `q^4(1-q^6)(1-q^7)/((1-q^3)(1-q^12))` when `T` is given (20 or 40), but factors them
+  correctly, expanded or not, when `T` is left out. qseries-sage factors them either way.
 
 Every function is checked against real Maple output by the parity battery in `parity/`
 (`parity/parity_report.md` has the latest run).
