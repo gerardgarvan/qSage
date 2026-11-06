@@ -18,7 +18,7 @@ Phase 6 was executed as a single plan: the mod-p functions reuse the Phase 5 ker
 |---|---|---|
 | `findhomcombomodp` | `(f, L, p, q, n, topshift, etaoption)` | doc page (confirmed) |
 | `findlincombomodp` | `(f, L, SL, p, q, topshift)` | doc page (confirmed) |
-| `findhommodp` | `(L, p, q, n, topshift)` | **inferred**: doc page not reachable; p-before-q order taken from the two sibling pages. Verify against findhommodp.html. |
+| `findhommodp` | `(L, p, q, n, topshift)` | doc page (confirmed 2026-11-05) |
 
 Note: ROADMAP success criterion 1 wrote `findhommodp(f_list, q, p, 2, 0)`; the doc-page order
 puts `p` before `q`.

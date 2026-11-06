@@ -80,7 +80,7 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - Phase 2 follow-up (2026-11-05): `etaq` starts from `1 + O(q^T)` so partial products stay truncated (etaq(q,1,1001): ~100 s -> under a second); `theta2(q^k)` sets r = k/4 via `_theta2_shift` (warns and uses 1/4 if the argument is not a power of the generator).
 
 - Phase 6: mod-p finders reuse `_kernel_search(..., F=GF(p))`; rows reduced with `_to_field` (ValueError if a denominator is divisible by p); results are polynomials over GF(p).
-- Phase 6: signatures `findhomcombomodp(f, L, p, q, n, topshift, etaoption)` and `findlincombomodp(f, L, SL, p, q, topshift)` from the doc pages; `findhommodp(L, p, q, n, topshift)` inferred from them (doc page not reachable) - verify.
+- Phase 6: signatures `findhomcombomodp(f, L, p, q, n, topshift, etaoption)` and `findlincombomodp(f, L, SL, p, q, topshift)` from the doc pages; `findhommodp(L, p, q, n, topshift)` confirmed against its doc page (2026-11-05).
 - Phase 6: `_check_prime(p)` runs before any computation; non-prime p raises ValueError.
 - Phase 6: doc oracle reproduced: findlincombomodp(F1, BB13, SBB13, 13, q, -8) = -6*X1, 'nx = , 6', '# of terms , 19'.
 
@@ -94,7 +94,6 @@ Ubuntu WSL, apt SageMath 9.5, repo at `~/qSage`, tests via `sage -python -m pyte
 - Merge Phase 6 into Phase 5: resolved - kept separate (05-CONTEXT D-01).
 
 
-- Confirm `findhommodp(L, p, q, n, topshift)` argument order against its doc page (inferred, not read).
 
 ## Risks
 

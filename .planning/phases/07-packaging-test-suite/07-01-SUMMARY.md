@@ -43,6 +43,5 @@ files_modified: [setup.cfg, setup.py, pyproject.toml, README.md, .gitignore, qse
 
 ## Follow-ups (not blocking v1.0)
 
-- Confirm `findhommodp(L, p, q, n, topshift)` argument order against its doc page.
 - `C:\qSage` and `~/qSage` have separate git histories; pick one as the source of truth
   (ideally with a GitHub remote).
