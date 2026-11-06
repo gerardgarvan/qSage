@@ -44,8 +44,9 @@ SECTIONS = [
          "head(etaq(q, 1, 100), 20)", "Euler's pentagonal number theorem: 1 - q - q^2 + q^5 + q^7 - q^12 - q^15 + ..."),
         ("Theta functions. `theta2` carries the `q^(1/4)` prefactor in its shift `r`.",
          "head(theta3(q, 100)), head(theta4(q, 100)), head(theta2(q, 100))", None),
-        ("Jacobi's triple product: `tripleprod(q, q^3, T)` is Euler's pentagonal series again (tutorial section 6.1).",
-         "(tripleprod(q, q**3, 10).series - etaq(q, 1, 100).series).add_bigoh(100) == 0", "true"),
+        ("Jacobi's triple product: `tripleprod(q, q^3, 10)` is Euler's pentagonal series; with index bound 10 the "
+         "sum is exact through q^50 (tutorial section 6.1).",
+         "(tripleprod(q, q**3, 10).series - etaq(q, 1, 100).series).add_bigoh(50) == 0", "true"),
     ]),
 
     ("2. prodmake: Andrews' algorithm", "Tutorial section 3.1", [
@@ -132,7 +133,7 @@ SECTIONS = [
          "E0 of Euler's product.",
          "E0 = sift(etaq(q, 1, 500), q, 5, 0, 499)\n"
          "head(E0, 12)", None),
-        (None, "jacprodmake(E0, q, 50)", None),
+        ("As a theta-function product, E0 = JAC(0,5) JAC(2,5) / JAC(1,5), the 5-dissection of Euler's product:", "jacprodmake(E0, q, 50)", None),
     ]),
 
     ("7. Congruences", "Tutorial section 7; findcong doc page", [

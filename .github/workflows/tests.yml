@@ -36,3 +36,6 @@ jobs:
           python -m pip install .
           cd "$RUNNER_TEMP"
           python -c "import qseries; from qseries import *; print(packageversion(), len(qseries.__all__), 'names')"
+
+      - name: Build the tutorial (fails if any example raises)
+        run: python docs/make_tutorial.py

@@ -72,16 +72,16 @@ Output:
 (1 + 2*q + 2*q^4 + 2*q^9 + O(q^15), 1 - 2*q + 2*q^4 - 2*q^9 + O(q^15), 'q^(1/4) * (2 + 2*q^2 + 2*q^6 + 2*q^12 + O(q^15))')
 ```
 
-Jacobi's triple product: `tripleprod(q, q^3, T)` is Euler's pentagonal series again (tutorial section 6.1).
+Jacobi's triple product: `tripleprod(q, q^3, 10)` is Euler's pentagonal series; with index bound 10 the sum is exact through q^50 (tutorial section 6.1).
 
 ```python
-(tripleprod(q, q**3, 10).series - etaq(q, 1, 100).series).add_bigoh(100) == 0
+(tripleprod(q, q**3, 10).series - etaq(q, 1, 100).series).add_bigoh(50) == 0
 ```
 
 Output:
 
 ```
-False
+True
 ```
 
 **Maple:** true
@@ -138,7 +138,7 @@ jacprodmake(x, q, 40)
 Output:
 
 ```
-JAC(1,5,infinity)^-1
+JAC(0,5,infinity) * JAC(1,5,infinity)^-1
 ```
 
 **Maple:** JAC(0,5,infinity) / JAC(1,5,infinity)
@@ -351,6 +351,8 @@ Output:
 1 + q - q^3 - q^7 - q^8 + O(q^12)
 ```
 
+As a theta-function product, E0 = JAC(0,5) JAC(2,5) / JAC(1,5), the 5-dissection of Euler's product:
+
 ```python
 jacprodmake(E0, q, 50)
 ```
@@ -358,7 +360,7 @@ jacprodmake(E0, q, 50)
 Output:
 
 ```
-JAC(1,5,infinity)^-1 * JAC(2,5,infinity)
+JAC(0,5,infinity) * JAC(1,5,infinity)^-1 * JAC(2,5,infinity)
 ```
 
 ## 7. Congruences

@@ -275,53 +275,33 @@ def jacprodmake(f, q, T, base=None):
 
     # Build JacProduct factors from residue classes mod P.
     #
-    # JAC(a,P) contributes prodmake exponents e at residues a, P-a, and P(=0 mod P).
-    # JAC(0,P) contributes exponent e at residue P only.
-    #
-    # Algorithm:
-    #   1. Get e at residue P.
-    #   2. Scan pairs (a, P-a) for a in 1..floor(P/2).
-    #      If e_a == e_{P-a} == e_P (and e_P != 0): JAC(a,P)^e_P; mark residue P accounted.
-    #      If a == P/2: JAC(P/2,P)^(e_{P/2}/2) — the D-08 mandatory half-exponent case.
-    #      Otherwise: record individual residues (non-standard case).
-    #   3. If residue P still unaccounted: add JAC(0,P) factor.
-
+    # JAC(a,P) = (q^a;q^P)(q^(P-a);q^P)(q^P;q^P), a != 0, contributes its exponent at residues
+    # a, P-a AND P; JAC(P/2,P) = (q^(P/2);q^P)^2 (q^P;q^P) contributes 2e at P/2 and e at P;
+    # JAC(0,P) = (q^P;q^P) contributes at residue P only. So: take JAC(a,P)^(e_a) for each
+    # symmetric pair, JAC(P/2,P)^(e_(P/2)/2), and put whatever exponent is left at residue P
+    # into JAC(0,P). A pair with e_a != e_(P-a) is not a product of theta functions.
+    import warnings
     e_period = _QQ(exponents.get(P, 0))   # exponent at the "zero" residue (multiples of P)
     factors = []
-    period_accounted = False
-
-    seen = set()
-    for a in range(1, P):
-        if a in seen:
-            continue
+    for a in range(1, P // 2 + 1):
         paired = P - a
-        seen.add(a)
-        seen.add(paired)
         e_a = _QQ(exponents.get(a, 0))
         e_pa = _QQ(exponents.get(paired, 0))
-
         if a == paired:
-            # P even, a == P/2: D-08 mandatory case — half exponent
             if e_a != 0:
                 factors.append((a, P, e_a / 2))
+                e_period -= e_a / 2
         elif e_a != 0 or e_pa != 0:
-            if e_a == e_pa == e_period and e_period != 0:
-                # Standard JAC(a,P)^e pattern: residues a, P-a, P all equal
-                factors.append((a, P, e_a))
-                period_accounted = True
-            elif e_a == e_pa and e_a != 0:
-                # Paired but different from e_period: non-standard
-                factors.append((a, P, e_a))
-            else:
-                # Unequal: record individually
-                if e_a != 0:
-                    factors.append((a, P, e_a))
-                if e_pa != 0:
-                    factors.append((paired, P, e_pa))
-
-    # Add JAC(0,P) only if residue-P exponent not yet accounted for
-    if not period_accounted and e_period != 0:
-        factors.append((0, P, e_period))
+            if e_a != e_pa:
+                warnings.warn(
+                    "jacprodmake: exponents at residues %d and %d (mod %d) differ (%s vs %s); "
+                    "the series is not a product of theta functions. Returning None."
+                    % (a, paired, P, e_a, e_pa))
+                return None
+            factors.append((a, P, e_a))
+            e_period -= e_a
+    if e_period != 0:
+        factors.insert(0, (0, P, e_period))
 
     return JacProduct(constant=c, r=r_input, factors=factors)
 

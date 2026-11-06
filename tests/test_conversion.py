@@ -324,3 +324,77 @@ def test_findprod_trivial():
     result = findprod(FL, 1, 3, 20)
     assert isinstance(result, list)
     assert len(result) >= 1
+
+
+
+# ---------------------------------------------------------------------------
+# CONV-04 regression: JAC(0,P) bookkeeping in jacprodmake (fixed 2026-11-05)
+# ---------------------------------------------------------------------------
+
+def _poch(R, a, b, T):
+    """(q^a; q^b)_inf to O(q^T), built directly (independent of the package)."""
+    q = R.gen()
+    s = R(1).add_bigoh(T)
+    k = 0
+    while a + k * b < T:
+        s = (s * (1 - q**(a + k * b))).add_bigoh(T)
+        k += 1
+    return s
+
+
+def _jac(R, a, b, T):
+    """Garvan's JAC(a,b,inf) = (q^a;q^b)(q^(b-a);q^b)(q^b;q^b); JAC(0,b) = (q^b;q^b)."""
+    if a == 0:
+        return _poch(R, b, b, T)
+    return (_poch(R, a, b, T) * _poch(R, b - a, b, T) * _poch(R, b, b, T)).add_bigoh(T)
+
+
+def test_jacprodmake_rogers_ramanujan():
+    """Oracle: tutorial sec. 3.4 -- jacprodmake of the Rogers-Ramanujan series is JAC(0,5)/JAC(1,5);
+    the expected product is also checked against the series built from (q^a;q^b) directly."""
+    from qseries import aqprod
+    R = LaurentSeriesRing(QQ, 'q', default_prec=80)
+    q = R.gen()
+    T = 50
+    x = sum(q**(n * n) / aqprod(q, q, n).series for n in range(9)).add_bigoh(T)
+    assert x == (_jac(R, 0, 5, T) / _jac(R, 1, 5, T)).add_bigoh(T)
+    result = jacprodmake(QSeries(x, T=T), q, 40)
+    assert set(result.factors) == {(0, 5, 1), (1, 5, -1)}, result.factors
+
+
+def test_jacprodmake_euler_5_dissection():
+    """Oracle: 5-dissection of Euler's product -- the q^(5n) part of (q;q)_inf is
+    (q^5;q^5)_inf (q^2,q^3;q^5)_inf / (q,q^4;q^5)_inf = JAC(0,5) JAC(2,5) / JAC(1,5)
+    (tutorial sec. 6.2); checked against the Pochhammer construction."""
+    from qseries import sift
+    R = LaurentSeriesRing(QQ, 'q', default_prec=600)
+    q = R.gen()
+    T = 50
+    E0 = sift(etaq(q, 1, 500), q, 5, 0, 499)
+    assert E0.series.add_bigoh(T) == (_jac(R, 0, 5, T) * _jac(R, 2, 5, T) / _jac(R, 1, 5, T)).add_bigoh(T)
+    result = jacprodmake(E0, q, T)
+    assert set(result.factors) == {(0, 5, 1), (1, 5, -1), (2, 5, 1)}, result.factors
+
+
+def test_jacprodmake_theta3_exponents_consistent():
+    """Oracle: theta3 = (-q;q^2)^2 (q^2;q^2) (Jacobi triple product), whose prodmake exponents
+    are -2, 3, -2, 1 at residues 1, 2, 3, 4 (mod 4); the JAC factors must reproduce them:
+    JAC(1,4)^-2 JAC(2,4)^(3/2) JAC(0,4)^(3/2)."""
+    R = LaurentSeriesRing(QQ, 'q', default_prec=80)
+    q = R.gen()
+    result = jacprodmake(theta3(q, 100), q, 60)
+    assert set(result.factors) == {(1, 4, -2), (2, 4, QQ(3) / 2), (0, 4, QQ(3) / 2)}, result.factors
+
+
+def test_jacprodmake_not_theta_product_returns_none():
+    """Design decision (2026-11-05): asymmetric residue exponents (here (1-q)^-1 alone, period 1 is
+    not detected within T so P = max n; a=1 vs P-1 differ) cannot be a product of JAC factors."""
+    import warnings
+    R = LaurentSeriesRing(QQ, 'q', default_prec=40)
+    q = R.gen()
+    f = QSeries((1 / ((1 - q) * (1 - q**3))).add_bigoh(30), T=30)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = jacprodmake(f, q, 30)
+    assert result is None
+    assert any("not a product of theta functions" in str(w.message) for w in caught)
